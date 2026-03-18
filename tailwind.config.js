@@ -1,4 +1,5 @@
 /** @type {import('tailwindcss').Config} */
+// TrashFrame config
 module.exports = {
   content: [
     "./pages/**/*.{js,ts,jsx,tsx,mdx}",
