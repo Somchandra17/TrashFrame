@@ -1,5 +1,3 @@
-import ColorThief from "colorthief/dist/color-thief.mjs";
-
 function rgbToHex([r, g, b]) {
   return "#" + [r, g, b].map((c) => c.toString(16).padStart(2, "0")).join("");
 }
@@ -41,6 +39,8 @@ function loadImage(url) {
  */
 export async function extractPalette(imageUrl) {
   const img = await loadImage(imageUrl);
+  // Dynamic import for ColorThief (client-side only library)
+  const ColorThief = (await import("colorthief")).default;
   const thief = new ColorThief();
 
   const dominant = thief.getColor(img);
