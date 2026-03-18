@@ -6,27 +6,48 @@ import Sidebar from "./components/Sidebar";
 import PosterControls from "./components/PosterControls";
 import CredentialsModal from "./components/CredentialsModal";
 import { fetchAlbum } from "./lib/spotify";
-import { extractDominantColors } from "./lib/colors";
+import { extractPalette, extractDominantColors } from "./lib/colors";
 import { DEFAULT_FRAME, PRESET_THEMES } from "./lib/constants";
 
-function injectThemeCss(css) {
-  let tag = document.getElementById("poster-theme");
-  if (!tag) {
-    tag = document.createElement("style");
-    tag.id = "poster-theme";
-    document.head.appendChild(tag);
+function ensureStyleTag(id) {
+  let tag = document.getElementById(id);
+  if (tag) return tag;
+  tag = document.createElement("style");
+  tag.id = id;
+  return tag;
+}
+
+function ensureCascadeOrder() {
+  const ids = ["poster-auto-colors", "poster-theme", "poster-overrides"];
+  const tags = ids.map((id) => document.getElementById(id)).filter(Boolean);
+  tags.forEach((t) => document.head.appendChild(t));
+}
+
+function injectAutoColors(vars) {
+  const tag = ensureStyleTag("poster-auto-colors");
+  if (!vars) {
+    tag.textContent = "";
+    if (!tag.parentNode) document.head.appendChild(tag);
+    return;
   }
+  const entries = Object.entries(vars).map(([k, v]) => `  ${k}: ${v};`).join("\n");
+  tag.textContent = `#poster-root {\n${entries}\n}`;
+  if (!tag.parentNode) document.head.appendChild(tag);
+  ensureCascadeOrder();
+}
+
+function injectThemeCss(css) {
+  const tag = ensureStyleTag("poster-theme");
   tag.textContent = css || "";
+  if (!tag.parentNode) document.head.appendChild(tag);
+  ensureCascadeOrder();
 }
 
 function injectOverrideCss(css) {
-  let tag = document.getElementById("poster-overrides");
-  if (!tag) {
-    tag = document.createElement("style");
-    tag.id = "poster-overrides";
-    document.head.appendChild(tag);
-  }
+  const tag = ensureStyleTag("poster-overrides");
   tag.textContent = css || "";
+  if (!tag.parentNode) document.head.appendChild(tag);
+  ensureCascadeOrder();
 }
 
 function extractFontsFromCss(css) {
@@ -64,6 +85,7 @@ const DEFAULT_OVERRIDES = {
   gradientBg: false,
   codeType: "qr",
   gradientColors: null,
+  ghostOpacity: 0,
 };
 
 const EMPTY_COLORS = [];
@@ -81,15 +103,30 @@ export default function Home() {
   const [hasCreds, setHasCreds] = useState(false);
   const [posterOverrides, setPosterOverrides] = useState(DEFAULT_OVERRIDES);
   const [albumColors, setAlbumColors] = useState(EMPTY_COLORS);
+  const [paletteData, setPaletteData] = useState(null);
 
   useEffect(() => {
-    if (!album?.coverUrl) { setAlbumColors(EMPTY_COLORS); return; }
+    if (!album?.coverUrl) {
+      setAlbumColors(EMPTY_COLORS);
+      setPaletteData(null);
+      return;
+    }
     let cancelled = false;
-    extractDominantColors(album.coverUrl)
-      .then((c) => { if (!cancelled) setAlbumColors(c); })
+    extractPalette(album.coverUrl)
+      .then((data) => {
+        if (cancelled) return;
+        setAlbumColors(data.palette);
+        setPaletteData(data);
+      })
       .catch(() => {});
     return () => { cancelled = true; };
   }, [album?.coverUrl]);
+
+  useEffect(() => {
+    if (!paletteData?.autoVars) return;
+    if (customTheme) return;
+    requestAnimationFrame(() => injectAutoColors(paletteData.autoVars));
+  }, [paletteData, customTheme]);
 
   useEffect(() => {
     const id = localStorage.getItem("spotify_client_id");
@@ -131,6 +168,10 @@ export default function Home() {
     if (o.gradientBg && o.gradientColors?.length >= 2) {
       const [c1, c2] = o.gradientColors;
       rules.push(`--fp-bg: linear-gradient(135deg, ${c1}, ${c2})`);
+    }
+
+    if (o.ghostOpacity > 0) {
+      rules.push(`--fp-ghost-opacity: ${o.ghostOpacity}`);
     }
 
     if (rules.length > 0) {
@@ -180,6 +221,7 @@ export default function Home() {
     } else {
       injectThemeCss("");
     }
+    injectAutoColors(null);
   }, []);
 
   const handleUploadTheme = useCallback((css) => {
@@ -188,6 +230,7 @@ export default function Home() {
     localStorage.setItem("poster_custom_css", css);
     localStorage.removeItem("poster_preset");
     loadGoogleFonts(extractFontsFromCss(css));
+    injectAutoColors(null);
   }, []);
 
   const handleResetTheme = useCallback(() => {
@@ -196,7 +239,10 @@ export default function Home() {
     injectThemeCss("");
     localStorage.removeItem("poster_custom_css");
     localStorage.setItem("poster_preset", "default");
-  }, []);
+    if (paletteData?.autoVars) {
+      injectAutoColors(paletteData.autoVars);
+    }
+  }, [paletteData]);
 
   async function handleGenerate(e) {
     e.preventDefault();
@@ -322,6 +368,7 @@ export default function Home() {
               layout={currentLayout}
               codeType={posterOverrides.codeType}
               albumColors={albumColors}
+              barColor={paletteData?.barColor}
             />
           </div>
         </div>

@@ -1,36 +1,62 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# TrashFrame
 
-## Getting Started
+Turn any **Spotify album** into a **printable poster** — multiple layout presets, CSS theming, high-res PNG/PDF export, and album-art–driven background effects.
 
-First, run the development server:
+**Live repo:** [github.com/Somchandra17/TrashFrame](https://github.com/Somchandra17/TrashFrame)
+
+## Features
+
+- **Spotify Web API** — Paste an album link; tracks, durations, cover art, and URI load via client-credentials flow (proxied through Next.js API routes).
+- **9 poster layouts** — Classic, Gallery, Overlay, Editorial, Bold Block, Minimal, Receipt, Immersive, Retro — tuned for print-ready hierarchy and spacing.
+- **CSS variable theming** — All poster styling lives under `#poster-root` (`--fp-*` variables). Presets or your own uploaded CSS.
+- **Style from an Image** — Copy a built-in AI prompt, paste it (with a reference poster) into ChatGPT or Claude, upload the generated CSS.
+- **Design controls** — Font scale, color vs B&W cover, gradient background from palette, ghost watermark, QR vs Spotify scannable code.
+- **Background layers** — Blurred album bloom, dominant-color overlay & vignette (ColorThief), optional ghost watermark; export-friendly DOM layers.
+- **Export** — PNG and PDF at **300 DPI** for chosen frame sizes (4×6, 5×7, A5, A4, 30×40 cm).
+
+## Getting started
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000).
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+### Spotify API credentials
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+1. Create an app in the [Spotify Developer Dashboard](https://developer.spotify.com/dashboard).
+2. In TrashFrame, open **API Credentials** and save **Client ID** and **Client Secret** (stored in `localStorage` in your browser only).
 
-## Learn More
+## Project structure (high level)
 
-To learn more about Next.js, take a look at the following resources:
+| Path | Role |
+|------|------|
+| `app/page.js` | Main flow, theme injection, palette / auto-colors, overrides |
+| `app/components/Poster.jsx` | Layout switcher + background layers + QR / Spotify code |
+| `app/components/Sidebar.jsx` | Frame size, quote, presets, “Style from an Image” |
+| `app/posterTheme.css` | Base `--fp-*` defaults + layout-specific rules |
+| `app/lib/constants.js` | Presets, downloadable template, AI prompt |
+| `app/lib/colors.js` | ColorThief palette + luminance-based auto colors |
+| `app/lib/export.js` | PNG / PDF export |
+| `app/api/spotify/*` | Token + album proxy routes |
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Build & deploy
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+```bash
+npm run build
+npm start
+```
 
-## Deploy on Vercel
+Deploy anywhere that supports Next.js 14 (e.g. Vercel). Ensure album cover host `i.scdn.co` remains allowed in `next.config.mjs` `images.remotePatterns` if you use `next/image` elsewhere.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Tech stack
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+- Next.js 14 (App Router)
+- React
+- Tailwind CSS (app UI only; poster is isolated CSS)
+- ColorThief, react-qr-code, html-to-image, jsPDF
+
+## License
+
+MIT (or as specified in repository root if different).

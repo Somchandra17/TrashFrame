@@ -103,6 +103,27 @@ export default function PosterControls({ overrides, onChange }) {
             </div>
           </div>
 
+          {/* Ghost Watermark */}
+          <div>
+            <span className="text-[10px] font-semibold uppercase tracking-wider text-zinc-400 block mb-1">Ghost Watermark</span>
+            <div className="flex rounded-lg overflow-hidden ring-1 ring-zinc-200">
+              <button
+                onClick={() => set("ghostOpacity", 0)}
+                className={`flex-1 py-1.5 text-[11px] font-medium transition-colors
+                  ${(!overrides.ghostOpacity || overrides.ghostOpacity === 0) ? "bg-zinc-900 text-white" : "bg-white text-zinc-500 hover:bg-zinc-50"}`}
+              >
+                Off
+              </button>
+              <button
+                onClick={() => set("ghostOpacity", 0.06)}
+                className={`flex-1 py-1.5 text-[11px] font-medium transition-colors
+                  ${overrides.ghostOpacity > 0 ? "bg-zinc-900 text-white" : "bg-white text-zinc-500 hover:bg-zinc-50"}`}
+              >
+                Subtle
+              </button>
+            </div>
+          </div>
+
           {/* Bottom Code */}
           <div>
             <span className="text-[10px] font-semibold uppercase tracking-wider text-zinc-400 block mb-1">Bottom Code</span>
@@ -126,7 +147,7 @@ export default function PosterControls({ overrides, onChange }) {
 
           {/* Reset */}
           <button
-            onClick={() => onChange({ fontScale: 1.0, colorCover: false, gradientBg: false, codeType: "qr", gradientColors: null })}
+            onClick={() => onChange({ fontScale: 1.0, colorCover: false, gradientBg: false, codeType: "qr", gradientColors: null, ghostOpacity: 0 })}
             className="text-[10px] text-zinc-400 hover:text-zinc-600 transition self-center mt-0.5"
           >
             Reset all

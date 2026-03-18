@@ -35,6 +35,14 @@
   --fp-qr-bg: #ffffff;
   --fp-padding: 5%;
   --fp-gap: 0.6em;
+
+  /* ── Background Art Effects ── */
+  --fp-bg-art-opacity: 0.15;
+  --fp-bg-blur: 40px;
+  --fp-bg-overlay: rgba(0, 0, 0, 0.55);
+  --fp-vignette-opacity: 0.4;
+  --fp-vignette-color: rgba(0, 0, 0, 0.6);
+  --fp-ghost-opacity: 0;
 }
 
 /* ──────────────── BASE (ALL LAYOUTS) ──────────────── */
@@ -173,26 +181,90 @@
   object-fit: contain;
 }
 
+/* ──────────────── BACKGROUND EFFECT LAYERS ──────────────── */
+
+.poster-layer-bloom {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background-size: cover;
+  background-position: center;
+  transform: scale(1.1);
+  filter: blur(var(--fp-bg-blur)) brightness(0.35);
+  opacity: var(--fp-bg-art-opacity);
+  z-index: 0;
+  pointer-events: none;
+}
+.poster-layer-overlay {
+  position: absolute;
+  inset: 0;
+  background: var(--fp-bg-overlay);
+  z-index: 1;
+  pointer-events: none;
+}
+.poster-layer-ghost {
+  position: absolute;
+  bottom: 0; left: 20%;
+  width: 60%; height: 40%;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  opacity: var(--fp-ghost-opacity);
+  filter: var(--fp-image-filter);
+  mix-blend-mode: luminosity;
+  z-index: 2;
+  pointer-events: none;
+}
+.poster-layer-vignette {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    ellipse at center,
+    transparent 35%,
+    var(--fp-vignette-color) 100%
+  );
+  opacity: var(--fp-vignette-opacity);
+  z-index: 5;
+  pointer-events: none;
+}
+
+#poster-root > .poster-content {
+  position: relative;
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  gap: inherit;
+  flex: 1;
+  min-height: 0;
+}
+
 
 /* ══════════════════════════════════════════════════════
    LAYOUT: CLASSIC
+   Clean album poster. Date top-right. Big cover image.
+   Title + artist + meta. Quote. Tracklist + QR bottom.
    ══════════════════════════════════════════════════════ */
 
 #poster-root[data-layout="classic"] {
-  gap: 0.4em;
+  gap: 0.35em;
 }
 #poster-root[data-layout="classic"] .poster-date {
   position: absolute;
   top: var(--fp-padding);
   right: var(--fp-padding);
+  z-index: 4;
 }
 #poster-root[data-layout="classic"] .poster-cover {
   border-radius: var(--fp-image-radius);
+  flex-shrink: 0;
 }
 #poster-root[data-layout="classic"] .poster-info {
   display: flex;
   flex-direction: column;
-  gap: 0.1em;
+  gap: 0.05em;
+}
+#poster-root[data-layout="classic"] .poster-info .poster-title {
+  font-size: calc(var(--fp-heading-size) * 1.1);
 }
 #poster-root[data-layout="classic"] .poster-bottom-row {
   display: flex;
@@ -211,79 +283,84 @@
 
 /* ══════════════════════════════════════════════════════
    LAYOUT: GALLERY  (Drake "More Life")
-   Cream bg. Big title at top. Dark panel ~42% height
-   with cover + cursive quote. 2-col tracklist with
-   palette swatches + genre tag beside it. Footer:
-   metadata left, artist/album right.
+   Cream bg. Bold title centered top. Dark panel ~45%
+   height holding cover + cursive subtitle. 2-col
+   numbered tracklist, palette swatches right. Footer
+   with duration/date left, artist + album name right.
    ══════════════════════════════════════════════════════ */
 
 #poster-root[data-layout="gallery"] {
   gap: 0;
+  padding: 4%;
 }
 
-#poster-root[data-layout="gallery"] > .poster-title {
+#poster-root[data-layout="gallery"] .poster-content > .poster-title {
   text-align: center;
-  font-size: calc(var(--fp-heading-size) * 1.2);
-  line-height: 1.0;
+  font-size: calc(var(--fp-heading-size) * 1.35);
+  line-height: 0.95;
   color: var(--fp-heading-color);
-  padding-bottom: 0.25em;
+  padding-bottom: 0.2em;
   flex-shrink: 0;
+  letter-spacing: 0.06em;
 }
 
 #poster-root[data-layout="gallery"] .poster-gallery-art-panel {
   background: #111;
-  padding: 5% 12%;
+  padding: 6% 10%;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0.4em;
+  gap: 0.5em;
   flex-shrink: 0;
-  min-height: 42%;
+  min-height: 45%;
   justify-content: center;
 }
 #poster-root[data-layout="gallery"] .poster-gallery-art-panel .poster-cover {
-  width: 75%;
+  width: 65%;
   border-radius: var(--fp-image-radius);
 }
 #poster-root[data-layout="gallery"] .poster-gallery-art-panel .poster-quote {
-  color: rgba(255,255,255,0.65);
-  font-size: calc(var(--fp-quote-size) * 0.65);
+  color: rgba(255,255,255,0.6);
+  font-size: calc(var(--fp-quote-size) * 0.7);
+  text-align: center;
 }
 
 #poster-root[data-layout="gallery"] .poster-gallery-body {
   display: flex;
-  gap: 0.6em;
+  gap: 0.8em;
   flex: 1;
-  padding-top: 0.5em;
+  padding-top: 0.6em;
   min-height: 0;
 }
 #poster-root[data-layout="gallery"] .poster-gallery-body > .poster-tracklist {
   flex: 1;
   min-width: 0;
-  font-size: calc(var(--fp-track-size) * 1.0);
-  line-height: 1.7;
+  font-size: calc(var(--fp-track-size) * 1.05);
+  line-height: 1.8;
 }
 #poster-root[data-layout="gallery"] .poster-gallery-body .poster-track {
   font-weight: 700;
 }
 #poster-root[data-layout="gallery"] .poster-gallery-body .poster-track-num {
   font-weight: 400;
+  color: var(--fp-track-num-color);
 }
 #poster-root[data-layout="gallery"] .poster-gallery-side {
   display: flex;
   flex-direction: column;
   align-items: flex-end;
-  gap: 0.4em;
+  gap: 0.5em;
   flex-shrink: 0;
   padding-top: 0.2em;
+  justify-content: flex-start;
 }
 #poster-root[data-layout="gallery"] .poster-gallery-palette {
   display: flex;
-  gap: 0.25em;
+  gap: 0.3em;
 }
 #poster-root[data-layout="gallery"] .poster-gallery-swatch {
-  width: 1.2em;
-  height: 1.5em;
+  width: 1.4em;
+  height: 1.8em;
   display: block;
   border-radius: 1px;
 }
@@ -301,16 +378,17 @@
   justify-content: space-between;
   align-items: flex-end;
   flex-shrink: 0;
-  padding-top: 0.5em;
-  border-top: none;
+  padding-top: 0.6em;
+  border-top: 1px solid color-mix(in srgb, var(--fp-meta-color) 15%, transparent);
+  margin-top: 0.4em;
 }
 #poster-root[data-layout="gallery"] .poster-gallery-footer-left {
   display: flex;
   flex-direction: column;
-  gap: 0.15em;
+  gap: 0.12em;
 }
 #poster-root[data-layout="gallery"] .poster-gallery-footer-left .poster-meta {
-  font-size: calc(var(--fp-meta-size) * 0.85);
+  font-size: calc(var(--fp-meta-size) * 0.8);
   line-height: 1.5;
 }
 #poster-root[data-layout="gallery"] .poster-gallery-footer-right {
@@ -318,23 +396,28 @@
   display: flex;
   flex-direction: column;
   align-items: flex-end;
-  gap: 0.15em;
+  gap: 0.1em;
 }
 #poster-root[data-layout="gallery"] .poster-gallery-footer-right .poster-artist {
-  font-size: calc(var(--fp-subtitle-size) * 0.7);
+  font-size: calc(var(--fp-subtitle-size) * 0.65);
   margin-bottom: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
 }
 #poster-root[data-layout="gallery"] .poster-gallery-footer-right .poster-title-sm {
-  font-size: calc(var(--fp-heading-size) * 0.5);
-  line-height: 1.1;
+  font-size: calc(var(--fp-heading-size) * 0.55);
+  line-height: 1.05;
   font-weight: var(--fp-heading-weight);
 }
 
 
 /* ══════════════════════════════════════════════════════
    LAYOUT: OVERLAY  (Kanye "Graduation")
-   Art fills background. Artist + album right-aligned
-   at top. Single-col tracklist. QR + meta at bottom.
+   Full album art fills background at partial opacity.
+   Artist name + bold title right-aligned at top.
+   Single-column tracklist with numbers + durations.
+   Spotify code + meta at very bottom. All text over
+   the cover image.
    ══════════════════════════════════════════════════════ */
 
 #poster-root[data-layout="overlay"] {
@@ -348,34 +431,41 @@
   height: 100%;
   object-fit: cover;
   z-index: 0;
-  opacity: 0.55;
+  opacity: 0.5;
 }
 #poster-root[data-layout="overlay"] .poster-overlay-content {
   position: relative;
-  z-index: 1;
+  z-index: 4;
   display: flex;
   flex-direction: column;
-  padding: 6%;
+  padding: 5% 6%;
   height: 100%;
-  gap: 0.5em;
+  gap: 0.4em;
 }
 #poster-root[data-layout="overlay"] .poster-overlay-header {
   text-align: right;
 }
 #poster-root[data-layout="overlay"] .poster-overlay-header .poster-artist {
-  font-size: calc(var(--fp-subtitle-size) * 0.85);
-  margin-bottom: 0.05em;
+  font-size: calc(var(--fp-subtitle-size) * 0.7);
+  margin-bottom: 0.02em;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
 }
 #poster-root[data-layout="overlay"] .poster-overlay-header .poster-title {
-  line-height: 1.0;
+  line-height: 0.95;
+  font-size: calc(var(--fp-heading-size) * 1.15);
 }
 #poster-root[data-layout="overlay"] .poster-tracklist {
   column-count: 1;
-  margin-top: 0.3em;
+  margin-top: 0.2em;
+  line-height: 1.7;
+}
+#poster-root[data-layout="overlay"] .poster-track-name {
+  font-weight: 700;
 }
 #poster-root[data-layout="overlay"] .poster-quote {
   text-align: right;
-  font-size: calc(var(--fp-quote-size) * 0.85);
+  font-size: calc(var(--fp-quote-size) * 0.75);
 }
 #poster-root[data-layout="overlay"] .poster-overlay-bottom {
   margin-top: auto;
@@ -390,13 +480,15 @@
 
 /* ══════════════════════════════════════════════════════
    LAYOUT: EDITORIAL  (Beatles "Hey Jude")
-   Year top-right with decorative line. Tiny spaced-caps
-   artist. MASSIVE title. Image fills ~60%. Multi-line
-   italic quote bottom-left. Labeled metadata columns.
+   Decorative rule + italic year top-right. Tiny
+   widely-spaced artist. MASSIVE bold title. Photo
+   fills ~62% of poster. Multi-line italic quote at
+   bottom-left. Labeled metadata in 4 columns.
    ══════════════════════════════════════════════════════ */
 
 #poster-root[data-layout="editorial"] {
-  gap: 0.15em;
+  gap: 0.1em;
+  padding: 5% 5% 3%;
 }
 #poster-root[data-layout="editorial"] .poster-editorial-topline {
   display: flex;
@@ -404,41 +496,42 @@
   gap: 0.5em;
   justify-content: flex-end;
   flex-shrink: 0;
-  padding-bottom: 0.1em;
+  padding-bottom: 0.05em;
 }
 #poster-root[data-layout="editorial"] .poster-editorial-rule-line {
   flex: 1;
-  height: 2px;
+  height: 1.5px;
   background: var(--fp-heading-color);
-  opacity: 0.7;
+  opacity: 0.6;
 }
 #poster-root[data-layout="editorial"] .poster-editorial-topline .poster-date {
   position: static;
-  font-size: calc(var(--fp-meta-size) * 1.2);
-  font-weight: 600;
+  font-size: calc(var(--fp-meta-size) * 1.5);
+  font-weight: 700;
   font-style: italic;
   letter-spacing: 0;
+  color: var(--fp-heading-color);
 }
 #poster-root[data-layout="editorial"] .poster-editorial-header {
   text-align: center;
-  padding: 0.15em 0 0.2em;
+  padding: 0.05em 0 0.15em;
   flex-shrink: 0;
 }
 #poster-root[data-layout="editorial"] .poster-editorial-header .poster-artist {
-  font-size: calc(var(--fp-subtitle-size) * 0.55);
+  font-size: calc(var(--fp-subtitle-size) * 0.45);
   text-transform: uppercase;
-  letter-spacing: 0.25em;
-  margin-bottom: 0.1em;
+  letter-spacing: 0.35em;
+  margin-bottom: 0.05em;
   font-weight: 400;
 }
 #poster-root[data-layout="editorial"] .poster-editorial-header .poster-title {
-  font-size: calc(var(--fp-heading-size) * 1.6);
-  line-height: 0.88;
+  font-size: calc(var(--fp-heading-size) * 2.0);
+  line-height: 0.85;
   letter-spacing: -0.02em;
 }
 #poster-root[data-layout="editorial"] .poster-cover-hero {
   flex: 1;
-  min-height: 55%;
+  min-height: 60%;
   object-fit: cover;
   object-position: center;
 }
@@ -446,43 +539,49 @@
   flex-shrink: 0;
   display: flex;
   flex-direction: column;
-  gap: 0.25em;
-  padding-top: 0.2em;
+  gap: 0.2em;
+  padding-top: 0.15em;
 }
 #poster-root[data-layout="editorial"] .poster-editorial-footer .poster-quote {
   text-align: left;
-  font-size: calc(var(--fp-quote-size) * 0.65);
+  font-size: calc(var(--fp-quote-size) * 0.55);
   line-height: 1.5;
+  max-width: 55%;
 }
 #poster-root[data-layout="editorial"] .poster-editorial-rule {
   width: 100%;
-  height: 1.5px;
+  height: 1px;
   background: var(--fp-heading-color);
-  opacity: 0.8;
+  opacity: 0.6;
 }
 #poster-root[data-layout="editorial"] .poster-editorial-meta-row {
   display: flex;
   justify-content: space-between;
-  gap: 0.4em;
+  gap: 0.3em;
 }
 #poster-root[data-layout="editorial"] .poster-editorial-meta-col {
   display: flex;
   flex-direction: column;
+  gap: 0.02em;
 }
 #poster-root[data-layout="editorial"] .poster-editorial-meta-row .poster-meta {
-  font-size: calc(var(--fp-meta-size) * 0.8);
+  font-size: calc(var(--fp-meta-size) * 0.75);
+  font-weight: 600;
 }
 #poster-root[data-layout="editorial"] .poster-editorial-meta-row .poster-meta-label {
-  font-size: calc(var(--fp-meta-size) * 0.6);
-  letter-spacing: 0.1em;
+  font-size: calc(var(--fp-meta-size) * 0.55);
+  letter-spacing: 0.12em;
+  opacity: 0.7;
 }
 
 
 /* ══════════════════════════════════════════════════════
    LAYOUT: BOLD BLOCK  (Billie "No Time To Die")
-   Zero padding. Colored panel top (~28%) with MASSIVE
-   title + vertical album type on right edge. Art fills
-   remaining space. Thin strip at bottom with tracklist.
+   Comic-book poster. Colored top panel ~32% with
+   ENORMOUS stacked title + vertical genre strip on
+   right edge. Album art fills middle ~60%. Small
+   text overlay at bottom of image. Thin tracklist
+   strip at very bottom.
    ══════════════════════════════════════════════════════ */
 
 #poster-root[data-layout="bold-block"] {
@@ -491,38 +590,39 @@
 }
 #poster-root[data-layout="bold-block"] .poster-boldblock-top {
   background: var(--fp-bg);
-  min-height: 28%;
+  min-height: 32%;
   display: flex;
   position: relative;
   flex-shrink: 0;
 }
 #poster-root[data-layout="bold-block"] .poster-boldblock-title-area {
   flex: 1;
-  padding: 4% 5% 2%;
+  padding: 5% 5% 3%;
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
 }
 #poster-root[data-layout="bold-block"] .poster-boldblock-title-area .poster-title {
-  font-size: calc(var(--fp-heading-size) * 1.5);
-  line-height: 0.85;
+  font-size: calc(var(--fp-heading-size) * 2.0);
+  line-height: 0.82;
+  letter-spacing: -0.01em;
 }
 #poster-root[data-layout="bold-block"] .poster-boldblock-title-area .poster-artist {
-  margin-top: 0.2em;
-  font-size: calc(var(--fp-subtitle-size) * 0.6);
+  margin-top: 0.25em;
+  font-size: calc(var(--fp-subtitle-size) * 0.5);
   text-transform: uppercase;
-  letter-spacing: 0.15em;
+  letter-spacing: 0.2em;
 }
 #poster-root[data-layout="bold-block"] .poster-boldblock-side-text {
   writing-mode: vertical-rl;
   text-orientation: mixed;
   font-family: var(--fp-heading-font);
-  font-size: calc(var(--fp-heading-size) * 0.45);
+  font-size: calc(var(--fp-heading-size) * 0.4);
   font-weight: var(--fp-heading-weight);
   color: var(--fp-heading-color);
   text-transform: uppercase;
-  letter-spacing: 0.15em;
-  padding: 0.4em 0.3em;
+  letter-spacing: 0.2em;
+  padding: 0.3em 0.25em;
   border-left: var(--fp-border-width) solid var(--fp-border-color);
   display: flex;
   align-items: center;
@@ -547,23 +647,24 @@
   bottom: 0;
   left: 0;
   right: 0;
-  padding: 12% 5% 3%;
-  background: linear-gradient(transparent 0%, rgba(0,0,0,0.7) 100%);
+  padding: 15% 5% 3%;
+  background: linear-gradient(transparent 0%, rgba(0,0,0,0.75) 100%);
   display: flex;
   flex-direction: column;
-  gap: 0.2em;
+  gap: 0.15em;
 }
 #poster-root[data-layout="bold-block"] .poster-boldblock-overlay-text .poster-meta {
-  color: rgba(255,255,255,0.7);
+  color: rgba(255,255,255,0.65);
+  font-size: calc(var(--fp-meta-size) * 0.9);
 }
 #poster-root[data-layout="bold-block"] .poster-boldblock-overlay-text .poster-quote {
-  color: rgba(255,255,255,0.9);
+  color: rgba(255,255,255,0.85);
   text-align: left;
-  font-size: calc(var(--fp-quote-size) * 0.6);
+  font-size: calc(var(--fp-quote-size) * 0.55);
 }
 #poster-root[data-layout="bold-block"] .poster-boldblock-bottom {
   background: var(--fp-bg);
-  padding: 1.5% 4% 2%;
+  padding: 1.5% 4% 2.5%;
   display: flex;
   gap: 0.5em;
   align-items: flex-end;
@@ -572,8 +673,8 @@
 #poster-root[data-layout="bold-block"] .poster-boldblock-bottom .poster-tracklist {
   flex: 1;
   min-width: 0;
-  font-size: calc(var(--fp-track-size) * 0.8);
-  line-height: 1.5;
+  font-size: calc(var(--fp-track-size) * 0.75);
+  line-height: 1.4;
 }
 #poster-root[data-layout="bold-block"] .poster-boldblock-bottom .poster-qr-wrap,
 #poster-root[data-layout="bold-block"] .poster-boldblock-bottom .poster-code-wrap {
@@ -583,14 +684,16 @@
 
 /* ══════════════════════════════════════════════════════
    LAYOUT: MINIMAL  (The 1975)
-   Maximum whitespace. Tiny artist top-left, metadata
-   top-right. Gigantic title centered. Small ghosted
-   cover. Thin rule. Inline track names at bottom.
+   Near-empty poster. Tiny metadata in top corners.
+   ENORMOUS title dominating the vertical center.
+   Small ghosted album art. Thin rule. Inline track
+   names in tiny text at the very bottom.
    ══════════════════════════════════════════════════════ */
 
 #poster-root[data-layout="minimal"] {
   justify-content: space-between;
   gap: 0;
+  padding: 5% 6%;
 }
 #poster-root[data-layout="minimal"] .poster-minimal-header {
   display: flex;
@@ -600,13 +703,14 @@
   flex-shrink: 0;
 }
 #poster-root[data-layout="minimal"] .poster-minimal-header .poster-artist {
-  font-size: calc(var(--fp-subtitle-size) * 0.65);
+  font-size: calc(var(--fp-subtitle-size) * 0.5);
   text-transform: uppercase;
-  letter-spacing: 0.12em;
+  letter-spacing: 0.15em;
+  font-weight: 400;
 }
 #poster-root[data-layout="minimal"] .poster-minimal-header .poster-meta {
   text-align: right;
-  font-size: calc(var(--fp-meta-size) * 0.7);
+  font-size: calc(var(--fp-meta-size) * 0.6);
 }
 #poster-root[data-layout="minimal"] .poster-minimal-center {
   flex: 1;
@@ -615,22 +719,23 @@
   justify-content: center;
   align-items: center;
   text-align: center;
-  gap: 0.4em;
-  padding: 6% 3%;
+  gap: 0.3em;
+  padding: 4% 0;
 }
 #poster-root[data-layout="minimal"] .poster-minimal-center .poster-title {
-  font-size: calc(var(--fp-heading-size) * 2.2);
-  line-height: 0.9;
-  letter-spacing: -0.03em;
+  font-size: calc(var(--fp-heading-size) * 3.2);
+  line-height: 0.85;
+  letter-spacing: -0.04em;
 }
 #poster-root[data-layout="minimal"] .poster-minimal-center .poster-quote {
-  font-size: calc(var(--fp-quote-size) * 0.6);
+  font-size: calc(var(--fp-quote-size) * 0.5);
+  margin-top: 0.2em;
 }
 #poster-root[data-layout="minimal"] .poster-cover-small {
-  width: 22%;
+  width: 18%;
   align-self: center;
-  opacity: 0.3;
-  margin-bottom: 0.4em;
+  opacity: 0.2;
+  margin-bottom: 0.3em;
   flex-shrink: 0;
 }
 #poster-root[data-layout="minimal"] .poster-minimal-bottom {
@@ -638,29 +743,29 @@
   justify-content: space-between;
   align-items: flex-end;
   gap: 0.5em;
-  border-top: 1px solid color-mix(in srgb, var(--fp-meta-color) 20%, transparent);
-  padding-top: 0.4em;
+  border-top: 1px solid color-mix(in srgb, var(--fp-meta-color) 15%, transparent);
+  padding-top: 0.35em;
   flex-shrink: 0;
 }
 #poster-root[data-layout="minimal"] .poster-minimal-bottom .poster-tracklist {
   column-count: unset;
   display: flex;
   flex-wrap: wrap;
-  gap: 0.05em 0.3em;
+  gap: 0.04em 0.25em;
   flex: 1;
 }
 #poster-root[data-layout="minimal"] .poster-track-inline {
   font-family: var(--fp-track-font);
-  font-size: calc(var(--fp-track-size) * 0.85);
+  font-size: calc(var(--fp-track-size) * 0.8);
   color: var(--fp-track-color);
   text-transform: uppercase;
   white-space: nowrap;
-  letter-spacing: 0.02em;
+  letter-spacing: 0.03em;
 }
 #poster-root[data-layout="minimal"] .poster-track-inline::after {
   content: " \2022";
   color: var(--fp-track-num-color);
-  margin-left: 0.25em;
+  margin-left: 0.2em;
 }
 #poster-root[data-layout="minimal"] .poster-track-inline:last-child::after {
   content: none;
@@ -669,43 +774,47 @@
 
 /* ══════════════════════════════════════════════════════
    LAYOUT: RECEIPT  (Tainy "DATA")
-   Large artist top. Album name bold right-aligned.
-   Small art. Date. Solid divider. Single-col tracklist
-   with dashed borders. Dashed divider. TOTAL line.
-   Barcode + QR at bottom.
+   Big bold artist at top. Album name right-aligned
+   below. Small album art. Date + track count row.
+   Solid divider. Single-col tracklist with dashed
+   row borders + durations aligned right. Dashed
+   divider. TOTAL row. Barcode + QR at bottom.
    ══════════════════════════════════════════════════════ */
 
 #poster-root[data-layout="receipt"] {
-  gap: 0.25em;
+  gap: 0.2em;
+  padding: 5% 6%;
 }
-#poster-root[data-layout="receipt"] > .poster-title {
-  line-height: 0.92;
-  font-size: calc(var(--fp-heading-size) * 1.15);
+#poster-root[data-layout="receipt"] .poster-content > .poster-title {
+  line-height: 0.88;
+  font-size: calc(var(--fp-heading-size) * 1.4);
+  letter-spacing: 0.08em;
 }
 #poster-root[data-layout="receipt"] .poster-receipt-album {
-  font-size: calc(var(--fp-heading-size) * 0.55);
+  font-size: calc(var(--fp-heading-size) * 0.6);
   font-weight: var(--fp-heading-weight);
   font-family: var(--fp-heading-font);
   color: var(--fp-heading-color);
   text-transform: uppercase;
   letter-spacing: var(--fp-heading-spacing);
   text-align: right;
-  line-height: 1.05;
+  line-height: 1.0;
 }
 #poster-root[data-layout="receipt"] .poster-cover-small {
-  width: 36%;
-  margin: 0.1em 0;
+  width: 30%;
+  margin: 0.15em 0;
 }
 #poster-root[data-layout="receipt"] .poster-receipt-date-row {
   display: flex;
   justify-content: space-between;
   align-items: baseline;
-  padding: 0.05em 0;
+  padding: 0.04em 0;
+  font-size: calc(var(--fp-meta-size) * 0.9);
 }
 #poster-root[data-layout="receipt"] .poster-receipt-divider {
   border: none;
   border-bottom: 1.5px solid var(--fp-heading-color);
-  opacity: 0.4;
+  opacity: 0.35;
 }
 #poster-root[data-layout="receipt"] .poster-receipt-divider-dashed {
   border-bottom-style: dashed;
@@ -715,19 +824,20 @@
   display: flex;
   justify-content: space-between;
   font-family: var(--fp-track-font);
-  font-size: calc(var(--fp-track-size) * 1.1);
+  font-size: calc(var(--fp-track-size) * 1.15);
   color: var(--fp-heading-color);
   font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.12em;
-  padding: 0.1em 0;
+  letter-spacing: 0.15em;
+  padding: 0.08em 0;
 }
 #poster-root[data-layout="receipt"] .poster-tracklist {
   column-count: 1;
+  line-height: 1.5;
 }
 #poster-root[data-layout="receipt"] .poster-track {
-  border-bottom: 1px dashed color-mix(in srgb, var(--fp-heading-color) 20%, transparent);
-  padding: 0.12em 0;
+  border-bottom: 1px dashed color-mix(in srgb, var(--fp-heading-color) 18%, transparent);
+  padding: 0.1em 0;
 }
 #poster-root[data-layout="receipt"] .poster-track:last-child {
   border-bottom: none;
@@ -737,10 +847,11 @@
 }
 #poster-root[data-layout="receipt"] .poster-track-name {
   font-weight: 600;
+  text-transform: uppercase;
 }
 #poster-root[data-layout="receipt"] .poster-quote {
-  font-size: calc(var(--fp-quote-size) * 0.7);
-  margin: 0.1em 0;
+  font-size: calc(var(--fp-quote-size) * 0.6);
+  margin: 0.08em 0;
 }
 #poster-root[data-layout="receipt"] .poster-receipt-bottom {
   display: flex;
@@ -751,28 +862,30 @@
 }
 #poster-root[data-layout="receipt"] .poster-receipt-barcode {
   width: 5em;
-  height: 1.5em;
+  height: 1.8em;
   background: repeating-linear-gradient(
     90deg,
-    var(--fp-heading-color) 0 1.5px,
-    transparent 1.5px 3px,
-    var(--fp-heading-color) 3px 4px,
-    transparent 4px 6px,
-    var(--fp-heading-color) 6px 7px,
-    transparent 7px 9px,
-    var(--fp-heading-color) 9px 11px,
-    transparent 11px 12px
+    var(--fp-heading-color) 0 1px,
+    transparent 1px 2.5px,
+    var(--fp-heading-color) 2.5px 3.5px,
+    transparent 3.5px 5px,
+    var(--fp-heading-color) 5px 6px,
+    transparent 6px 7.5px,
+    var(--fp-heading-color) 7.5px 9px,
+    transparent 9px 10px
   );
-  opacity: 0.7;
+  opacity: 0.65;
   flex-shrink: 0;
 }
 
 
 /* ══════════════════════════════════════════════════════
    LAYOUT: IMMERSIVE  (SZA "SOS")
-   Full-bleed image. Huge outlined title at top. Thin
-   white inset border. Dash-separated track names at
-   bottom over dark gradient. QR + meta at bottom edge.
+   Full-bleed album cover. HUGE outlined/stroked
+   title at top. Small subtitle. Thin white inset
+   rectangle border frame. Dash-separated flowing
+   track names at bottom over heavy dark gradient.
+   QR + meta at very bottom edge.
    ══════════════════════════════════════════════════════ */
 
 #poster-root[data-layout="immersive"] {
@@ -789,101 +902,108 @@
 }
 #poster-root[data-layout="immersive"] .poster-immersive-frame {
   position: absolute;
-  inset: 5%;
-  border: 1.5px solid rgba(255,255,255,0.4);
-  z-index: 1;
+  inset: 4%;
+  border: 1.5px solid rgba(255,255,255,0.35);
+  z-index: 4;
   pointer-events: none;
 }
 #poster-root[data-layout="immersive"] .poster-immersive-overlay {
   position: relative;
-  z-index: 2;
-  padding: 7% 7% 0;
+  z-index: 4;
+  padding: 6% 6% 0;
   text-align: center;
 }
 #poster-root[data-layout="immersive"] .poster-immersive-overlay .poster-artist {
-  font-size: calc(var(--fp-subtitle-size) * 0.7);
-  text-shadow: 0 1px 10px rgba(0,0,0,0.6);
-  margin-bottom: 0.05em;
+  font-size: calc(var(--fp-subtitle-size) * 0.55);
+  text-shadow: 0 2px 12px rgba(0,0,0,0.7);
+  margin-bottom: 0.02em;
   text-transform: uppercase;
-  letter-spacing: 0.15em;
+  letter-spacing: 0.2em;
+  color: rgba(255,255,255,0.6);
 }
 #poster-root[data-layout="immersive"] .poster-immersive-overlay .poster-title {
-  font-size: calc(var(--fp-heading-size) * 1.8);
-  line-height: 0.9;
-  -webkit-text-stroke: 2px var(--fp-heading-color);
+  font-size: calc(var(--fp-heading-size) * 2.5);
+  line-height: 0.88;
+  -webkit-text-stroke: 3px var(--fp-heading-color);
   color: transparent;
   text-shadow: none;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.1em;
 }
 #poster-root[data-layout="immersive"] .poster-immersive-bottom {
   position: relative;
-  z-index: 2;
+  z-index: 4;
   margin-top: auto;
-  padding: 20% 6% 5%;
-  background: linear-gradient(transparent 0%, rgba(0,0,0,0.85) 55%);
+  padding: 25% 5% 4%;
+  background: linear-gradient(transparent 0%, rgba(0,0,0,0.9) 50%);
   display: flex;
   flex-direction: column;
-  gap: 0.3em;
+  gap: 0.25em;
 }
 #poster-root[data-layout="immersive"] .poster-immersive-tracks {
   font-family: var(--fp-track-font);
   font-size: var(--fp-track-size);
   color: var(--fp-track-color);
   text-align: center;
-  line-height: 2.0;
+  line-height: 1.9;
   font-weight: 600;
 }
 #poster-root[data-layout="immersive"] .poster-track-sep {
   color: var(--fp-track-num-color);
-  margin: 0 0.15em;
+  margin: 0 0.12em;
 }
 #poster-root[data-layout="immersive"] .poster-immersive-meta-row {
   display: flex;
   justify-content: space-between;
   align-items: flex-end;
-  margin-top: 0.15em;
+  margin-top: 0.1em;
 }
 #poster-root[data-layout="immersive"] .poster-quote {
-  text-shadow: 0 1px 12px rgba(0,0,0,0.5);
-  font-size: calc(var(--fp-quote-size) * 0.75);
+  text-shadow: 0 2px 16px rgba(0,0,0,0.6);
+  font-size: calc(var(--fp-quote-size) * 0.65);
 }
 
 
 /* ══════════════════════════════════════════════════════
    LAYOUT: RETRO  (Disco poster)
-   Small subtitle centered. MASSIVE 3D-shadow title.
-   Art in thick bordered frame. Quote + meta at bottom.
+   Tiny subtitle at top. ENORMOUS 3D-shadow title
+   dominating upper third. Album art in thick bordered
+   frame centered. Cursive quote at bottom with meta.
    ══════════════════════════════════════════════════════ */
 
 #poster-root[data-layout="retro"] {
-  gap: 0.15em;
+  gap: 0;
   align-items: center;
+  padding: 5%;
 }
 #poster-root[data-layout="retro"] .poster-retro-header {
   text-align: center;
-  padding-bottom: 0.05em;
+  padding-bottom: 0.1em;
   width: 100%;
   flex-shrink: 0;
 }
 #poster-root[data-layout="retro"] .poster-retro-header .poster-artist {
-  font-size: calc(var(--fp-subtitle-size) * 0.55);
+  font-size: calc(var(--fp-subtitle-size) * 0.45);
   text-transform: uppercase;
-  letter-spacing: 0.25em;
+  letter-spacing: 0.3em;
   margin-bottom: 0;
+  opacity: 0.8;
 }
 #poster-root[data-layout="retro"] .poster-retro-header .poster-title {
-  font-size: calc(var(--fp-heading-size) * 1.6);
-  line-height: 0.85;
+  font-size: calc(var(--fp-heading-size) * 2.4);
+  line-height: 0.82;
   text-shadow:
-    3px 3px 0 rgba(0,0,0,0.15),
-    6px 6px 0 rgba(0,0,0,0.07);
+    4px 4px 0 rgba(0,0,0,0.2),
+    8px 8px 0 rgba(0,0,0,0.1),
+    12px 12px 0 rgba(0,0,0,0.04);
+  letter-spacing: -0.02em;
 }
 #poster-root[data-layout="retro"] .poster-retro-image-frame {
-  border: 5px solid var(--fp-border-color);
-  padding: 2.5%;
-  width: 68%;
+  border: 6px solid var(--fp-border-color);
+  padding: 3%;
+  width: 65%;
   flex-shrink: 0;
-  box-shadow: 2px 2px 8px rgba(0,0,0,0.12);
+  box-shadow: 3px 3px 12px rgba(0,0,0,0.15);
+  margin: 0.3em 0;
 }
 #poster-root[data-layout="retro"] .poster-retro-image-frame .poster-cover {
   width: 100%;
@@ -893,11 +1013,12 @@
   width: 100%;
   display: flex;
   flex-direction: column;
-  gap: 0.25em;
+  gap: 0.2em;
 }
 #poster-root[data-layout="retro"] .poster-retro-footer .poster-quote {
-  font-size: calc(var(--fp-quote-size) * 0.65);
-  line-height: 1.45;
+  font-size: calc(var(--fp-quote-size) * 0.55);
+  line-height: 1.5;
+  text-align: center;
 }
 #poster-root[data-layout="retro"] .poster-retro-meta-row {
   display: flex;

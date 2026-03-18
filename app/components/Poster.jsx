@@ -34,14 +34,21 @@ function useResolvedBgHex() {
   return bgHex;
 }
 
-function BottomCode({ url, uri, codeType }) {
+function BottomCode({ url, uri, codeType, barColor }) {
   const bgHex = useResolvedBgHex();
+  const bar = barColor || "black";
 
   if (codeType === "scannable" && uri) {
-    const src = `https://scannables.scdn.co/uri/plain/png/${bgHex}/black/640/${uri}`;
+    const src = `https://scannables.scdn.co/uri/plain/png/${bgHex}/${bar}/640/${uri}`;
     return (
       <div className="poster-code-wrap">
-        <img src={src} alt="Spotify Code" className="poster-spotify-code" crossOrigin="anonymous" />
+        <img
+          src={src}
+          alt="Spotify Code"
+          className="poster-spotify-code"
+          crossOrigin="anonymous"
+          style={{ mixBlendMode: "multiply" }}
+        />
       </div>
     );
   }
@@ -68,7 +75,7 @@ function TrackRow({ t, hideArtists, hideNum, hideDur }) {
 
 /* ═══════════════════════ CLASSIC ═══════════════════════ */
 
-function LayoutClassic({ album, quote, codeType }) {
+function LayoutClassic({ album, quote, codeType, barColor }) {
   return (
     <>
       <div className="poster-date">{album.releaseDate}</div>
@@ -85,7 +92,7 @@ function LayoutClassic({ album, quote, codeType }) {
         <div className="poster-tracklist">
           {album.tracks.map((t) => <TrackRow key={t.number} t={t} />)}
         </div>
-        <BottomCode url={album.spotifyUrl} uri={album.uri} codeType={codeType} />
+        <BottomCode url={album.spotifyUrl} uri={album.uri} codeType={codeType} barColor={barColor} />
       </div>
     </>
   );
@@ -93,7 +100,7 @@ function LayoutClassic({ album, quote, codeType }) {
 
 /* ═══════════════════════ GALLERY (Drake "More Life") ═══════════════════════ */
 
-function LayoutGallery({ album, quote, codeType, albumColors }) {
+function LayoutGallery({ album, quote, codeType, albumColors, barColor }) {
   const swatches = (albumColors && albumColors.length >= 2) ? albumColors.slice(0, 5) : null;
   return (
     <>
@@ -123,7 +130,7 @@ function LayoutGallery({ album, quote, codeType, albumColors }) {
           <p className="poster-meta">RELEASED BY: {album.albumType} RECORDS</p>
         </div>
         <div className="poster-gallery-footer-right">
-          <BottomCode url={album.spotifyUrl} uri={album.uri} codeType={codeType} />
+          <BottomCode url={album.spotifyUrl} uri={album.uri} codeType={codeType} barColor={barColor} />
           <p className="poster-artist">{album.artists}</p>
           <p className="poster-title poster-title-sm">{album.name}</p>
         </div>
@@ -134,7 +141,7 @@ function LayoutGallery({ album, quote, codeType, albumColors }) {
 
 /* ═══════════════════════ EDITORIAL (Beatles "Hey Jude") ═══════════════════════ */
 
-function LayoutEditorial({ album, quote, codeType }) {
+function LayoutEditorial({ album, quote, codeType, barColor }) {
   return (
     <>
       <div className="poster-editorial-topline">
@@ -174,7 +181,7 @@ function LayoutEditorial({ album, quote, codeType }) {
 
 /* ═══════════════════════ BOLD BLOCK (Billie "No Time To Die") ═══════════════════════ */
 
-function LayoutBoldBlock({ album, quote, codeType }) {
+function LayoutBoldBlock({ album, quote, codeType, barColor }) {
   return (
     <>
       <div className="poster-boldblock-top">
@@ -195,7 +202,7 @@ function LayoutBoldBlock({ album, quote, codeType }) {
         <div className="poster-tracklist">
           {album.tracks.map((t) => <TrackRow key={t.number} t={t} hideArtists />)}
         </div>
-        <BottomCode url={album.spotifyUrl} uri={album.uri} codeType={codeType} />
+        <BottomCode url={album.spotifyUrl} uri={album.uri} codeType={codeType} barColor={barColor} />
       </div>
     </>
   );
@@ -203,7 +210,7 @@ function LayoutBoldBlock({ album, quote, codeType }) {
 
 /* ═══════════════════════ MINIMAL (The 1975) ═══════════════════════ */
 
-function LayoutMinimal({ album, quote, codeType }) {
+function LayoutMinimal({ album, quote, codeType, barColor }) {
   return (
     <>
       <div className="poster-minimal-header">
@@ -223,7 +230,7 @@ function LayoutMinimal({ album, quote, codeType }) {
             <span key={t.number} className="poster-track-inline">{t.name}</span>
           ))}
         </div>
-        <BottomCode url={album.spotifyUrl} uri={album.uri} codeType={codeType} />
+        <BottomCode url={album.spotifyUrl} uri={album.uri} codeType={codeType} barColor={barColor} />
       </div>
     </>
   );
@@ -231,7 +238,7 @@ function LayoutMinimal({ album, quote, codeType }) {
 
 /* ═══════════════════════ RECEIPT (Tainy "DATA") ═══════════════════════ */
 
-function LayoutReceipt({ album, quote, codeType }) {
+function LayoutReceipt({ album, quote, codeType, barColor }) {
   return (
     <>
       <h1 className="poster-title">{album.artists}</h1>
@@ -255,7 +262,7 @@ function LayoutReceipt({ album, quote, codeType }) {
       {quote && <p className="poster-quote">&ldquo;{quote}&rdquo;</p>}
       <div className="poster-receipt-bottom">
         <div className="poster-receipt-barcode" />
-        <BottomCode url={album.spotifyUrl} uri={album.uri} codeType={codeType} />
+        <BottomCode url={album.spotifyUrl} uri={album.uri} codeType={codeType} barColor={barColor} />
       </div>
     </>
   );
@@ -263,7 +270,7 @@ function LayoutReceipt({ album, quote, codeType }) {
 
 /* ═══════════════════════ IMMERSIVE (SZA "SOS") ═══════════════════════ */
 
-function LayoutImmersive({ album, quote, codeType }) {
+function LayoutImmersive({ album, quote, codeType, barColor }) {
   return (
     <>
       <Cover src={album.coverUrl} name={album.name} className="poster-cover-fullbleed" />
@@ -286,7 +293,7 @@ function LayoutImmersive({ album, quote, codeType }) {
           <span className="poster-meta">
             {album.releaseDate} &bull; {album.totalTracks} tracks &bull; {album.totalDuration}
           </span>
-          <BottomCode url={album.spotifyUrl} uri={album.uri} codeType={codeType} />
+          <BottomCode url={album.spotifyUrl} uri={album.uri} codeType={codeType} barColor={barColor} />
         </div>
       </div>
     </>
@@ -295,7 +302,7 @@ function LayoutImmersive({ album, quote, codeType }) {
 
 /* ═══════════════════════ RETRO (Disco poster) ═══════════════════════ */
 
-function LayoutRetro({ album, quote, codeType }) {
+function LayoutRetro({ album, quote, codeType, barColor }) {
   return (
     <>
       <div className="poster-retro-header">
@@ -309,7 +316,7 @@ function LayoutRetro({ album, quote, codeType }) {
         {quote && <p className="poster-quote">&ldquo;{quote}&rdquo;</p>}
         <div className="poster-retro-meta-row">
           <span className="poster-meta">{album.releaseDate} &bull; {album.totalDuration}</span>
-          <BottomCode url={album.spotifyUrl} uri={album.uri} codeType={codeType} />
+          <BottomCode url={album.spotifyUrl} uri={album.uri} codeType={codeType} barColor={barColor} />
         </div>
       </div>
     </>
@@ -318,7 +325,7 @@ function LayoutRetro({ album, quote, codeType }) {
 
 /* ═══════════════════════ OVERLAY (Kanye "Graduation") ═══════════════════════ */
 
-function LayoutOverlay({ album, quote, codeType }) {
+function LayoutOverlay({ album, quote, codeType, barColor }) {
   return (
     <>
       <Cover src={album.coverUrl} name={album.name} className="poster-cover-bg" />
@@ -332,7 +339,7 @@ function LayoutOverlay({ album, quote, codeType }) {
         </div>
         {quote && <p className="poster-quote">&ldquo;{quote}&rdquo;</p>}
         <div className="poster-overlay-bottom">
-          <BottomCode url={album.spotifyUrl} uri={album.uri} codeType={codeType} />
+          <BottomCode url={album.spotifyUrl} uri={album.uri} codeType={codeType} barColor={barColor} />
           <p className="poster-meta">{album.totalDuration} &bull; {album.releaseDate}</p>
         </div>
       </div>
@@ -352,12 +359,13 @@ const LAYOUTS = {
   retro: LayoutRetro,
 };
 
-export default function Poster({ album, quote, frameSize, layout, codeType, albumColors }) {
+export default function Poster({ album, quote, frameSize, layout, codeType, albumColors, barColor }) {
   if (!album) return null;
 
   const aspect = frameAspect(frameSize);
   const layoutKey = layout || "classic";
   const LayoutComponent = LAYOUTS[layoutKey] || LayoutClassic;
+  const coverUrl = album.coverUrl;
 
   return (
     <div
@@ -365,12 +373,30 @@ export default function Poster({ album, quote, frameSize, layout, codeType, albu
       data-layout={layoutKey}
       style={{ aspectRatio: `${aspect}` }}
     >
-      <LayoutComponent
-        album={album}
-        quote={quote}
-        codeType={codeType || "qr"}
-        albumColors={albumColors}
+      {/* Layer 1 — blurred background bloom */}
+      <div
+        className="poster-layer-bloom"
+        style={{ backgroundImage: `url(${coverUrl})` }}
       />
+      {/* Layer 2 — dark/light overlay */}
+      <div className="poster-layer-overlay" />
+      {/* Layer 3 — ghost watermark */}
+      <div
+        className="poster-layer-ghost"
+        style={{ backgroundImage: `url(${coverUrl})` }}
+      />
+      {/* Layer 4 — poster content */}
+      <div className="poster-content">
+        <LayoutComponent
+          album={album}
+          quote={quote}
+          codeType={codeType || "qr"}
+          albumColors={albumColors}
+          barColor={barColor}
+        />
+      </div>
+      {/* Layer 5 — edge vignette */}
+      <div className="poster-layer-vignette" />
     </div>
   );
 }

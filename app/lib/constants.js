@@ -53,6 +53,32 @@ export const DEFAULT_THEME_CSS = `/* TrashFrame – Poster Theme Variables
   --fp-qr-bg: #ffffff;
   --fp-padding: 5%;
   --fp-gap: 0.6em;
+
+  /* ── Background Art Effects ── */
+
+  /* Opacity of the blurred album art background */
+  /* 0 = plain background, 0.15 = subtle, 0.3 = strong */
+  --fp-bg-art-opacity: 0.15;
+
+  /* Blur amount on the background album art layer */
+  /* 0px = sharp, 40px = soft bloom, 80px = very diffused */
+  --fp-bg-blur: 40px;
+
+  /* Dark/light overlay on top of the blurred art */
+  /* Increase alpha to darken, decrease to lighten */
+  --fp-bg-overlay: rgba(0, 0, 0, 0.55);
+
+  /* Edge vignette strength */
+  /* 0 = no vignette, 0.4 = subtle, 0.8 = heavy */
+  --fp-vignette-opacity: 0.4;
+
+  /* Vignette tint color — auto set from dominant color */
+  /* Override with any rgba() value */
+  --fp-vignette-color: rgba(0, 0, 0, 0.6);
+
+  /* Ghost watermark behind tracklist — 0 = off by default */
+  /* Try 0.04 to 0.08 for a subtle effect */
+  --fp-ghost-opacity: 0;
 }
 `;
 
@@ -130,6 +156,32 @@ Here is the template to fill:
   /* Layout spacing */
   --fp-padding: ;
   --fp-gap: ;
+
+  /* ── Background Art Effects ── */
+
+  /* Opacity of the blurred album art background */
+  /* 0 = plain background, 0.15 = subtle, 0.3 = strong */
+  --fp-bg-art-opacity: ;
+
+  /* Blur amount on the background album art layer */
+  /* 0px = sharp, 40px = soft bloom, 80px = very diffused */
+  --fp-bg-blur: ;
+
+  /* Dark/light overlay on top of the blurred art */
+  /* Use rgba — increase alpha to darken, decrease to lighten */
+  --fp-bg-overlay: ;
+
+  /* Edge vignette strength */
+  /* 0 = no vignette, 0.4 = subtle, 0.8 = heavy */
+  --fp-vignette-opacity: ;
+
+  /* Vignette tint color */
+  /* Use rgba() value matching the poster mood */
+  --fp-vignette-color: ;
+
+  /* Ghost watermark behind tracklist — 0 = off */
+  /* Try 0.04 to 0.08 for a subtle effect */
+  --fp-ghost-opacity: ;
 }
 `;
 
@@ -153,31 +205,33 @@ export const PRESET_THEMES = [
   --fp-image-filter: none;
   --fp-image-radius: 0px;
   --fp-heading-font: 'DM Serif Display', serif;
-  --fp-heading-size: 1.8em;
-  --fp-heading-color: #c0392b;
+  --fp-heading-size: 1.9em;
+  --fp-heading-color: #1a1a1a;
   --fp-heading-weight: 400;
-  --fp-heading-spacing: 0.05em;
+  --fp-heading-spacing: 0.06em;
   --fp-subtitle-color: #4a4a4a;
-  --fp-subtitle-size: 0.7em;
+  --fp-subtitle-size: 0.65em;
   --fp-meta-color: #8b7d6b;
-  --fp-meta-size: 0.42em;
+  --fp-meta-size: 0.4em;
   --fp-quote-font: 'Cormorant Garamond', serif;
-  --fp-quote-size: 0.9em;
-  --fp-quote-color: rgba(255,255,255,0.6);
+  --fp-quote-size: 0.85em;
+  --fp-quote-color: rgba(255,255,255,0.55);
   --fp-quote-style: italic;
   --fp-track-font: 'DM Sans', sans-serif;
-  --fp-track-size: 0.4em;
+  --fp-track-size: 0.38em;
   --fp-track-color: #333333;
   --fp-track-num-color: #999999;
   --fp-track-columns: 2;
-  --fp-track-gap: 0.15em;
+  --fp-track-gap: 0.12em;
   --fp-border-color: transparent;
   --fp-border-width: 0px;
-  --fp-qr-size: 36px;
+  --fp-qr-size: 34px;
   --fp-qr-fg: #1a1a1a;
   --fp-qr-bg: #f0e6d3;
-  --fp-padding: 5%;
-  --fp-gap: 0.4em;
+  --fp-padding: 4%;
+  --fp-gap: 0em;
+  --fp-bg-art-opacity: 0;
+  --fp-vignette-opacity: 0;
 }`,
   },
   {
@@ -226,34 +280,36 @@ export const PRESET_THEMES = [
     colors: ["#ffffff", "#0a0a0a", "#888888"],
     css: `#poster-root {
   --fp-bg: #ffffff;
-  --fp-image-filter: grayscale(100%) contrast(1.15);
+  --fp-image-filter: grayscale(100%) contrast(1.2);
   --fp-image-radius: 0px;
   --fp-heading-font: 'Playfair Display', serif;
-  --fp-heading-size: 2.8em;
+  --fp-heading-size: 3.0em;
   --fp-heading-color: #0a0a0a;
   --fp-heading-weight: 900;
   --fp-heading-spacing: -0.02em;
-  --fp-subtitle-color: #444444;
-  --fp-subtitle-size: 0.6em;
-  --fp-meta-color: #888888;
-  --fp-meta-size: 0.42em;
+  --fp-subtitle-color: #333333;
+  --fp-subtitle-size: 0.55em;
+  --fp-meta-color: #777777;
+  --fp-meta-size: 0.4em;
   --fp-quote-font: 'Playfair Display', serif;
-  --fp-quote-size: 0.6em;
-  --fp-quote-color: #222222;
+  --fp-quote-size: 0.55em;
+  --fp-quote-color: #1a1a1a;
   --fp-quote-style: italic;
   --fp-track-font: 'Playfair Display', serif;
-  --fp-track-size: 0.38em;
+  --fp-track-size: 0.36em;
   --fp-track-color: #333333;
   --fp-track-num-color: #bbbbbb;
   --fp-track-columns: 2;
-  --fp-track-gap: 0.15em;
+  --fp-track-gap: 0.12em;
   --fp-border-color: transparent;
   --fp-border-width: 0px;
-  --fp-qr-size: 40px;
+  --fp-qr-size: 36px;
   --fp-qr-fg: #0a0a0a;
   --fp-qr-bg: #ffffff;
   --fp-padding: 5%;
-  --fp-gap: 0.15em;
+  --fp-gap: 0.1em;
+  --fp-bg-art-opacity: 0;
+  --fp-vignette-opacity: 0;
 }`,
   },
   {
@@ -267,31 +323,33 @@ export const PRESET_THEMES = [
   --fp-image-filter: contrast(1.3) saturate(0.85);
   --fp-image-radius: 0px;
   --fp-heading-font: 'Anton', sans-serif;
-  --fp-heading-size: 2.8em;
+  --fp-heading-size: 3.2em;
   --fp-heading-color: #1a1a1a;
   --fp-heading-weight: 400;
-  --fp-heading-spacing: 0.02em;
-  --fp-subtitle-color: #3d3d3d;
-  --fp-subtitle-size: 0.6em;
+  --fp-heading-spacing: 0.01em;
+  --fp-subtitle-color: #1a1a1a;
+  --fp-subtitle-size: 0.55em;
   --fp-meta-color: #6b5e4e;
-  --fp-meta-size: 0.38em;
+  --fp-meta-size: 0.36em;
   --fp-quote-font: 'Bangers', cursive;
-  --fp-quote-size: 0.85em;
+  --fp-quote-size: 0.8em;
   --fp-quote-color: #2d7a4f;
   --fp-quote-style: normal;
   --fp-track-font: 'Courier Prime', monospace;
-  --fp-track-size: 0.3em;
+  --fp-track-size: 0.28em;
   --fp-track-color: #2a2a2a;
   --fp-track-num-color: #8a7d6b;
   --fp-track-columns: 2;
-  --fp-track-gap: 0.08em;
+  --fp-track-gap: 0.06em;
   --fp-border-color: #1a1a1a;
-  --fp-border-width: 4px;
-  --fp-qr-size: 28px;
+  --fp-border-width: 5px;
+  --fp-qr-size: 26px;
   --fp-qr-fg: #1a1a1a;
   --fp-qr-bg: #d4c5a9;
   --fp-padding: 0%;
   --fp-gap: 0em;
+  --fp-bg-art-opacity: 0;
+  --fp-vignette-opacity: 0;
 }`,
   },
   {
@@ -305,31 +363,33 @@ export const PRESET_THEMES = [
   --fp-image-filter: grayscale(70%) contrast(1.1);
   --fp-image-radius: 0px;
   --fp-heading-font: 'Instrument Serif', serif;
-  --fp-heading-size: 2.4em;
-  --fp-heading-color: #2a4a4a;
+  --fp-heading-size: 2.8em;
+  --fp-heading-color: #2a3a3a;
   --fp-heading-weight: 400;
-  --fp-heading-spacing: -0.03em;
+  --fp-heading-spacing: -0.04em;
   --fp-subtitle-color: #5a7a7a;
-  --fp-subtitle-size: 0.5em;
+  --fp-subtitle-size: 0.45em;
   --fp-meta-color: #8a9a9a;
-  --fp-meta-size: 0.35em;
+  --fp-meta-size: 0.32em;
   --fp-quote-font: 'Instrument Serif', serif;
-  --fp-quote-size: 0.75em;
+  --fp-quote-size: 0.65em;
   --fp-quote-color: #4a6a6a;
   --fp-quote-style: italic;
   --fp-track-font: 'DM Sans', sans-serif;
-  --fp-track-size: 0.28em;
+  --fp-track-size: 0.25em;
   --fp-track-color: #5a6a6a;
   --fp-track-num-color: #aabbbb;
   --fp-track-columns: 4;
-  --fp-track-gap: 0.05em;
+  --fp-track-gap: 0.04em;
   --fp-border-color: transparent;
   --fp-border-width: 0px;
-  --fp-qr-size: 24px;
-  --fp-qr-fg: #2a4a4a;
+  --fp-qr-size: 22px;
+  --fp-qr-fg: #2a3a3a;
   --fp-qr-bg: #f5f3ef;
-  --fp-padding: 6%;
+  --fp-padding: 5%;
   --fp-gap: 0em;
+  --fp-bg-art-opacity: 0;
+  --fp-vignette-opacity: 0;
 }`,
   },
   {
@@ -378,34 +438,36 @@ export const PRESET_THEMES = [
     colors: ["#0d1b2a", "#e0e8f0", "#4a7c9b"],
     css: `#poster-root {
   --fp-bg: #0d1b2a;
-  --fp-image-filter: brightness(0.75) saturate(1.25);
+  --fp-image-filter: brightness(0.8) saturate(1.3);
   --fp-image-radius: 0px;
   --fp-heading-font: 'Oswald', sans-serif;
-  --fp-heading-size: 2.6em;
-  --fp-heading-color: rgba(255,255,255,0.9);
+  --fp-heading-size: 3.0em;
+  --fp-heading-color: rgba(255,255,255,0.85);
   --fp-heading-weight: 700;
-  --fp-heading-spacing: 0.12em;
-  --fp-subtitle-color: rgba(255,255,255,0.55);
-  --fp-subtitle-size: 0.65em;
-  --fp-meta-color: rgba(255,255,255,0.4);
-  --fp-meta-size: 0.38em;
+  --fp-heading-spacing: 0.15em;
+  --fp-subtitle-color: rgba(255,255,255,0.5);
+  --fp-subtitle-size: 0.6em;
+  --fp-meta-color: rgba(255,255,255,0.35);
+  --fp-meta-size: 0.35em;
   --fp-quote-font: 'Cormorant Garamond', serif;
-  --fp-quote-size: 0.85em;
-  --fp-quote-color: rgba(255,255,255,0.7);
+  --fp-quote-size: 0.8em;
+  --fp-quote-color: rgba(255,255,255,0.65);
   --fp-quote-style: italic;
   --fp-track-font: 'DM Sans', sans-serif;
-  --fp-track-size: 0.34em;
-  --fp-track-color: rgba(255,255,255,0.65);
-  --fp-track-num-color: rgba(255,255,255,0.3);
+  --fp-track-size: 0.32em;
+  --fp-track-color: rgba(255,255,255,0.6);
+  --fp-track-num-color: rgba(255,255,255,0.25);
   --fp-track-columns: 1;
-  --fp-track-gap: 0.05em;
+  --fp-track-gap: 0.04em;
   --fp-border-color: transparent;
   --fp-border-width: 0px;
-  --fp-qr-size: 34px;
-  --fp-qr-fg: rgba(255,255,255,0.65);
+  --fp-qr-size: 32px;
+  --fp-qr-fg: rgba(255,255,255,0.6);
   --fp-qr-bg: rgba(0,0,0,0.3);
   --fp-padding: 0%;
   --fp-gap: 0em;
+  --fp-bg-art-opacity: 0;
+  --fp-vignette-opacity: 0;
 }`,
   },
   {
@@ -419,31 +481,33 @@ export const PRESET_THEMES = [
   --fp-image-filter: sepia(30%) contrast(1.2) saturate(0.9);
   --fp-image-radius: 0px;
   --fp-heading-font: 'Righteous', sans-serif;
-  --fp-heading-size: 2.8em;
+  --fp-heading-size: 3.5em;
   --fp-heading-color: #1a2744;
   --fp-heading-weight: 400;
-  --fp-heading-spacing: 0.03em;
+  --fp-heading-spacing: 0.02em;
   --fp-subtitle-color: #2a3a5a;
-  --fp-subtitle-size: 0.5em;
+  --fp-subtitle-size: 0.45em;
   --fp-meta-color: #4a5a7a;
-  --fp-meta-size: 0.38em;
+  --fp-meta-size: 0.36em;
   --fp-quote-font: 'Merriweather', serif;
-  --fp-quote-size: 0.6em;
+  --fp-quote-size: 0.5em;
   --fp-quote-color: #1a2744;
   --fp-quote-style: italic;
   --fp-track-font: 'Courier Prime', monospace;
-  --fp-track-size: 0.3em;
+  --fp-track-size: 0.28em;
   --fp-track-color: #1a2744;
   --fp-track-num-color: #8a7020;
   --fp-track-columns: 2;
-  --fp-track-gap: 0.08em;
+  --fp-track-gap: 0.06em;
   --fp-border-color: #1a2744;
-  --fp-border-width: 5px;
-  --fp-qr-size: 28px;
+  --fp-border-width: 6px;
+  --fp-qr-size: 26px;
   --fp-qr-fg: #1a2744;
   --fp-qr-bg: #e8b931;
   --fp-padding: 5%;
-  --fp-gap: 0.15em;
+  --fp-gap: 0em;
+  --fp-bg-art-opacity: 0;
+  --fp-vignette-opacity: 0;
 }`,
   },
 ];
