@@ -1,4 +1,7 @@
-import ColorThief from "colorthief";
+/**
+ * Color extraction utilities using native Canvas API
+ * No external dependencies required
+ */
 
 function rgbToHex([r, g, b]) {
   return "#" + [r, g, b].map((c) => c.toString(16).padStart(2, "0")).join("");
@@ -18,7 +21,6 @@ function darken([r, g, b], factor) {
 
 /**
  * Load an image with CORS for canvas pixel access.
- * Returns the loaded HTMLImageElement.
  */
 function loadImage(url) {
   return new Promise((resolve, reject) => {
@@ -31,27 +33,81 @@ function loadImage(url) {
 }
 
 /**
- * Extract a 5-color palette from an image URL using ColorThief.
- * Returns { palette, dominant, isDark, autoVars }.
- *
- * palette:   [[r,g,b], ...] — 5 dominant colors
- * dominant:  [r,g,b]        — single most dominant color
- * isDark:    boolean         — true if dominant luminance < 0.5
- * autoVars: object           — CSS variable values auto-derived from palette
+ * Extract colors from image using canvas - no external library needed
+ */
+function getColorsFromCanvas(img, colorCount = 5) {
+  const canvas = document.createElement("canvas");
+  const ctx = canvas.getContext("2d");
+  
+  // Sample at a smaller size for performance
+  const sampleSize = 100;
+  canvas.width = sampleSize;
+  canvas.height = sampleSize;
+  
+  ctx.drawImage(img, 0, 0, sampleSize, sampleSize);
+  const imageData = ctx.getImageData(0, 0, sampleSize, sampleSize);
+  const pixels = imageData.data;
+  
+  // Build color buckets using quantization
+  const colorMap = {};
+  
+  for (let i = 0; i < pixels.length; i += 4) {
+    const r = Math.round(pixels[i] / 16) * 16;
+    const g = Math.round(pixels[i + 1] / 16) * 16;
+    const b = Math.round(pixels[i + 2] / 16) * 16;
+    const a = pixels[i + 3];
+    
+    // Skip transparent pixels
+    if (a < 128) continue;
+    
+    const key = `${r},${g},${b}`;
+    colorMap[key] = (colorMap[key] || 0) + 1;
+  }
+  
+  // Sort by frequency and get top colors
+  const sortedColors = Object.entries(colorMap)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, colorCount * 3) // Get more to filter similar ones
+    .map(([key]) => key.split(",").map(Number));
+  
+  // Filter out colors that are too similar
+  const palette = [];
+  for (const color of sortedColors) {
+    if (palette.length >= colorCount) break;
+    
+    const isTooSimilar = palette.some((existing) => {
+      const diff = Math.abs(existing[0] - color[0]) + 
+                   Math.abs(existing[1] - color[1]) + 
+                   Math.abs(existing[2] - color[2]);
+      return diff < 60;
+    });
+    
+    if (!isTooSimilar) {
+      palette.push(color);
+    }
+  }
+  
+  // Fill remaining slots if needed
+  while (palette.length < colorCount && sortedColors.length > palette.length) {
+    const next = sortedColors[palette.length];
+    if (next) palette.push(next);
+  }
+  
+  const dominant = palette[0] || [128, 128, 128];
+  
+  return { dominant, palette };
+}
+
+/**
+ * Extract a 5-color palette from an image URL.
+ * Returns { palette, dominant, isDark, autoVars, barColor }.
  */
 export async function extractPalette(imageUrl) {
   const img = await loadImage(imageUrl);
-  const thief = new ColorThief();
-
-  const dominant = thief.getColor(img);
-  const palette = thief.getPalette(img, 5);
+  const { dominant, palette } = getColorsFromCanvas(img, 5);
 
   const lum = luminance(dominant);
   const isDark = lum < 0.5;
-
-  const lightest = palette.reduce((a, b) =>
-    luminance(b) > luminance(a) ? b : a
-  );
 
   let autoVars;
   if (isDark) {

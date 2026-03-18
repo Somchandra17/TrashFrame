@@ -4,7 +4,6 @@ import { useState, useEffect, useCallback } from "react";
 import Poster from "./components/Poster";
 import Sidebar from "./components/Sidebar";
 import PosterControls from "./components/PosterControls";
-import CredentialsModal from "./components/CredentialsModal";
 import { fetchAlbum } from "./lib/spotify";
 import { extractPalette, extractDominantColors } from "./lib/colors";
 import { DEFAULT_FRAME, PRESET_THEMES } from "./lib/constants";
@@ -86,6 +85,7 @@ const DEFAULT_OVERRIDES = {
   codeType: "qr",
   gradientColors: null,
   ghostOpacity: 0,
+  fontColor: null,
 };
 
 const EMPTY_COLORS = [];
@@ -99,8 +99,6 @@ export default function Home() {
   const [quote, setQuote] = useState("");
   const [customTheme, setCustomTheme] = useState(null);
   const [activePreset, setActivePreset] = useState("default");
-  const [credsOpen, setCredsOpen] = useState(false);
-  const [hasCreds, setHasCreds] = useState(false);
   const [posterOverrides, setPosterOverrides] = useState(DEFAULT_OVERRIDES);
   const [albumColors, setAlbumColors] = useState(EMPTY_COLORS);
   const [paletteData, setPaletteData] = useState(null);
@@ -129,11 +127,6 @@ export default function Home() {
   }, [paletteData, customTheme]);
 
   useEffect(() => {
-    const id = localStorage.getItem("spotify_client_id");
-    const secret = localStorage.getItem("spotify_client_secret");
-    setHasCreds(!!(id && secret));
-    if (!id || !secret) setCredsOpen(true);
-
     const savedCustom = localStorage.getItem("poster_custom_css");
     const savedPreset = localStorage.getItem("poster_preset");
 
@@ -172,6 +165,15 @@ export default function Home() {
 
     if (o.ghostOpacity > 0) {
       rules.push(`--fp-ghost-opacity: ${o.ghostOpacity}`);
+    }
+
+    if (o.fontColor) {
+      rules.push(`--fp-heading-color: ${o.fontColor}`);
+      rules.push(`--fp-subtitle-color: ${o.fontColor}`);
+      rules.push(`--fp-track-color: ${o.fontColor}`);
+      rules.push(`--fp-quote-color: ${o.fontColor}`);
+      rules.push(`--fp-meta-color: ${o.fontColor}cc`);
+      rules.push(`--fp-track-num-color: ${o.fontColor}88`);
     }
 
     if (rules.length > 0) {
@@ -248,13 +250,6 @@ export default function Home() {
     e.preventDefault();
     if (!url.trim()) return;
 
-    const id = localStorage.getItem("spotify_client_id");
-    const secret = localStorage.getItem("spotify_client_secret");
-    if (!id || !secret) {
-      setCredsOpen(true);
-      return;
-    }
-
     setLoading(true);
     setError("");
     try {
@@ -262,21 +257,10 @@ export default function Home() {
       setAlbum(data);
       setPosterOverrides(DEFAULT_OVERRIDES);
     } catch (err) {
-      if (err.message === "MISSING_CREDENTIALS") {
-        setCredsOpen(true);
-      } else {
-        setError(err.message);
-      }
+      setError(err.message);
     } finally {
       setLoading(false);
     }
-  }
-
-  function handleCredsClose() {
-    setCredsOpen(false);
-    const id = localStorage.getItem("spotify_client_id");
-    const secret = localStorage.getItem("spotify_client_secret");
-    setHasCreds(!!(id && secret));
   }
 
   if (!album) {
@@ -316,16 +300,6 @@ export default function Home() {
             <p className="text-sm text-red-500 mt-1">{error}</p>
           )}
         </form>
-
-        <button
-          onClick={() => setCredsOpen(true)}
-          className="mt-8 text-xs text-zinc-400 hover:text-zinc-600 transition"
-          title="Spotify API settings"
-        >
-          {hasCreds ? "⚙ Update API Credentials" : "⚙ Set API Credentials"}
-        </button>
-
-        <CredentialsModal open={credsOpen} onClose={handleCredsClose} />
       </div>
     );
   }
@@ -343,15 +317,6 @@ export default function Home() {
         >
           TrashFrame
         </button>
-        <div className="flex items-center gap-3">
-          <button
-            onClick={() => setCredsOpen(true)}
-            className="text-xs text-zinc-400 hover:text-zinc-600 transition"
-            title="Spotify API settings"
-          >
-            ⚙
-          </button>
-        </div>
       </header>
 
       <div className="flex-1 flex flex-col lg:flex-row gap-6 lg:gap-8 p-4 lg:p-6 overflow-hidden">
@@ -386,8 +351,6 @@ export default function Home() {
           albumName={album.name}
         />
       </div>
-
-      <CredentialsModal open={credsOpen} onClose={handleCredsClose} />
     </div>
   );
 }

@@ -1,13 +1,15 @@
 import { NextResponse } from "next/server";
 
-export async function POST(request) {
-  try {
-    const { client_id, client_secret } = await request.json();
+// Use server-side environment variables
+const SPOTIFY_CLIENT_ID = process.env.SPOTIFY_CLIENT_ID;
+const SPOTIFY_CLIENT_SECRET = process.env.SPOTIFY_CLIENT_SECRET;
 
-    if (!client_id || !client_secret) {
+export async function POST() {
+  try {
+    if (!SPOTIFY_CLIENT_ID || !SPOTIFY_CLIENT_SECRET) {
       return NextResponse.json(
-        { error: "Missing client_id or client_secret" },
-        { status: 400 }
+        { error: "Spotify credentials not configured on server" },
+        { status: 500 }
       );
     }
 
@@ -17,7 +19,7 @@ export async function POST(request) {
         "Content-Type": "application/x-www-form-urlencoded",
         Authorization:
           "Basic " +
-          Buffer.from(client_id + ":" + client_secret).toString("base64"),
+          Buffer.from(SPOTIFY_CLIENT_ID + ":" + SPOTIFY_CLIENT_SECRET).toString("base64"),
       },
       body: "grant_type=client_credentials",
     });

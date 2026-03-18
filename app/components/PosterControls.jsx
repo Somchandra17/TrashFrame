@@ -61,6 +61,47 @@ export default function PosterControls({ overrides, onChange }) {
             />
           </div>
 
+          {/* Font Color */}
+          <div>
+            <span className="text-[10px] font-semibold uppercase tracking-wider text-zinc-400 block mb-1">Font Color</span>
+            <div className="flex gap-1.5 flex-wrap">
+              {[
+                { label: "Auto", value: null },
+                { label: "White", value: "#ffffff" },
+                { label: "Black", value: "#111111" },
+                { label: "Cream", value: "#f5f0e6" },
+                { label: "Gold", value: "#c9a962" },
+              ].map((opt) => (
+                <button
+                  key={opt.label}
+                  onClick={() => set("fontColor", opt.value)}
+                  className={`px-2 py-1 rounded-md text-[10px] font-medium transition-colors flex items-center gap-1
+                    ${overrides.fontColor === opt.value 
+                      ? "bg-zinc-900 text-white" 
+                      : "bg-zinc-100 text-zinc-600 hover:bg-zinc-200"}`}
+                >
+                  {opt.value && (
+                    <span 
+                      className="w-2.5 h-2.5 rounded-full ring-1 ring-black/10" 
+                      style={{ backgroundColor: opt.value }}
+                    />
+                  )}
+                  {opt.label}
+                </button>
+              ))}
+            </div>
+            {/* Custom color picker */}
+            <div className="flex items-center gap-2 mt-2">
+              <input
+                type="color"
+                value={overrides.fontColor || "#111111"}
+                onChange={(e) => set("fontColor", e.target.value)}
+                className="w-6 h-6 rounded cursor-pointer border-0 p-0"
+              />
+              <span className="text-[10px] text-zinc-500">Custom color</span>
+            </div>
+          </div>
+
           {/* Album Art */}
           <div>
             <span className="text-[10px] font-semibold uppercase tracking-wider text-zinc-400 block mb-1">Album Art</span>
@@ -147,7 +188,7 @@ export default function PosterControls({ overrides, onChange }) {
 
           {/* Reset */}
           <button
-            onClick={() => onChange({ fontScale: 1.0, colorCover: false, gradientBg: false, codeType: "qr", gradientColors: null, ghostOpacity: 0 })}
+            onClick={() => onChange({ fontScale: 1.0, colorCover: false, gradientBg: false, codeType: "qr", gradientColors: null, ghostOpacity: 0, fontColor: null })}
             className="text-[10px] text-zinc-400 hover:text-zinc-600 transition self-center mt-0.5"
           >
             Reset all
