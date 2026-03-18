@@ -1,10 +1,138 @@
 "use client";
 
-import { useState, useEffect } from "react";
 import QRCode from "react-qr-code";
 import { frameAspect } from "../lib/constants";
 
 /* eslint-disable @next/next/no-img-element */
+
+/* ═══════════════════════ DECORATIVE SVG ELEMENTS ═══════════════════════ */
+
+function VinylRecord({ className = "", size = 80, color = "currentColor" }) {
+  return (
+    <svg
+      className={`poster-vinyl ${className}`}
+      width={size}
+      height={size}
+      viewBox="0 0 100 100"
+      fill="none"
+      style={{ color }}
+    >
+      {/* Outer ring */}
+      <circle cx="50" cy="50" r="48" stroke="currentColor" strokeWidth="2" fill="none" />
+      <circle cx="50" cy="50" r="45" stroke="currentColor" strokeWidth="0.5" opacity="0.5" fill="none" />
+      {/* Grooves */}
+      <circle cx="50" cy="50" r="40" stroke="currentColor" strokeWidth="0.3" opacity="0.4" fill="none" />
+      <circle cx="50" cy="50" r="35" stroke="currentColor" strokeWidth="0.3" opacity="0.4" fill="none" />
+      <circle cx="50" cy="50" r="30" stroke="currentColor" strokeWidth="0.3" opacity="0.4" fill="none" />
+      <circle cx="50" cy="50" r="25" stroke="currentColor" strokeWidth="0.3" opacity="0.4" fill="none" />
+      {/* Label area */}
+      <circle cx="50" cy="50" r="18" fill="currentColor" opacity="0.15" />
+      <circle cx="50" cy="50" r="15" stroke="currentColor" strokeWidth="0.5" fill="none" />
+      {/* Center hole */}
+      <circle cx="50" cy="50" r="3" fill="currentColor" opacity="0.6" />
+      {/* Shine highlight */}
+      <ellipse cx="35" cy="35" rx="8" ry="15" fill="currentColor" opacity="0.08" transform="rotate(-45 35 35)" />
+    </svg>
+  );
+}
+
+function SoundWave({ className = "", width = 120, height = 40, color = "currentColor", bars = 32 }) {
+  const barWidth = width / (bars * 2);
+  return (
+    <svg
+      className={`poster-soundwave ${className}`}
+      width={width}
+      height={height}
+      viewBox={`0 0 ${width} ${height}`}
+      style={{ color }}
+    >
+      {Array.from({ length: bars }).map((_, i) => {
+        const h = Math.sin((i / bars) * Math.PI) * 0.7 + Math.random() * 0.3;
+        const barHeight = h * height * 0.8;
+        return (
+          <rect
+            key={i}
+            x={i * barWidth * 2 + barWidth * 0.5}
+            y={(height - barHeight) / 2}
+            width={barWidth}
+            height={barHeight}
+            fill="currentColor"
+            opacity={0.6 + Math.random() * 0.4}
+            rx={barWidth / 2}
+          />
+        );
+      })}
+    </svg>
+  );
+}
+
+function MusicNote({ className = "", size = 24, color = "currentColor" }) {
+  return (
+    <svg
+      className={`poster-note ${className}`}
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="currentColor"
+      style={{ color }}
+    >
+      <path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z" />
+    </svg>
+  );
+}
+
+function DoubleNote({ className = "", size = 32, color = "currentColor" }) {
+  return (
+    <svg
+      className={`poster-note ${className}`}
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="currentColor"
+      style={{ color }}
+    >
+      <path d="M21 3v12.5a3.5 3.5 0 1 1-2-3.15V5h-8v11.5a3.5 3.5 0 1 1-2-3.15V3h12z" />
+    </svg>
+  );
+}
+
+function Signature({ className = "", artistName = "Artist" }) {
+  return (
+    <div className={`poster-signature ${className}`}>
+      <svg width="80" height="30" viewBox="0 0 80 30" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round">
+        <path d="M5 20 Q15 5 25 15 T45 12 Q55 8 65 18 L75 15" opacity="0.7" />
+        <path d="M10 25 Q20 22 30 25" opacity="0.5" />
+      </svg>
+    </div>
+  );
+}
+
+function ArtisticBorder({ className = "" }) {
+  return (
+    <div className={`poster-art-border ${className}`}>
+      <div className="poster-art-border-corner poster-art-border-tl" />
+      <div className="poster-art-border-corner poster-art-border-tr" />
+      <div className="poster-art-border-corner poster-art-border-bl" />
+      <div className="poster-art-border-corner poster-art-border-br" />
+    </div>
+  );
+}
+
+function TextureOverlay({ type = "grain" }) {
+  return <div className={`poster-texture poster-texture-${type}`} />;
+}
+
+function StarRating({ rating = 5, className = "" }) {
+  return (
+    <div className={`poster-stars ${className}`}>
+      {Array.from({ length: 5 }).map((_, i) => (
+        <svg key={i} width="12" height="12" viewBox="0 0 24 24" fill={i < rating ? "currentColor" : "none"} stroke="currentColor" strokeWidth="2">
+          <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+        </svg>
+      ))}
+    </div>
+  );
+}
 
 function Cover({ src, name, className }) {
   return (
@@ -17,29 +145,12 @@ function Cover({ src, name, className }) {
   );
 }
 
-function useResolvedBgHex() {
-  const [bgHex, setBgHex] = useState("ffffff");
-  useEffect(() => {
-    function read() {
-      const el = document.getElementById("poster-root");
-      if (!el) return;
-      const raw = getComputedStyle(el).getPropertyValue("--fp-bg").trim().replace("#", "");
-      if (/^[0-9a-fA-F]{3,6}$/.test(raw)) {
-        setBgHex(raw.length === 3 ? raw.split("").map((c) => c + c).join("") : raw);
-      }
-    }
-    const t = setTimeout(read, 50);
-    return () => clearTimeout(t);
-  });
-  return bgHex;
-}
-
 function BottomCode({ url, uri, codeType, barColor }) {
-  const bgHex = useResolvedBgHex();
   const bar = barColor || "black";
 
   if (codeType === "scannable" && uri) {
-    const src = `https://scannables.scdn.co/uri/plain/png/${bgHex}/${bar}/640/${uri}`;
+    // Use transparent background (000001 is Spotify's "transparent" code)
+    const src = `https://scannables.scdn.co/uri/plain/svg/000001/${bar}/640/${uri}`;
     return (
       <div className="poster-code-wrap">
         <img
@@ -47,7 +158,6 @@ function BottomCode({ url, uri, codeType, barColor }) {
           alt="Spotify Code"
           className="poster-spotify-code"
           crossOrigin="anonymous"
-          style={{ mixBlendMode: "multiply" }}
         />
       </div>
     );
@@ -55,7 +165,7 @@ function BottomCode({ url, uri, codeType, barColor }) {
 
   return (
     <div className="poster-qr-wrap">
-      <QRCode value={url} size={48} fgColor="var(--fp-qr-fg, #111)" bgColor="var(--fp-qr-bg, #fff)" />
+      <QRCode value={url} size={48} fgColor="var(--fp-qr-fg, #111)" bgColor="transparent" />
     </div>
   );
 }
@@ -78,7 +188,10 @@ function TrackRow({ t, hideArtists, hideNum, hideDur }) {
 function LayoutClassic({ album, quote, codeType, barColor }) {
   return (
     <>
+      <TextureOverlay type="grain" />
+      <ArtisticBorder />
       <div className="poster-date">{album.releaseDate}</div>
+      <VinylRecord className="poster-decor-vinyl" size={60} />
       <Cover src={album.coverUrl} name={album.name} />
       <div className="poster-info">
         <h1 className="poster-title">{album.name}</h1>
@@ -88,11 +201,15 @@ function LayoutClassic({ album, quote, codeType, barColor }) {
         </p>
       </div>
       {quote && <p className="poster-quote">&ldquo;{quote}&rdquo;</p>}
+      <SoundWave className="poster-decor-wave" width={100} height={20} bars={24} />
       <div className="poster-bottom-row">
         <div className="poster-tracklist">
           {album.tracks.map((t) => <TrackRow key={t.number} t={t} />)}
         </div>
-        <BottomCode url={album.spotifyUrl} uri={album.uri} codeType={codeType} barColor={barColor} />
+        <div className="poster-bottom-right">
+          <Signature artistName={album.artists} />
+          <BottomCode url={album.spotifyUrl} uri={album.uri} codeType={codeType} barColor={barColor} />
+        </div>
       </div>
     </>
   );
@@ -104,6 +221,7 @@ function LayoutGallery({ album, quote, codeType, albumColors, barColor }) {
   const swatches = (albumColors && albumColors.length >= 2) ? albumColors.slice(0, 5) : null;
   return (
     <>
+      <TextureOverlay type="paper" />
       <h1 className="poster-title">{album.name}</h1>
       <div className="poster-gallery-art-panel">
         <Cover src={album.coverUrl} name={album.name} />
@@ -130,6 +248,7 @@ function LayoutGallery({ album, quote, codeType, albumColors, barColor }) {
           <p className="poster-meta">RELEASED BY: {album.albumType} RECORDS</p>
         </div>
         <div className="poster-gallery-footer-right">
+          <Signature artistName={album.artists} />
           <BottomCode url={album.spotifyUrl} uri={album.uri} codeType={codeType} barColor={barColor} />
           <p className="poster-artist">{album.artists}</p>
           <p className="poster-title poster-title-sm">{album.name}</p>
@@ -184,12 +303,14 @@ function LayoutEditorial({ album, quote, codeType, barColor }) {
 function LayoutBoldBlock({ album, quote, codeType, barColor }) {
   return (
     <>
+      <TextureOverlay type="halftone" />
       <div className="poster-boldblock-top">
         <div className="poster-boldblock-title-area">
           <h1 className="poster-title">{album.name}</h1>
           <p className="poster-artist">{album.artists}</p>
         </div>
         <span className="poster-boldblock-side-text">{album.albumType}</span>
+        <span className="poster-boldblock-price">99p</span>
       </div>
       <div className="poster-boldblock-image-wrap">
         <Cover src={album.coverUrl} name={album.name} />
@@ -213,6 +334,7 @@ function LayoutBoldBlock({ album, quote, codeType, barColor }) {
 function LayoutMinimal({ album, quote, codeType, barColor }) {
   return (
     <>
+      <TextureOverlay type="scratch" />
       <div className="poster-minimal-header">
         <p className="poster-artist">{album.artists}</p>
         <p className="poster-meta">
@@ -223,7 +345,7 @@ function LayoutMinimal({ album, quote, codeType, barColor }) {
         <h1 className="poster-title">{album.name}</h1>
         {quote && <p className="poster-quote">&ldquo;{quote}&rdquo;</p>}
       </div>
-      <Cover src={album.coverUrl} name={album.name} className="poster-cover-small" />
+      <Cover src={album.coverUrl} name={album.name} className="poster-cover-small poster-minimal-cover-masked" />
       <div className="poster-minimal-bottom">
         <div className="poster-tracklist">
           {album.tracks.map((t) => (
@@ -274,6 +396,7 @@ function LayoutImmersive({ album, quote, codeType, barColor }) {
   return (
     <>
       <Cover src={album.coverUrl} name={album.name} className="poster-cover-fullbleed" />
+      <TextureOverlay type="film" />
       <div className="poster-immersive-frame" />
       <div className="poster-immersive-overlay">
         <p className="poster-artist">{album.artists}</p>
@@ -289,6 +412,7 @@ function LayoutImmersive({ album, quote, codeType, barColor }) {
             </span>
           ))}
         </p>
+        <SoundWave className="poster-immersive-wave" width={160} height={24} bars={48} />
         <div className="poster-immersive-meta-row">
           <span className="poster-meta">
             {album.releaseDate} &bull; {album.totalTracks} tracks &bull; {album.totalDuration}
@@ -305,15 +429,21 @@ function LayoutImmersive({ album, quote, codeType, barColor }) {
 function LayoutRetro({ album, quote, codeType, barColor }) {
   return (
     <>
+      <TextureOverlay type="vintage" />
+      <MusicNote className="poster-retro-note poster-retro-note-1" size={20} />
+      <DoubleNote className="poster-retro-note poster-retro-note-2" size={28} />
+      <MusicNote className="poster-retro-note poster-retro-note-3" size={16} />
       <div className="poster-retro-header">
         <p className="poster-artist">{album.artists}</p>
         <h1 className="poster-title">{album.name}</h1>
       </div>
       <div className="poster-retro-image-frame">
+        <VinylRecord className="poster-retro-vinyl" size={50} />
         <Cover src={album.coverUrl} name={album.name} />
       </div>
       <div className="poster-retro-footer">
         {quote && <p className="poster-quote">&ldquo;{quote}&rdquo;</p>}
+        <StarRating rating={5} className="poster-retro-stars" />
         <div className="poster-retro-meta-row">
           <span className="poster-meta">{album.releaseDate} &bull; {album.totalDuration}</span>
           <BottomCode url={album.spotifyUrl} uri={album.uri} codeType={codeType} barColor={barColor} />
@@ -329,6 +459,8 @@ function LayoutOverlay({ album, quote, codeType, barColor }) {
   return (
     <>
       <Cover src={album.coverUrl} name={album.name} className="poster-cover-bg" />
+      <TextureOverlay type="grain" />
+      <VinylRecord className="poster-overlay-vinyl" size={100} />
       <div className="poster-overlay-content">
         <div className="poster-overlay-header">
           <p className="poster-artist">{album.artists}</p>
@@ -338,6 +470,7 @@ function LayoutOverlay({ album, quote, codeType, barColor }) {
           {album.tracks.map((t) => <TrackRow key={t.number} t={t} hideArtists />)}
         </div>
         {quote && <p className="poster-quote">&ldquo;{quote}&rdquo;</p>}
+        <SoundWave className="poster-overlay-wave" width={140} height={30} bars={40} />
         <div className="poster-overlay-bottom">
           <BottomCode url={album.spotifyUrl} uri={album.uri} codeType={codeType} barColor={barColor} />
           <p className="poster-meta">{album.totalDuration} &bull; {album.releaseDate}</p>

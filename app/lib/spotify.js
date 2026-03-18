@@ -14,28 +14,19 @@ function msToTime(ms) {
   return `${m}:${sec.toString().padStart(2, "0")}`;
 }
 
+// Token cache for client-side
+let tokenCache = { token: null, expiry: 0 };
+
 export async function getToken() {
-  const stored = localStorage.getItem("spotify_token");
-  const expiry = localStorage.getItem("spotify_token_expiry");
-
-  if (stored && expiry && Date.now() < Number(expiry)) {
-    return stored;
+  // Check client-side cache first
+  if (tokenCache.token && Date.now() < tokenCache.expiry) {
+    return tokenCache.token;
   }
 
-  const clientId = localStorage.getItem("spotify_client_id");
-  const clientSecret = localStorage.getItem("spotify_client_secret");
-
-  if (!clientId || !clientSecret) {
-    throw new Error("MISSING_CREDENTIALS");
-  }
-
+  // Fetch new token from server (server uses env vars)
   const res = await fetch("/api/spotify/token", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      client_id: clientId,
-      client_secret: clientSecret,
-    }),
   });
 
   if (!res.ok) {
@@ -44,11 +35,12 @@ export async function getToken() {
   }
 
   const data = await res.json();
-  localStorage.setItem("spotify_token", data.access_token);
-  localStorage.setItem(
-    "spotify_token_expiry",
-    String(Date.now() + data.expires_in * 1000 - 60_000)
-  );
+  
+  // Cache the token client-side
+  tokenCache = {
+    token: data.access_token,
+    expiry: Date.now() + data.expires_in * 1000 - 60_000,
+  };
 
   return data.access_token;
 }

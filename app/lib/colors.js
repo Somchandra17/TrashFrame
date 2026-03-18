@@ -1,4 +1,4 @@
-import ColorThief from "colorthief";
+import ColorThief from "colorthief/dist/color-thief.mjs";
 
 function rgbToHex([r, g, b]) {
   return "#" + [r, g, b].map((c) => c.toString(16).padStart(2, "0")).join("");
