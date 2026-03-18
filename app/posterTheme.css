@@ -1026,3 +1026,272 @@
   align-items: flex-end;
   width: 100%;
 }
+
+
+/* ══════════════════════════════════════════════════════════
+   DECORATIVE ELEMENTS
+   Artistic graphics that enhance the poster designs
+   ══════════════════════════════════════════════════════════ */
+
+/* ── Texture Overlays ── */
+
+.poster-texture {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 6;
+  mix-blend-mode: overlay;
+  opacity: 0.4;
+}
+
+.poster-texture-grain {
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+  opacity: 0.08;
+}
+
+.poster-texture-paper {
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='paper'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.04' numOctaves='5'/%3E%3CfeDisplacementMap in='SourceGraphic' scale='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' fill='%23f5f0e8' filter='url(%23paper)'/%3E%3C/svg%3E");
+  opacity: 0.15;
+  mix-blend-mode: multiply;
+}
+
+.poster-texture-vintage {
+  background: 
+    radial-gradient(ellipse at 20% 80%, rgba(139, 90, 43, 0.12) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 20%, rgba(139, 90, 43, 0.08) 0%, transparent 50%),
+    linear-gradient(180deg, rgba(255,255,255,0.05) 0%, transparent 50%, rgba(0,0,0,0.08) 100%);
+  opacity: 0.6;
+  mix-blend-mode: multiply;
+}
+
+.poster-texture-film {
+  background: 
+    repeating-linear-gradient(
+      0deg,
+      transparent 0px,
+      transparent 2px,
+      rgba(0,0,0,0.03) 2px,
+      rgba(0,0,0,0.03) 4px
+    );
+  opacity: 0.5;
+}
+
+.poster-texture-halftone {
+  background-image: radial-gradient(circle, var(--fp-heading-color) 1px, transparent 1px);
+  background-size: 4px 4px;
+  opacity: 0.04;
+  mix-blend-mode: multiply;
+}
+
+.poster-texture-scratch {
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cline x1='0' y1='50' x2='400' y2='55' stroke='%23888' stroke-width='0.3' opacity='0.3'/%3E%3Cline x1='0' y1='150' x2='400' y2='148' stroke='%23888' stroke-width='0.2' opacity='0.2'/%3E%3Cline x1='0' y1='280' x2='400' y2='282' stroke='%23888' stroke-width='0.4' opacity='0.25'/%3E%3Cline x1='100' y1='0' x2='102' y2='400' stroke='%23888' stroke-width='0.2' opacity='0.15'/%3E%3Cline x1='320' y1='0' x2='318' y2='400' stroke='%23888' stroke-width='0.3' opacity='0.2'/%3E%3C/svg%3E");
+  opacity: 0.3;
+}
+
+/* ── Artistic Border ── */
+
+.poster-art-border {
+  position: absolute;
+  inset: 3%;
+  pointer-events: none;
+  z-index: 4;
+}
+
+.poster-art-border-corner {
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  border-color: var(--fp-heading-color);
+  opacity: 0.3;
+}
+
+.poster-art-border-tl {
+  top: 0; left: 0;
+  border-top: 2px solid;
+  border-left: 2px solid;
+}
+
+.poster-art-border-tr {
+  top: 0; right: 0;
+  border-top: 2px solid;
+  border-right: 2px solid;
+}
+
+.poster-art-border-bl {
+  bottom: 0; left: 0;
+  border-bottom: 2px solid;
+  border-left: 2px solid;
+}
+
+.poster-art-border-br {
+  bottom: 0; right: 0;
+  border-bottom: 2px solid;
+  border-right: 2px solid;
+}
+
+/* ── Vinyl Record ── */
+
+.poster-vinyl {
+  opacity: 0.15;
+  color: var(--fp-heading-color);
+}
+
+.poster-decor-vinyl {
+  position: absolute;
+  top: var(--fp-padding);
+  left: var(--fp-padding);
+  z-index: 2;
+  opacity: 0.12;
+}
+
+.poster-overlay-vinyl {
+  position: absolute;
+  top: 8%;
+  left: -5%;
+  z-index: 2;
+  opacity: 0.25;
+  transform: rotate(-15deg);
+}
+
+.poster-retro-vinyl {
+  position: absolute;
+  top: -15px;
+  right: -15px;
+  z-index: 2;
+  opacity: 0.3;
+  transform: rotate(15deg);
+}
+
+/* ── Sound Wave ── */
+
+.poster-soundwave {
+  opacity: 0.3;
+  color: var(--fp-heading-color);
+}
+
+.poster-decor-wave {
+  position: absolute;
+  bottom: calc(var(--fp-padding) + 15%);
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 2;
+  opacity: 0.15;
+}
+
+.poster-overlay-wave {
+  margin: 0.5em 0;
+  opacity: 0.4;
+}
+
+.poster-immersive-wave {
+  margin: 0.3em auto;
+  opacity: 0.5;
+  color: rgba(255,255,255,0.6);
+}
+
+/* ── Music Notes ── */
+
+.poster-note {
+  opacity: 0.15;
+  color: var(--fp-heading-color);
+}
+
+.poster-retro-note {
+  position: absolute;
+  z-index: 2;
+  opacity: 0.2;
+}
+
+.poster-retro-note-1 {
+  top: 8%;
+  left: 8%;
+  transform: rotate(-15deg);
+}
+
+.poster-retro-note-2 {
+  top: 15%;
+  right: 12%;
+  transform: rotate(20deg);
+}
+
+.poster-retro-note-3 {
+  bottom: 25%;
+  left: 5%;
+  transform: rotate(-25deg);
+}
+
+/* ── Signature ── */
+
+.poster-signature {
+  color: var(--fp-heading-color);
+  opacity: 0.6;
+}
+
+.poster-signature svg {
+  display: block;
+}
+
+/* ── Star Rating ── */
+
+.poster-stars {
+  display: flex;
+  gap: 2px;
+  color: var(--fp-heading-color);
+  opacity: 0.7;
+  justify-content: center;
+  margin: 0.2em 0;
+}
+
+.poster-retro-stars {
+  margin-bottom: 0.3em;
+}
+
+/* ── Bottom Right Container ── */
+
+.poster-bottom-right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.3em;
+  flex-shrink: 0;
+}
+
+/* ── Bold Block Price Tag ── */
+
+.poster-boldblock-price {
+  position: absolute;
+  bottom: 8%;
+  right: 5%;
+  font-family: var(--fp-heading-font);
+  font-size: calc(var(--fp-heading-size) * 0.5);
+  font-weight: var(--fp-heading-weight);
+  color: var(--fp-heading-color);
+  background: var(--fp-bg);
+  border: 2px solid var(--fp-border-color);
+  border-radius: 50%;
+  width: 2.5em;
+  height: 2.5em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 3;
+}
+
+/* ── Minimal Cover Mask Effect ── */
+
+.poster-minimal-cover-masked {
+  -webkit-mask-image: linear-gradient(
+    135deg,
+    black 0%,
+    black 40%,
+    transparent 60%,
+    transparent 100%
+  );
+  mask-image: linear-gradient(
+    135deg,
+    black 0%,
+    black 40%,
+    transparent 60%,
+    transparent 100%
+  );
+}
