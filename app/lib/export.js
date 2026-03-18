@@ -1,0 +1,43 @@
+import { toPng } from "html-to-image";
+import { jsPDF } from "jspdf";
+import { framePx, FRAME_SIZES } from "./constants";
+
+export async function exportPng(frameKey) {
+  const node = document.getElementById("poster-root");
+  if (!node) throw new Error("Poster element not found");
+
+  const [w, h] = framePx(frameKey);
+  const rect = node.getBoundingClientRect();
+  const ratio = w / rect.width;
+
+  const dataUrl = await toPng(node, {
+    canvasWidth: w,
+    canvasHeight: h,
+    pixelRatio: ratio,
+    cacheBust: true,
+  });
+
+  return dataUrl;
+}
+
+export async function downloadPng(frameKey, albumName) {
+  const dataUrl = await exportPng(frameKey);
+  const link = document.createElement("a");
+  link.download = `${(albumName || "poster").replace(/\s+/g, "_")}_${frameKey}.png`;
+  link.href = dataUrl;
+  link.click();
+}
+
+export async function downloadPdf(frameKey, albumName) {
+  const dataUrl = await exportPng(frameKey);
+  const { cm } = FRAME_SIZES[frameKey];
+
+  const pdf = new jsPDF({
+    orientation: cm[0] > cm[1] ? "landscape" : "portrait",
+    unit: "cm",
+    format: [cm[0], cm[1]],
+  });
+
+  pdf.addImage(dataUrl, "PNG", 0, 0, cm[0], cm[1]);
+  pdf.save(`${(albumName || "poster").replace(/\s+/g, "_")}_${frameKey}.pdf`);
+}

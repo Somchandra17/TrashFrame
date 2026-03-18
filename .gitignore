@@ -28,6 +28,9 @@ yarn-error.log*
 # local env files
 .env*.local
 
+# reference images (development only)
+/image templates/
+
 # vercel
 .vercel
 
