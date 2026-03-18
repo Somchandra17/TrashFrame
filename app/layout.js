@@ -14,7 +14,7 @@ const geistMono = localFont({
 });
 
 export const metadata = {
-  title: "TrashFrame",
+  title: "TrashFrame - Album Poster Generator",
   description: "Turn any Spotify album into a printable poster",
 };
 
