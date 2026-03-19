@@ -154,21 +154,37 @@ function BottomCode({ url, uri, codeType, barColor }) {
   const [svgStr, setSvgStr] = useState("");
 
   useEffect(() => {
-    if (codeType === "scannable" && uri) {
-      const bg = bar === "black" ? "ffffff" : "000000";
-      const src = `https://scannables.scdn.co/uri/plain/svg/${bg}/${bar}/640/${uri}`;
-      
-      fetch(src)
-        .then((res) => res.text())
-        .then((text) => {
-          // Remove the first background rect so it is purely transparent, to support html-to-image exports
-          let transparentSvg = text.replace(/<rect[^>]*fill="[^"]*"[^>]*\/>/i, '');
-          // Inject our scaling class dynamically
-          transparentSvg = transparentSvg.replace('<svg ', '<svg class="poster-spotify-code" ');
-          setSvgStr(transparentSvg);
-        })
-        .catch((e) => console.error("Could not load Spotify Scannable SVG", e));
+    if (codeType !== "scannable" || !uri) {
+      setSvgStr("");
+      return undefined;
     }
+
+    const controller = new AbortController();
+    const bg = bar === "black" ? "ffffff" : "000000";
+    const src = `https://scannables.scdn.co/uri/plain/svg/${bg}/${bar}/640/${uri}`;
+
+    fetch(src, { signal: controller.signal })
+      .then((res) => {
+        if (!res.ok) {
+          throw new Error(`Spotify code request failed with ${res.status}`);
+        }
+        return res.text();
+      })
+      .then((text) => {
+        // Remove the first background rect so it is purely transparent, to support html-to-image exports
+        let transparentSvg = text.replace(/<rect[^>]*fill="[^"]*"[^>]*\/>/i, "");
+        // Inject our scaling class dynamically
+        transparentSvg = transparentSvg.replace("<svg ", '<svg class="poster-spotify-code" ');
+        setSvgStr(transparentSvg);
+      })
+      .catch((err) => {
+        if (err.name !== "AbortError") {
+          console.error("Could not load Spotify Scannable SVG", err);
+          setSvgStr("");
+        }
+      });
+
+    return () => controller.abort();
   }, [codeType, uri, bar]);
 
   if (codeType === "scannable" && uri) {
@@ -201,6 +217,68 @@ function TrackRow({ t, hideArtists, hideNum, hideDur }) {
   );
 }
 
+function isTrackItem(album) {
+  return album?.mediaType === "track";
+}
+
+function getPosterTypeLabel(album) {
+  return isTrackItem(album) ? "TRACK" : album.albumType;
+}
+
+function getCountLabel(album) {
+  if (!isTrackItem(album)) {
+    return `${album.totalTracks} tracks`;
+  }
+
+  if (album.collectionTrackCount) {
+    return `Track ${album.trackNumber} of ${album.collectionTrackCount}`;
+  }
+
+  return "Single track";
+}
+
+function getCountLabelUpper(album) {
+  if (!isTrackItem(album)) {
+    return `${album.totalTracks} TRACKS`;
+  }
+
+  if (album.collectionTrackCount) {
+    return `TRACK ${String(album.trackNumber).padStart(2, "0")}/${String(album.collectionTrackCount).padStart(2, "0")}`;
+  }
+
+  return "TRACK 01";
+}
+
+function getSourceName(album) {
+  return isTrackItem(album) ? (album.collectionName || "Standalone release") : album.name;
+}
+
+function getGallerySourceLine(album) {
+  return isTrackItem(album)
+    ? `FROM: ${getSourceName(album)}`
+    : `RELEASED BY: ${album.albumType} RECORDS`;
+}
+
+function getEditorialTypeLabel(album) {
+  return isTrackItem(album) ? "Track by" : `${album.albumType} by`;
+}
+
+function getSourceLabel(album) {
+  return isTrackItem(album) ? "From the release" : "From the album";
+}
+
+function getCountAndDuration(album) {
+  return `${getCountLabel(album)} • ${album.totalDuration}`;
+}
+
+function getRetroPanelLabel(album) {
+  return isTrackItem(album) ? "TRACK DATA" : "SIDE A / SIDE B";
+}
+
+function getArcadePanelLabel(album) {
+  return isTrackItem(album) ? "TRACK SELECT" : "STAGE SELECT";
+}
+
 /* ═══════════════════════ CLASSIC ═══════════════════════ */
 
 function LayoutClassic({ album, quote, codeType, barColor }) {
@@ -213,7 +291,7 @@ function LayoutClassic({ album, quote, codeType, barColor }) {
         <h1 className="poster-title">{album.name}</h1>
         <p className="poster-artist">{album.artists}</p>
         <p className="poster-meta">
-          {album.totalTracks} tracks &bull; {album.totalDuration} &bull; {album.releaseYear}
+          {getCountLabel(album)} &bull; {album.totalDuration} &bull; {album.releaseYear}
         </p>
       </div>
       {quote && <p className="poster-quote">&ldquo;{quote}&rdquo;</p>}
@@ -253,13 +331,13 @@ function LayoutGallery({ album, quote, codeType, albumColors, barColor }) {
               ))}
             </div>
           )}
-          <span className="poster-gallery-type">{album.albumType}</span>
+          <span className="poster-gallery-type">{getPosterTypeLabel(album)}</span>
         </div>
       </div>
       <div className="poster-gallery-footer">
         <div className="poster-gallery-footer-left">
           <p className="poster-meta">{album.totalDuration}/{album.releaseDate}</p>
-          <p className="poster-meta">RELEASED BY: {album.albumType} RECORDS</p>
+          <p className="poster-meta">{getGallerySourceLine(album)}</p>
         </div>
         <div className="poster-gallery-footer-right">
           <Signature artistName={album.artists} />
@@ -291,12 +369,12 @@ function LayoutEditorial({ album, quote, codeType, barColor }) {
         <div className="poster-editorial-rule" />
         <div className="poster-editorial-meta-row">
           <div className="poster-editorial-meta-col">
-            <span className="poster-meta-label">{album.albumType} by</span>
+            <span className="poster-meta-label">{getEditorialTypeLabel(album)}</span>
             <span className="poster-meta">{album.artists}</span>
           </div>
           <div className="poster-editorial-meta-col">
-            <span className="poster-meta-label">From the album</span>
-            <span className="poster-meta">{album.name}</span>
+            <span className="poster-meta-label">{getSourceLabel(album)}</span>
+            <span className="poster-meta">{getSourceName(album)}</span>
           </div>
           <div className="poster-editorial-meta-col">
             <span className="poster-meta-label">Released</span>
@@ -304,7 +382,7 @@ function LayoutEditorial({ album, quote, codeType, barColor }) {
           </div>
           <div className="poster-editorial-meta-col">
             <span className="poster-meta-label">Duration</span>
-            <span className="poster-meta">{album.totalTracks} tracks &bull; {album.totalDuration}</span>
+            <span className="poster-meta">{getCountAndDuration(album)}</span>
           </div>
           <div className="poster-editorial-meta-col poster-editorial-code-col">
             <span className="poster-meta-label">Listen</span>
@@ -327,7 +405,7 @@ function LayoutBoldBlock({ album, quote, codeType, barColor }) {
           <h1 className="poster-title">{album.name}</h1>
           <p className="poster-artist">{album.artists}</p>
         </div>
-        <span className="poster-boldblock-side-text">{album.albumType}</span>
+        <span className="poster-boldblock-side-text">{getPosterTypeLabel(album)}</span>
         <span className="poster-boldblock-price">99p</span>
       </div>
       <div className="poster-boldblock-image-wrap">
@@ -354,7 +432,7 @@ function LayoutMinimal({ album, quote, codeType, barColor }) {
     <>
       <div className="poster-minimal-topline">
         <span className="poster-date">{album.releaseYear}</span>
-        <span className="poster-meta">{album.albumType}</span>
+        <span className="poster-meta">{getPosterTypeLabel(album)}</span>
       </div>
       <div className="poster-minimal-stage">
         <div className="poster-minimal-copy">
@@ -376,7 +454,7 @@ function LayoutMinimal({ album, quote, codeType, barColor }) {
           ))}
         </p>
         <div className="poster-minimal-meta-row">
-          <span className="poster-meta">{album.releaseDate} &bull; {album.totalTracks} tracks &bull; {album.totalDuration}</span>
+          <span className="poster-meta">{album.releaseDate} &bull; {getCountLabel(album)} &bull; {album.totalDuration}</span>
           <BottomCode url={album.spotifyUrl} uri={album.uri} codeType={codeType} barColor={barColor} />
         </div>
       </div>
@@ -411,7 +489,7 @@ function LayoutImmersive({ album, quote, codeType, barColor }) {
         <SoundWave className="poster-immersive-wave" width={160} height={24} bars={48} />
         <div className="poster-immersive-meta-row">
           <span className="poster-meta">
-            {album.releaseDate} &bull; {album.totalTracks} tracks &bull; {album.totalDuration}
+            {album.releaseDate} &bull; {getCountLabel(album)} &bull; {album.totalDuration}
           </span>
           <BottomCode url={album.spotifyUrl} uri={album.uri} codeType={codeType} barColor={barColor} />
         </div>
@@ -431,7 +509,7 @@ function LayoutRetro({ album, quote, codeType, barColor }) {
       <DoubleNote className="poster-retro-note poster-retro-note-2" size={28} />
       <MusicNote className="poster-retro-note poster-retro-note-3" size={16} />
       <div className="poster-retro-header">
-        <span className="poster-retro-kicker">{album.albumType} EDITION</span>
+        <span className="poster-retro-kicker">{getPosterTypeLabel(album)} EDITION</span>
         <p className="poster-artist">{album.artists}</p>
         <h1 className="poster-title">{album.name}</h1>
       </div>
@@ -442,8 +520,8 @@ function LayoutRetro({ album, quote, codeType, barColor }) {
         </div>
         <div className="poster-retro-track-panel">
           <div className="poster-retro-track-header">
-            <span>SIDE A / SIDE B</span>
-            <span>{album.totalTracks} TRACKS</span>
+            <span>{getRetroPanelLabel(album)}</span>
+            <span>{getCountLabelUpper(album)}</span>
           </div>
           <div className="poster-tracklist poster-retro-tracklist">
             {album.tracks.map((t) => (
@@ -564,7 +642,7 @@ function LayoutMasterpiecePlaylist({ album, quote, codeType, albumColors, barCol
       <h1 className="playlist-title">{album.name}</h1>
       <div className="playlist-meta">
         <p className="poster-artist">{album.artists}</p>
-        <p className="poster-meta">{album.releaseYear} &bull; {album.totalTracks} tracks</p>
+        <p className="poster-meta">{album.releaseYear} &bull; {getCountLabel(album)}</p>
       </div>
       <Cover src={album.coverUrl} name={album.name} className="playlist-image" />
       {quote && <p className="poster-quote">&ldquo;{quote}&rdquo;</p>}
@@ -607,7 +685,7 @@ function LayoutMasterpieceGraduation({ album, quote, codeType, barColor }) {
         <div className="grad-footer-row">
           <div className="grad-footer-meta">
             <p className="poster-meta">{album.releaseDate}</p>
-            <p className="poster-meta">{album.totalTracks} tracks &bull; {album.totalDuration}</p>
+            <p className="poster-meta">{getCountAndDuration(album)}</p>
           </div>
           <div className="grad-footer-right">
             <BottomCode url={album.spotifyUrl} uri={album.uri} codeType={codeType} barColor={barColor} />
@@ -622,7 +700,9 @@ function LayoutMasterpieceGraduation({ album, quote, codeType, barColor }) {
 /* ═══════════════════════ MASTERPIECE: 8-BIT ARCADE ═══════════════════════ */
 
 function LayoutMasterpiece8Bit({ album, quote, codeType, barColor }) {
-  const hiScore = String(album.totalTracks * 1250).padStart(6, "0");
+  const hiScore = isTrackItem(album)
+    ? String((album.popularity ?? album.trackNumber ?? 1) * 1000).padStart(6, "0")
+    : String(album.totalTracks * 1250).padStart(6, "0");
 
   return (
     <>
@@ -635,7 +715,7 @@ function LayoutMasterpiece8Bit({ album, quote, codeType, barColor }) {
           <span className="poster-8bit-chip">TIME {album.totalDuration}</span>
         </div>
         <div className="poster-8bit-marquee">
-          <span className="poster-8bit-label">{album.albumType}</span>
+          <span className="poster-8bit-label">{getPosterTypeLabel(album)}</span>
           <h1 className="poster-title">{album.name}</h1>
           <p className="poster-8bit-artist">PLAYER 1: {album.artists}</p>
         </div>
@@ -646,8 +726,8 @@ function LayoutMasterpiece8Bit({ album, quote, codeType, barColor }) {
           </div>
           <div className="poster-8bit-panel">
             <div className="poster-8bit-panel-header">
-              <span>STAGE SELECT</span>
-              <span>{album.totalTracks} LEVELS</span>
+              <span>{getArcadePanelLabel(album)}</span>
+              <span>{getCountLabelUpper(album)}</span>
             </div>
             <div className="poster-8bit-tracklist">
               {album.tracks.map((t) => (

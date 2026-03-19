@@ -11,25 +11,25 @@ export async function GET(request, { params }) {
     const { id } = params;
     if (!id) {
       return jsonError(
-        "Missing Spotify album id.",
+        "Missing Spotify track id.",
         400,
-        "missing_album_id",
+        "missing_track_id",
       );
     }
 
     const token = await getSpotifyToken();
 
-    const res = await fetch(`https://api.spotify.com/v1/albums/${id}`, {
+    const res = await fetch(`https://api.spotify.com/v1/tracks/${id}`, {
       headers: { Authorization: `Bearer ${token}` },
     });
 
     if (!res.ok) {
-      return spotifyApiError("album", res);
+      return spotifyApiError("track", res);
     }
 
     const data = await res.json();
     return NextResponse.json(data);
   } catch (err) {
-    return handleSpotifyRouteError(err, "album");
+    return handleSpotifyRouteError(err, "track");
   }
 }

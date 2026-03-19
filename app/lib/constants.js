@@ -56,11 +56,11 @@ export const DEFAULT_THEME_CSS = `/* TrashFrame – Poster Theme Variables
 
   /* ── Background Art Effects ── */
 
-  /* Opacity of the blurred album art background */
+  /* Opacity of the blurred cover art background */
   /* 0 = plain background, 0.15 = subtle, 0.3 = strong */
   --fp-bg-art-opacity: 0.15;
 
-  /* Blur amount on the background album art layer */
+  /* Blur amount on the background cover art layer */
   /* 0px = sharp, 40px = soft bloom, 80px = very diffused */
   --fp-bg-blur: 40px;
 
@@ -82,7 +82,7 @@ export const DEFAULT_THEME_CSS = `/* TrashFrame – Poster Theme Variables
 }
 `;
 
-export const AI_THEME_PROMPT = `I am going to show you a poster image. Based on the visual style of this image, I want you to fill in a CSS variables file for a music album poster web app called Trashframe.
+export const AI_THEME_PROMPT = `I am going to show you a poster image. Based on the visual style of this image, I want you to fill in a CSS variables file for a music poster web app called Trashframe.
 
 Your job is to look at the image and extract:
 - Background color or texture feel (translate to a hex color)
@@ -109,13 +109,13 @@ Here is the template to fill:
   /* Poster background color */
   --fp-bg: ;
 
-  /* Album image CSS filter */
+  /* Cover image CSS filter */
   --fp-image-filter: ;
 
-  /* Album image border radius */
+  /* Cover image border radius */
   --fp-image-radius: ;
 
-  /* Album title */
+  /* Poster title */
   --fp-heading-font: ;
   --fp-heading-size: ;
   --fp-heading-color: ;
@@ -159,11 +159,11 @@ Here is the template to fill:
 
   /* ── Background Art Effects ── */
 
-  /* Opacity of the blurred album art background */
+  /* Opacity of the blurred cover art background */
   /* 0 = plain background, 0.15 = subtle, 0.3 = strong */
   --fp-bg-art-opacity: ;
 
-  /* Blur amount on the background album art layer */
+  /* Blur amount on the background cover art layer */
   /* 0px = sharp, 40px = soft bloom, 80px = very diffused */
   --fp-bg-blur: ;
 

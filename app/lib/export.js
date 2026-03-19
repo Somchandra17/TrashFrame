@@ -2,6 +2,16 @@ import { getFontEmbedCSS, toPng } from "html-to-image";
 import { jsPDF } from "jspdf";
 import { framePx, FRAME_SIZES } from "./constants";
 
+function getDownloadBaseName(itemName, frameKey) {
+  const safeName = (itemName || "poster")
+    .trim()
+    .replace(/[<>:"/\\|?*\u0000-\u001F]+/g, " ")
+    .replace(/\s+/g, "_")
+    .replace(/^_+|_+$/g, "");
+
+  return `${safeName || "poster"}_${frameKey}`;
+}
+
 async function getSafeFontEmbedCSS(node) {
   try {
     return await getFontEmbedCSS(node, {
@@ -48,31 +58,23 @@ export async function exportPng(frameKey) {
 }
 
 export async function downloadPng(frameKey, albumName) {
-  try {
-    const dataUrl = await exportPng(frameKey);
-    const link = document.createElement("a");
-    link.download = `${(albumName || "poster").replace(/\s+/g, "_")}_${frameKey}.png`;
-    link.href = dataUrl;
-    link.click();
-  } catch (err) {
-    alert("Export failed: " + err.message);
-  }
+  const dataUrl = await exportPng(frameKey);
+  const link = document.createElement("a");
+  link.download = `${getDownloadBaseName(albumName, frameKey)}.png`;
+  link.href = dataUrl;
+  link.click();
 }
 
 export async function downloadPdf(frameKey, albumName) {
-  try {
-    const dataUrl = await exportPng(frameKey);
-    const { cm } = FRAME_SIZES[frameKey];
+  const dataUrl = await exportPng(frameKey);
+  const { cm } = FRAME_SIZES[frameKey];
 
-    const pdf = new jsPDF({
-      orientation: cm[0] > cm[1] ? "landscape" : "portrait",
-      unit: "cm",
-      format: [cm[0], cm[1]],
-    });
+  const pdf = new jsPDF({
+    orientation: cm[0] > cm[1] ? "landscape" : "portrait",
+    unit: "cm",
+    format: [cm[0], cm[1]],
+  });
 
-    pdf.addImage(dataUrl, "PNG", 0, 0, cm[0], cm[1]);
-    pdf.save(`${(albumName || "poster").replace(/\s+/g, "_")}_${frameKey}.pdf`);
-  } catch (err) {
-    alert("Export failed: " + err.message);
-  }
+  pdf.addImage(dataUrl, "PNG", 0, 0, cm[0], cm[1]);
+  pdf.save(`${getDownloadBaseName(albumName, frameKey)}.pdf`);
 }

@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import Poster from "./components/Poster";
 import Sidebar from "./components/Sidebar";
-import { fetchAlbum } from "./lib/spotify";
+import { fetchSpotifyItem } from "./lib/spotify";
 import { extractPalette, extractDominantColors } from "./lib/colors";
 import { DEFAULT_FRAME, PRESET_THEMES } from "./lib/constants";
 
@@ -205,7 +205,7 @@ export default function Home() {
     setLoading(true);
     setError("");
     try {
-      const data = await fetchAlbum(url.trim());
+      const data = await fetchSpotifyItem(url.trim());
       setAlbum(data);
       setPosterOverrides(DEFAULT_OVERRIDES);
     } catch (err) {
@@ -252,7 +252,7 @@ export default function Home() {
     overrideRules.push(`--fp-quote-font: '${o.quoteFont}', sans-serif`);
     loadGoogleFonts([o.quoteFont]);
   }
-  // Album art adjustments
+  // Cover art adjustments
   const artFilters = [];
   if (o.colorCover) artFilters.push('grayscale(0)');
   if (o.artBrightness && o.artBrightness !== 100) artFilters.push(`brightness(${o.artBrightness}%)`);
@@ -320,18 +320,18 @@ export default function Home() {
         {/* Main Content */}
         <div className="landing-content">
           <h1 className="landing-title">TrashFrame</h1>
-          <p className="landing-subtitle">Turn any Spotify album into a printable poster</p>
+          <p className="landing-subtitle">Turn any Spotify album or song into a printable poster</p>
 
           <form onSubmit={handleGenerate} className="landing-form">
             <input
               type="text"
               value={url}
               onChange={(e) => setUrl(e.target.value)}
-              placeholder="Paste a Spotify album link…"
+              placeholder="Paste a Spotify album or song link..."
               className="landing-input"
             />
             <button type="submit" disabled={loading || !url.trim()} className="landing-btn">
-              {loading ? "Loading…" : "Generate"}
+              {loading ? "Loading..." : "Generate"}
             </button>
           </form>
 
@@ -393,7 +393,7 @@ export default function Home() {
             onSelectPreset={handleSelectPreset}
             onUploadTheme={handleUploadTheme}
             onResetTheme={handleResetTheme}
-            albumName={album.name}
+            itemName={album.name}
             overrides={posterOverrides}
             onChangeOverrides={handleOverridesChange}
           />

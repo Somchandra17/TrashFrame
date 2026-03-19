@@ -1,5 +1,6 @@
 const SPOTIFY_ID_RE = /^[a-zA-Z0-9]+$/;
 const URL_SCHEME_RE = /^[a-z][a-z0-9+.-]*:/i;
+const SUPPORTED_RESOURCE_TYPES = new Set(["album", "track"]);
 
 const RESOURCE_LABELS = {
   album: "album",
@@ -8,11 +9,16 @@ const RESOURCE_LABELS = {
   episode: "podcast episode",
   playlist: "playlist",
   show: "podcast show",
-  track: "track",
+  track: "song",
   user: "profile",
 };
 
-function makeAlbumError(message, code = "spotify_album_url_invalid") {
+const MONTHS = [
+  "January", "February", "March", "April", "May", "June",
+  "July", "August", "September", "October", "November", "December",
+];
+
+function makeSpotifyError(message, code = "spotify_url_invalid") {
   const err = new Error(message);
   err.code = code;
   return err;
@@ -42,18 +48,19 @@ function getSpotifyResourceTypeLabel(resourceType) {
   return RESOURCE_LABELS[resourceType] || resourceType;
 }
 
-function invalidAlbumLinkError(resourceType) {
-  return makeAlbumError(
-    `That's a Spotify ${getSpotifyResourceTypeLabel(resourceType)} link. Paste an album link instead.`,
+function unsupportedResourceError(resourceType) {
+  return makeSpotifyError(
+    `That's a Spotify ${getSpotifyResourceTypeLabel(resourceType)} link. Paste an album or song link instead.`,
     `spotify_${resourceType}_link`,
   );
 }
 
-function validateAlbumId(id) {
+function validateSpotifyId(id, resourceType) {
   if (!id || !SPOTIFY_ID_RE.test(id)) {
-    throw makeAlbumError(
-      "That Spotify album link looks incomplete. Copy the full album link and try again.",
-      "spotify_album_link_incomplete",
+    const resourceLabel = getSpotifyResourceTypeLabel(resourceType);
+    throw makeSpotifyError(
+      `That Spotify ${resourceLabel} link looks incomplete. Copy the full ${resourceLabel} link and try again.`,
+      `spotify_${resourceType}_link_incomplete`,
     );
   }
 
@@ -77,33 +84,39 @@ function getUrlResource(parts) {
   };
 }
 
-function extractAlbumId(value) {
+function parseSpotifyResource(value) {
   if (!value) {
-    throw makeAlbumError("Paste a Spotify album URL to continue.", "spotify_album_url_missing");
+    throw makeSpotifyError(
+      "Paste a Spotify album or song URL to continue.",
+      "spotify_url_missing",
+    );
   }
 
   if (value.startsWith("spotify:")) {
     const parts = value.split(":");
 
     if (parts[1] === "user" && parts[3] === "playlist") {
-      throw invalidAlbumLinkError("playlist");
+      throw unsupportedResourceError("playlist");
     }
 
     const resourceType = parts[1];
     const resourceId = parts[2];
 
     if (!resourceType) {
-      throw makeAlbumError(
-        "That Spotify link looks incomplete. Copy the full album link and try again.",
+      throw makeSpotifyError(
+        "That Spotify link looks incomplete. Copy the full album or song link and try again.",
         "spotify_link_incomplete",
       );
     }
 
-    if (resourceType !== "album") {
-      throw invalidAlbumLinkError(resourceType);
+    if (!SUPPORTED_RESOURCE_TYPES.has(resourceType)) {
+      throw unsupportedResourceError(resourceType);
     }
 
-    return validateAlbumId(resourceId);
+    return {
+      resourceType,
+      resourceId: validateSpotifyId(resourceId, resourceType),
+    };
   }
 
   let parsedUrl;
@@ -111,8 +124,8 @@ function extractAlbumId(value) {
   try {
     parsedUrl = new URL(normalizeInputUrl(value));
   } catch {
-    throw makeAlbumError(
-      "That doesn't look like a Spotify link. Paste a Spotify album URL.",
+    throw makeSpotifyError(
+      "That doesn't look like a Spotify link. Paste a Spotify album or song URL.",
       "spotify_url_invalid",
     );
   }
@@ -120,15 +133,15 @@ function extractAlbumId(value) {
   const hostname = parsedUrl.hostname.toLowerCase();
 
   if (isSpotifyShortLink(hostname)) {
-    throw makeAlbumError(
-      "Short Spotify share links aren't supported yet. Open the album in Spotify and copy the full album URL.",
+    throw makeSpotifyError(
+      "Short Spotify share links aren't supported yet. Open the song or album in Spotify and copy the full link.",
       "spotify_short_link_unsupported",
     );
   }
 
   if (!isSpotifyHost(hostname)) {
-    throw makeAlbumError(
-      "That doesn't look like a Spotify link. Paste a Spotify album URL.",
+    throw makeSpotifyError(
+      "That doesn't look like a Spotify link. Paste a Spotify album or song URL.",
       "spotify_host_invalid",
     );
   }
@@ -138,17 +151,43 @@ function extractAlbumId(value) {
   );
 
   if (!resourceType) {
-    throw makeAlbumError(
-      "That Spotify link looks incomplete. Copy the full album link and try again.",
+    throw makeSpotifyError(
+      "That Spotify link looks incomplete. Copy the full album or song link and try again.",
       "spotify_link_incomplete",
     );
   }
 
-  if (resourceType !== "album") {
-    throw invalidAlbumLinkError(resourceType);
+  if (!SUPPORTED_RESOURCE_TYPES.has(resourceType)) {
+    throw unsupportedResourceError(resourceType);
   }
 
-  return validateAlbumId(resourceId);
+  return {
+    resourceType,
+    resourceId: validateSpotifyId(resourceId, resourceType),
+  };
+}
+
+function joinArtists(artists) {
+  return (artists || []).map((artist) => artist.name).join(", ");
+}
+
+function formatReleaseDate(rawDate) {
+  const parts = (rawDate || "").split("-");
+  const year = parts[0] || "";
+  const monthIdx = parts[1] ? parseInt(parts[1], 10) - 1 : -1;
+  const day = parts[2] ? parseInt(parts[2], 10) : null;
+  const monthName = monthIdx >= 0 ? MONTHS[monthIdx] : "";
+
+  const releaseDate = day
+    ? `${year} / ${monthName} ${day}`
+    : monthIdx >= 0
+      ? `${year} / ${monthName}`
+      : year;
+
+  return {
+    releaseDate,
+    releaseYear: year,
+  };
 }
 
 function msToTime(ms) {
@@ -158,63 +197,26 @@ function msToTime(ms) {
   return `${m}:${sec.toString().padStart(2, "0")}`;
 }
 
-export async function fetchAlbum(url) {
-  const id = extractAlbumId(url);
-
-  // The Next.js API route handles Spotify tokens securely on the server-side.
-  let res;
-
-  try {
-    res = await fetch(`/api/spotify/album/${id}`);
-  } catch {
-    throw makeAlbumError(
-      "Couldn't reach Spotify right now. Check your connection and try again.",
-      "spotify_request_failed",
-    );
-  }
-
-  if (!res.ok) {
-    const err = await res.json().catch(() => ({}));
-    throw makeAlbumError(
-      err.error || "Spotify couldn't load that album right now. Try again in a moment.",
-      err.code || "spotify_album_fetch_failed",
-    );
-  }
-
-  const data = await res.json();
-
-  const months = [
-    "January", "February", "March", "April", "May", "June",
-    "July", "August", "September", "October", "November", "December",
-  ];
-
-  const parts = (data.release_date || "").split("-");
-  const year = parts[0] || "";
-  const monthIdx = parts[1] ? parseInt(parts[1], 10) - 1 : -1;
-  const day = parts[2] ? parseInt(parts[2], 10) : null;
-  const monthName = monthIdx >= 0 ? months[monthIdx] : "";
-  const releaseDateFormatted = day
-    ? `${year} / ${monthName} ${day}`
-    : monthIdx >= 0
-      ? `${year} / ${monthName}`
-      : year;
+function normalizeAlbum(data, url, id) {
+  const { releaseDate, releaseYear } = formatReleaseDate(data.release_date);
 
   let totalMs = 0;
-  const tracks = (data.tracks?.items || []).map((t, i) => {
-    totalMs += t.duration_ms;
+  const tracks = (data.tracks?.items || []).map((track, index) => {
+    totalMs += track.duration_ms;
     return {
-      number: i + 1,
-      name: t.name,
-      artists: (t.artists || []).map((a) => a.name).join(", "),
-      duration: msToTime(t.duration_ms),
+      number: index + 1,
+      name: track.name,
+      artists: joinArtists(track.artists),
+      duration: msToTime(track.duration_ms),
     };
   });
 
   return {
+    mediaType: "album",
     name: data.name,
-    artists: (data.artists || []).map((a) => a.name).join(", "),
-    releaseDate: releaseDateFormatted,
-    releaseYear: year,
+    artists: joinArtists(data.artists),
+    releaseDate,
+    releaseYear,
     totalTracks: data.total_tracks || tracks.length,
     totalDuration: msToTime(totalMs),
     tracks,
@@ -222,5 +224,80 @@ export async function fetchAlbum(url) {
     spotifyUrl: data.external_urls?.spotify || url,
     uri: data.uri || `spotify:album:${id}`,
     albumType: (data.album_type || "album").toUpperCase(),
+    collectionName: data.name,
+    collectionType: (data.album_type || "album").toUpperCase(),
+    collectionTrackCount: data.total_tracks || tracks.length,
   };
+}
+
+function normalizeTrack(data, url, id) {
+  const { releaseDate, releaseYear } = formatReleaseDate(data.album?.release_date);
+  const duration = msToTime(data.duration_ms || 0);
+  const trackNumber = data.track_number || 1;
+  const collectionTrackCount = data.album?.total_tracks || null;
+
+  return {
+    mediaType: "track",
+    name: data.name,
+    artists: joinArtists(data.artists),
+    releaseDate,
+    releaseYear,
+    totalTracks: 1,
+    totalDuration: duration,
+    tracks: [
+      {
+        number: trackNumber,
+        name: data.name,
+        artists: joinArtists(data.artists),
+        duration,
+      },
+    ],
+    coverUrl: data.album?.images?.[0]?.url || "",
+    spotifyUrl: data.external_urls?.spotify || url,
+    uri: data.uri || `spotify:track:${id}`,
+    albumType: "TRACK",
+    collectionName: data.album?.name || "",
+    collectionType: (data.album?.album_type || "album").toUpperCase(),
+    collectionTrackCount,
+    trackNumber,
+    discNumber: data.disc_number || 1,
+    explicit: Boolean(data.explicit),
+    popularity: typeof data.popularity === "number" ? data.popularity : null,
+    isrc: data.external_ids?.isrc || "",
+  };
+}
+
+export async function fetchSpotifyItem(url) {
+  const { resourceType, resourceId } = parseSpotifyResource(url);
+
+  let res;
+
+  try {
+    res = await fetch(`/api/spotify/${resourceType}/${resourceId}`);
+  } catch {
+    throw makeSpotifyError(
+      "Couldn't reach Spotify right now. Check your connection and try again.",
+      "spotify_request_failed",
+    );
+  }
+
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw makeSpotifyError(
+      err.error || "Spotify couldn't load that item right now. Try again in a moment.",
+      err.code || "spotify_fetch_failed",
+    );
+  }
+
+  const data = await res.json();
+
+  if (resourceType === "track") {
+    return normalizeTrack(data, url, resourceId);
+  }
+
+  return normalizeAlbum(data, url, resourceId);
+}
+
+export async function fetchAlbum(url) {
+  return fetchSpotifyItem(url);
 }

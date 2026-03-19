@@ -93,13 +93,14 @@ export default function Sidebar({
   onSelectPreset,
   onUploadTheme,
   onResetTheme,
-  albumName,
+  itemName,
   overrides,
   onChangeOverrides,
 }) {
   const fileRef = useRef(null);
   const [exporting, setExporting] = useState(null);
   const [copied, setCopied] = useState(false);
+  const [exportError, setExportError] = useState("");
 
   function setOverride(key, value) {
     onChangeOverrides({ ...overrides, [key]: value });
@@ -145,12 +146,13 @@ export default function Sidebar({
 
   async function handleExport(type) {
     setExporting(type);
+    setExportError("");
     try {
-      if (type === "png") await downloadPng(frameSize, albumName);
-      else await downloadPdf(frameSize, albumName);
+      if (type === "png") await downloadPng(frameSize, itemName);
+      else await downloadPdf(frameSize, itemName);
     } catch (err) {
       console.error("Export failed:", err);
-      alert("Export failed \u2013 see console for details.");
+      setExportError(err.message || "Export failed. Try again.");
     } finally {
       setExporting(null);
     }
@@ -264,8 +266,8 @@ export default function Sidebar({
         />
       </Section>
 
-      {/* ───────── 2. ALBUM ART ───────── */}
-      <Section icon={icons.image} title="Album Art" defaultOpen={false}>
+      {/* ───────── 2. COVER ART ───────── */}
+      <Section icon={icons.image} title="Cover Art" defaultOpen={false}>
         <TogglePair
           labelA="B&W"
           labelB="Color"
@@ -567,6 +569,9 @@ export default function Sidebar({
         >
           {exporting === "pdf" ? "Exporting\u2026" : "Download PDF"}
         </button>
+        {exportError && (
+          <p className="text-xs text-red-600 leading-relaxed">{exportError}</p>
+        )}
       </Section>
     </aside>
   );
