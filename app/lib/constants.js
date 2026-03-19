@@ -360,33 +360,33 @@ export const PRESET_THEMES = [
     colors: ["#f5f3ef", "#2a4a4a", "#8a9a9a"],
     css: `#poster-root {
   --fp-bg: #f5f3ef;
-  --fp-image-filter: grayscale(70%) contrast(1.1);
+  --fp-image-filter: grayscale(48%) contrast(1.08);
   --fp-image-radius: 0px;
   --fp-heading-font: 'Instrument Serif', serif;
-  --fp-heading-size: 2.8em;
+  --fp-heading-size: 3.1em;
   --fp-heading-color: #2a3a3a;
   --fp-heading-weight: 400;
   --fp-heading-spacing: -0.04em;
-  --fp-subtitle-color: #5a7a7a;
-  --fp-subtitle-size: 0.45em;
+  --fp-subtitle-color: #5f7c7b;
+  --fp-subtitle-size: 0.56em;
   --fp-meta-color: #8a9a9a;
-  --fp-meta-size: 0.32em;
+  --fp-meta-size: 0.36em;
   --fp-quote-font: 'Instrument Serif', serif;
-  --fp-quote-size: 0.65em;
+  --fp-quote-size: 0.74em;
   --fp-quote-color: #4a6a6a;
   --fp-quote-style: italic;
-  --fp-track-font: 'DM Sans', sans-serif;
-  --fp-track-size: 0.25em;
-  --fp-track-color: #5a6a6a;
+  --fp-track-font: 'Space Grotesk', sans-serif;
+  --fp-track-size: 0.31em;
+  --fp-track-color: #506665;
   --fp-track-num-color: #aabbbb;
-  --fp-track-columns: 4;
+  --fp-track-columns: 1;
   --fp-track-gap: 0.04em;
   --fp-border-color: transparent;
   --fp-border-width: 0px;
-  --fp-qr-size: 22px;
+  --fp-qr-size: 26px;
   --fp-qr-fg: #2a3a3a;
   --fp-qr-bg: transparent;
-  --fp-padding: 5%;
+  --fp-padding: 6%;
   --fp-gap: 0em;
   --fp-bg-art-opacity: 0;
   --fp-vignette-opacity: 0;
@@ -395,7 +395,7 @@ export const PRESET_THEMES = [
   {
     id: "red-mono",
     name: "Receipt",
-    layout: "receipt",
+    layout: "masterpiece-receipt",
     desc: "Receipt-style, dashed dividers, total row",
     colors: ["#ece4d8", "#c0392b", "#d4a89a"],
     css: `#poster-root {
@@ -403,31 +403,31 @@ export const PRESET_THEMES = [
   --fp-image-filter: grayscale(100%) sepia(40%) saturate(3) hue-rotate(-15deg) contrast(1.1);
   --fp-image-radius: 2px;
   --fp-heading-font: 'Archivo Black', sans-serif;
-  --fp-heading-size: 2.0em;
+  --fp-heading-size: 1.85em;
   --fp-heading-color: #c0392b;
   --fp-heading-weight: 400;
   --fp-heading-spacing: 0.06em;
   --fp-subtitle-color: #a83228;
   --fp-subtitle-size: 0.75em;
   --fp-meta-color: #d4a89a;
-  --fp-meta-size: 0.38em;
-  --fp-quote-font: 'Noto Serif', serif;
-  --fp-quote-size: 0.9em;
+  --fp-meta-size: 0.42em;
+  --fp-quote-font: 'IBM Plex Mono', monospace;
+  --fp-quote-size: 0.82em;
   --fp-quote-color: #c0392b;
   --fp-quote-style: normal;
   --fp-track-font: 'IBM Plex Mono', monospace;
-  --fp-track-size: 0.35em;
+  --fp-track-size: 0.4em;
   --fp-track-color: #8b2020;
   --fp-track-num-color: #d4a89a;
   --fp-track-columns: 1;
   --fp-track-gap: 0.08em;
   --fp-border-color: #c0392b;
-  --fp-border-width: 2px;
+  --fp-border-width: 0px;
   --fp-qr-size: 38px;
   --fp-qr-fg: #c0392b;
   --fp-qr-bg: transparent;
-  --fp-padding: 5%;
-  --fp-gap: 0.25em;
+  --fp-padding: 8% 10%;
+  --fp-gap: 0em;
 }`,
   },
   {

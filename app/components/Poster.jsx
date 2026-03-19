@@ -306,6 +306,10 @@ function LayoutEditorial({ album, quote, codeType, barColor }) {
             <span className="poster-meta-label">Duration</span>
             <span className="poster-meta">{album.totalTracks} tracks &bull; {album.totalDuration}</span>
           </div>
+          <div className="poster-editorial-meta-col poster-editorial-code-col">
+            <span className="poster-meta-label">Listen</span>
+            <BottomCode url={album.spotifyUrl} uri={album.uri} codeType={codeType} barColor={barColor} />
+          </div>
         </div>
       </div>
     </>
@@ -338,6 +342,43 @@ function LayoutBoldBlock({ album, quote, codeType, barColor }) {
           {album.tracks.map((t) => <TrackRow key={t.number} t={t} hideArtists />)}
         </div>
         <BottomCode url={album.spotifyUrl} uri={album.uri} codeType={codeType} barColor={barColor} />
+      </div>
+    </>
+  );
+}
+
+/* ═══════════════════════ MINIMAL ═══════════════════════ */
+
+function LayoutMinimal({ album, quote, codeType, barColor }) {
+  return (
+    <>
+      <div className="poster-minimal-topline">
+        <span className="poster-date">{album.releaseYear}</span>
+        <span className="poster-meta">{album.albumType}</span>
+      </div>
+      <div className="poster-minimal-stage">
+        <div className="poster-minimal-copy">
+          <p className="poster-artist">{album.artists}</p>
+          <h1 className="poster-title">{album.name}</h1>
+          {quote && <p className="poster-quote">&ldquo;{quote}&rdquo;</p>}
+        </div>
+        <div className="poster-minimal-art-wrap">
+          <Cover src={album.coverUrl} name={album.name} className="poster-minimal-cover poster-minimal-cover-masked" />
+        </div>
+      </div>
+      <div className="poster-minimal-bottom">
+        <p className="poster-minimal-tracks">
+          {album.tracks.map((t, i) => (
+            <span key={t.number}>
+              {i > 0 && <span className="poster-minimal-sep"> / </span>}
+              {t.name}
+            </span>
+          ))}
+        </p>
+        <div className="poster-minimal-meta-row">
+          <span className="poster-meta">{album.releaseDate} &bull; {album.totalTracks} tracks &bull; {album.totalDuration}</span>
+          <BottomCode url={album.spotifyUrl} uri={album.uri} codeType={codeType} barColor={barColor} />
+        </div>
       </div>
     </>
   );
@@ -492,12 +533,13 @@ function LayoutMasterpieceComic({ album, quote, codeType, barColor }) {
       <TextureOverlay type="halftone" />
       <div className="comic-header">
         <h1 className="poster-title">{album.name}</h1>
+        <p className="comic-subhead">{album.artists}</p>
       </div>
       <div className="comic-image-container">
         <div className="comic-price">99¢</div>
         <Cover src={album.coverUrl} name={album.name} />
         <div className="comic-quote-bubble">
-          {quote ? <p className="poster-quote">&ldquo;{quote}&rdquo;</p> : <p className="poster-artist">STARRING {album.artists}</p>}
+          {quote ? <p className="poster-quote">&ldquo;{quote}&rdquo;</p> : <p className="poster-artist">ISSUE {album.releaseYear || "NOW"}</p>}
         </div>
       </div>
       <div className="comic-footer">
@@ -520,6 +562,10 @@ function LayoutMasterpiecePlaylist({ album, quote, codeType, albumColors, barCol
     <>
       <TextureOverlay type="paper" />
       <h1 className="playlist-title">{album.name}</h1>
+      <div className="playlist-meta">
+        <p className="poster-artist">{album.artists}</p>
+        <p className="poster-meta">{album.releaseYear} &bull; {album.totalTracks} tracks</p>
+      </div>
       <Cover src={album.coverUrl} name={album.name} className="playlist-image" />
       {quote && <p className="poster-quote">&ldquo;{quote}&rdquo;</p>}
       <div className="playlist-tracks">
@@ -554,12 +600,19 @@ function LayoutMasterpieceGraduation({ album, quote, codeType, barColor }) {
           <p className="poster-artist">{album.artists}</p>
           <h1 className="poster-title">{album.name}</h1>
         </div>
+        {quote && <p className="poster-quote grad-quote">&ldquo;{quote}&rdquo;</p>}
         <div className="poster-tracklist">
           {album.tracks.map((t) => <TrackRow key={t.number} t={t} hideArtists />)}
         </div>
         <div className="grad-footer-row">
-          <BottomCode url={album.spotifyUrl} uri={album.uri} codeType={codeType} barColor={barColor} />
-          <SoundWave className="poster-decor-wave" width={80} height={20} bars={20} />
+          <div className="grad-footer-meta">
+            <p className="poster-meta">{album.releaseDate}</p>
+            <p className="poster-meta">{album.totalTracks} tracks &bull; {album.totalDuration}</p>
+          </div>
+          <div className="grad-footer-right">
+            <BottomCode url={album.spotifyUrl} uri={album.uri} codeType={codeType} barColor={barColor} />
+            <SoundWave className="poster-decor-wave" width={80} height={20} bars={20} />
+          </div>
         </div>
       </div>
     </>
@@ -660,6 +713,7 @@ const LAYOUTS = {
   overlay: LayoutOverlay,
   editorial: LayoutEditorial,
   "bold-block": LayoutBoldBlock,
+  minimal: LayoutMinimal,
   immersive: LayoutImmersive,
   retro: LayoutRetro,
   "masterpiece-jcard": LayoutMasterpieceJCard,
