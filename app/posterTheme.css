@@ -63,10 +63,15 @@
 
 .poster-cover {
   width: 100%;
+  max-height: 100%;
+  aspect-ratio: 1 / 1;
   display: block;
   filter: var(--fp-image-filter);
   border-radius: var(--fp-image-radius);
   object-fit: cover;
+  flex-shrink: 1;
+  min-height: 0;
+  min-width: 0;
 }
 .poster-title {
   font-family: var(--fp-heading-font);
@@ -125,6 +130,7 @@
   font-size: var(--fp-track-size);
   color: var(--fp-track-color);
   line-height: 1.6;
+  overflow: hidden;
 }
 .poster-track {
   display: flex;
@@ -141,10 +147,10 @@
 }
 .poster-track-name {
   flex: 1;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  overflow-wrap: break-word;
+  word-break: break-word;
   text-transform: uppercase;
+  min-width: 0;
 }
 .poster-track-artists {
   color: var(--fp-meta-color);
@@ -238,6 +244,16 @@
   min-height: 0;
 }
 
+/* ────────── GLOBAL LAYOUT COVER OVERRIDES ────────── */
+#poster-root[data-layout="overlay"] .poster-cover,
+#poster-root[data-layout="immersive"] .poster-cover,
+#poster-root[data-layout="masterpiece-graduation"] .grad-bg {
+  aspect-ratio: auto;
+  max-height: none;
+  width: 100%;
+  height: 100%;
+}
+
 
 /* ══════════════════════════════════════════════════════
    LAYOUT: CLASSIC
@@ -256,7 +272,6 @@
 }
 #poster-root[data-layout="classic"] .poster-cover {
   border-radius: var(--fp-image-radius);
-  flex-shrink: 0;
 }
 #poster-root[data-layout="classic"] .poster-info {
   display: flex;
@@ -311,9 +326,11 @@
   flex-direction: column;
   align-items: center;
   gap: 0.5em;
-  flex-shrink: 0;
-  min-height: 45%;
+  flex-shrink: 1;
+  min-height: 35%;
+  max-height: 55%;
   justify-content: center;
+  overflow: hidden;
 }
 #poster-root[data-layout="gallery"] .poster-gallery-art-panel .poster-cover {
   width: 65%;
@@ -353,10 +370,14 @@
   flex-shrink: 0;
   padding-top: 0.2em;
   justify-content: flex-start;
+  max-width: 30%;
+  overflow: hidden;
 }
 #poster-root[data-layout="gallery"] .poster-gallery-palette {
   display: flex;
+  flex-wrap: wrap;
   gap: 0.3em;
+  justify-content: flex-end;
 }
 #poster-root[data-layout="gallery"] .poster-gallery-swatch {
   width: 1.4em;
@@ -421,7 +442,7 @@
    ══════════════════════════════════════════════════════ */
 
 #poster-root[data-layout="overlay"] {
-  padding: 0;
+  padding: 5%;
   gap: 0;
 }
 #poster-root[data-layout="overlay"] .poster-cover-bg {
@@ -431,16 +452,25 @@
   height: 100%;
   object-fit: cover;
   z-index: 0;
-  opacity: 0.5;
+  filter: blur(15px) brightness(0.7);
+  transform: scale(1.05); /* clean blurred edges */
 }
 #poster-root[data-layout="overlay"] .poster-overlay-content {
   position: relative;
   z-index: 4;
   display: flex;
   flex-direction: column;
-  padding: 5% 6%;
+  padding: 6% 8%;
   height: 100%;
-  gap: 0.4em;
+  gap: 0.6em;
+  background: rgba(20, 20, 20, 0.4);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 16px;
+  box-shadow: 0 30px 60px -15px rgba(0,0,0,0.6);
+  color: #fff;
+  overflow: hidden;
 }
 #poster-root[data-layout="overlay"] .poster-overlay-header {
   text-align: right;
@@ -453,28 +483,41 @@
 }
 #poster-root[data-layout="overlay"] .poster-overlay-header .poster-title {
   line-height: 0.95;
-  font-size: calc(var(--fp-heading-size) * 1.15);
+  font-size: calc(var(--fp-heading-size) * 1.25);
 }
 #poster-root[data-layout="overlay"] .poster-tracklist {
   column-count: 1;
   margin-top: 0.2em;
   line-height: 1.7;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
 }
 #poster-root[data-layout="overlay"] .poster-track-name {
   font-weight: 700;
+  color: rgba(255,255,255,0.95);
+}
+#poster-root[data-layout="overlay"] .poster-track-dur {
+  color: rgba(255,255,255,0.6);
 }
 #poster-root[data-layout="overlay"] .poster-quote {
   text-align: right;
   font-size: calc(var(--fp-quote-size) * 0.75);
+  color: rgba(255,255,255,0.8);
 }
 #poster-root[data-layout="overlay"] .poster-overlay-bottom {
   margin-top: auto;
   display: flex;
   justify-content: space-between;
   align-items: flex-end;
+  flex-shrink: 0;
+  padding-top: 0.3em;
 }
 #poster-root[data-layout="overlay"] .poster-overlay-bottom .poster-qr-wrap {
   justify-content: flex-start;
+}
+#poster-root[data-layout="overlay"] .poster-overlay-bottom .poster-meta {
+  color: rgba(255,255,255,0.6);
 }
 
 
@@ -587,6 +630,8 @@
 #poster-root[data-layout="bold-block"] {
   gap: 0;
   padding: 0;
+  background: var(--fp-bg);
+  border: calc(var(--fp-border-width) * 2) solid var(--fp-border-color);
 }
 #poster-root[data-layout="bold-block"] .poster-boldblock-top {
   background: var(--fp-bg);
@@ -594,6 +639,7 @@
   display: flex;
   position: relative;
   flex-shrink: 0;
+  border-bottom: calc(var(--fp-border-width) * 1.5) solid var(--fp-border-color);
 }
 #poster-root[data-layout="bold-block"] .poster-boldblock-title-area {
   flex: 1;
@@ -603,9 +649,11 @@
   justify-content: flex-end;
 }
 #poster-root[data-layout="bold-block"] .poster-boldblock-title-area .poster-title {
-  font-size: calc(var(--fp-heading-size) * 2.0);
-  line-height: 0.82;
-  letter-spacing: -0.01em;
+  font-size: calc(var(--fp-heading-size) * 2.2);
+  line-height: 0.85;
+  letter-spacing: -0.02em;
+  font-weight: 800;
+  text-transform: uppercase;
 }
 #poster-root[data-layout="bold-block"] .poster-boldblock-title-area .poster-artist {
   margin-top: 0.25em;
@@ -619,7 +667,6 @@
   font-family: var(--fp-heading-font);
   font-size: calc(var(--fp-heading-size) * 0.4);
   font-weight: var(--fp-heading-weight);
-  color: var(--fp-heading-color);
   text-transform: uppercase;
   letter-spacing: 0.2em;
   padding: 0.3em 0.25em;
@@ -628,6 +675,8 @@
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
+  background: var(--fp-border-color);
+  color: var(--fp-bg);
 }
 #poster-root[data-layout="bold-block"] .poster-boldblock-image-wrap {
   position: relative;
@@ -669,6 +718,7 @@
   gap: 0.5em;
   align-items: flex-end;
   flex-shrink: 0;
+  border-top: calc(var(--fp-border-width) * 1.5) solid var(--fp-border-color);
 }
 #poster-root[data-layout="bold-block"] .poster-boldblock-bottom .poster-tracklist {
   flex: 1;
@@ -682,201 +732,7 @@
 }
 
 
-/* ══════════════════════════════════════════════════════
-   LAYOUT: MINIMAL  (The 1975)
-   Near-empty poster. Tiny metadata in top corners.
-   ENORMOUS title dominating the vertical center.
-   Small ghosted album art. Thin rule. Inline track
-   names in tiny text at the very bottom.
-   ══════════════════════════════════════════════════════ */
 
-#poster-root[data-layout="minimal"] {
-  justify-content: space-between;
-  gap: 0;
-  padding: 5% 6%;
-}
-#poster-root[data-layout="minimal"] .poster-minimal-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  gap: 1em;
-  flex-shrink: 0;
-}
-#poster-root[data-layout="minimal"] .poster-minimal-header .poster-artist {
-  font-size: calc(var(--fp-subtitle-size) * 0.5);
-  text-transform: uppercase;
-  letter-spacing: 0.15em;
-  font-weight: 400;
-}
-#poster-root[data-layout="minimal"] .poster-minimal-header .poster-meta {
-  text-align: right;
-  font-size: calc(var(--fp-meta-size) * 0.6);
-}
-#poster-root[data-layout="minimal"] .poster-minimal-center {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  text-align: center;
-  gap: 0.3em;
-  padding: 4% 0;
-}
-#poster-root[data-layout="minimal"] .poster-minimal-center .poster-title {
-  font-size: calc(var(--fp-heading-size) * 3.2);
-  line-height: 0.85;
-  letter-spacing: -0.04em;
-}
-#poster-root[data-layout="minimal"] .poster-minimal-center .poster-quote {
-  font-size: calc(var(--fp-quote-size) * 0.5);
-  margin-top: 0.2em;
-}
-#poster-root[data-layout="minimal"] .poster-cover-small {
-  width: 18%;
-  align-self: center;
-  opacity: 0.2;
-  margin-bottom: 0.3em;
-  flex-shrink: 0;
-}
-#poster-root[data-layout="minimal"] .poster-minimal-bottom {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-end;
-  gap: 0.5em;
-  border-top: 1px solid color-mix(in srgb, var(--fp-meta-color) 15%, transparent);
-  padding-top: 0.35em;
-  flex-shrink: 0;
-}
-#poster-root[data-layout="minimal"] .poster-minimal-bottom .poster-tracklist {
-  column-count: unset;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.04em 0.25em;
-  flex: 1;
-}
-#poster-root[data-layout="minimal"] .poster-track-inline {
-  font-family: var(--fp-track-font);
-  font-size: calc(var(--fp-track-size) * 0.8);
-  color: var(--fp-track-color);
-  text-transform: uppercase;
-  white-space: nowrap;
-  letter-spacing: 0.03em;
-}
-#poster-root[data-layout="minimal"] .poster-track-inline::after {
-  content: " \2022";
-  color: var(--fp-track-num-color);
-  margin-left: 0.2em;
-}
-#poster-root[data-layout="minimal"] .poster-track-inline:last-child::after {
-  content: none;
-}
-
-
-/* ══════════════════════════════════════════════════════
-   LAYOUT: RECEIPT  (Tainy "DATA")
-   Big bold artist at top. Album name right-aligned
-   below. Small album art. Date + track count row.
-   Solid divider. Single-col tracklist with dashed
-   row borders + durations aligned right. Dashed
-   divider. TOTAL row. Barcode + QR at bottom.
-   ══════════════════════════════════════════════════════ */
-
-#poster-root[data-layout="receipt"] {
-  gap: 0.2em;
-  padding: 5% 6%;
-}
-#poster-root[data-layout="receipt"] .poster-content > .poster-title {
-  line-height: 0.88;
-  font-size: calc(var(--fp-heading-size) * 1.4);
-  letter-spacing: 0.08em;
-}
-#poster-root[data-layout="receipt"] .poster-receipt-album {
-  font-size: calc(var(--fp-heading-size) * 0.6);
-  font-weight: var(--fp-heading-weight);
-  font-family: var(--fp-heading-font);
-  color: var(--fp-heading-color);
-  text-transform: uppercase;
-  letter-spacing: var(--fp-heading-spacing);
-  text-align: right;
-  line-height: 1.0;
-}
-#poster-root[data-layout="receipt"] .poster-cover-small {
-  width: 30%;
-  margin: 0.15em 0;
-}
-#poster-root[data-layout="receipt"] .poster-receipt-date-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: baseline;
-  padding: 0.04em 0;
-  font-size: calc(var(--fp-meta-size) * 0.9);
-}
-#poster-root[data-layout="receipt"] .poster-receipt-divider {
-  border: none;
-  border-bottom: 1.5px solid var(--fp-heading-color);
-  opacity: 0.35;
-}
-#poster-root[data-layout="receipt"] .poster-receipt-divider-dashed {
-  border-bottom-style: dashed;
-  border-bottom-width: 1px;
-}
-#poster-root[data-layout="receipt"] .poster-receipt-total {
-  display: flex;
-  justify-content: space-between;
-  font-family: var(--fp-track-font);
-  font-size: calc(var(--fp-track-size) * 1.15);
-  color: var(--fp-heading-color);
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.15em;
-  padding: 0.08em 0;
-}
-#poster-root[data-layout="receipt"] .poster-tracklist {
-  column-count: 1;
-  line-height: 1.5;
-}
-#poster-root[data-layout="receipt"] .poster-track {
-  border-bottom: 1px dashed color-mix(in srgb, var(--fp-heading-color) 18%, transparent);
-  padding: 0.1em 0;
-}
-#poster-root[data-layout="receipt"] .poster-track:last-child {
-  border-bottom: none;
-}
-#poster-root[data-layout="receipt"] .poster-track-num {
-  min-width: 1.2em;
-}
-#poster-root[data-layout="receipt"] .poster-track-name {
-  font-weight: 600;
-  text-transform: uppercase;
-}
-#poster-root[data-layout="receipt"] .poster-quote {
-  font-size: calc(var(--fp-quote-size) * 0.6);
-  margin: 0.08em 0;
-}
-#poster-root[data-layout="receipt"] .poster-receipt-bottom {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-end;
-  margin-top: auto;
-  gap: 0.5em;
-}
-#poster-root[data-layout="receipt"] .poster-receipt-barcode {
-  width: 5em;
-  height: 1.8em;
-  background: repeating-linear-gradient(
-    90deg,
-    var(--fp-heading-color) 0 1px,
-    transparent 1px 2.5px,
-    var(--fp-heading-color) 2.5px 3.5px,
-    transparent 3.5px 5px,
-    var(--fp-heading-color) 5px 6px,
-    transparent 6px 7.5px,
-    var(--fp-heading-color) 7.5px 9px,
-    transparent 9px 10px
-  );
-  opacity: 0.65;
-  flex-shrink: 0;
-}
 
 
 /* ══════════════════════════════════════════════════════
@@ -933,11 +789,12 @@
   position: relative;
   z-index: 4;
   margin-top: auto;
-  padding: 25% 5% 4%;
-  background: linear-gradient(transparent 0%, rgba(0,0,0,0.9) 50%);
+  padding: 20% 5% 4%;
+  background: linear-gradient(transparent 0%, rgba(0,0,0,0.85) 45%);
   display: flex;
   flex-direction: column;
   gap: 0.25em;
+  overflow: hidden;
 }
 #poster-root[data-layout="immersive"] .poster-immersive-tracks {
   font-family: var(--fp-track-font);
@@ -986,27 +843,38 @@
   text-transform: uppercase;
   letter-spacing: 0.3em;
   margin-bottom: 0;
-  opacity: 0.8;
+  opacity: 0.9;
+  color: #00f0ff;
+  font-weight: 800;
 }
 #poster-root[data-layout="retro"] .poster-retro-header .poster-title {
-  font-size: calc(var(--fp-heading-size) * 2.4);
-  line-height: 0.82;
+  font-size: calc(var(--fp-heading-size) * 2.8);
+  line-height: 0.85;
+  text-transform: uppercase;
+  color: #ff007f;
   text-shadow:
-    4px 4px 0 rgba(0,0,0,0.2),
-    8px 8px 0 rgba(0,0,0,0.1),
-    12px 12px 0 rgba(0,0,0,0.04);
-  letter-spacing: -0.02em;
+    3px 3px 0px #00f0ff,
+    6px 6px 0px #ffff00,
+    9px 9px 0px #111;
+  letter-spacing: -0.04em;
+  font-style: italic;
+  transform: skewX(-10deg);
+  margin-top: 0.1em;
 }
 #poster-root[data-layout="retro"] .poster-retro-image-frame {
-  border: 6px solid var(--fp-border-color);
-  padding: 3%;
-  width: 65%;
+  border: 8px solid #00f0ff;
+  padding: 0;
+  width: 70%;
   flex-shrink: 0;
-  box-shadow: 3px 3px 12px rgba(0,0,0,0.15);
-  margin: 0.3em 0;
+  box-shadow: 12px 12px 0px #ff007f, 18px 18px 0px #111;
+  margin: 1.5em 0;
+  position: relative;
+  background: black;
 }
 #poster-root[data-layout="retro"] .poster-retro-image-frame .poster-cover {
   width: 100%;
+  filter: sepia(100%) hue-rotate(280deg) saturate(300%) contrast(150%);
+  display: block;
 }
 #poster-root[data-layout="retro"] .poster-retro-footer {
   margin-top: auto;
@@ -1016,15 +884,21 @@
   gap: 0.2em;
 }
 #poster-root[data-layout="retro"] .poster-retro-footer .poster-quote {
-  font-size: calc(var(--fp-quote-size) * 0.55);
+  font-size: calc(var(--fp-quote-size) * 0.65);
   line-height: 1.5;
   text-align: center;
+  color: #ffff00;
+  text-shadow: 2px 2px 0 #111;
 }
 #poster-root[data-layout="retro"] .poster-retro-meta-row {
   display: flex;
   justify-content: space-between;
   align-items: flex-end;
   width: 100%;
+}
+#poster-root[data-layout="retro"] .poster-retro-meta-row .poster-meta {
+  color: #00f0ff;
+  font-weight: 700;
 }
 
 
@@ -1198,8 +1072,8 @@
 
 .poster-retro-note {
   position: absolute;
-  z-index: 2;
-  opacity: 0.2;
+  z-index: 1;
+  opacity: 0.15;
 }
 
 .poster-retro-note-1 {
@@ -1294,4 +1168,456 @@
     transparent 60%,
     transparent 100%
   );
+}
+
+/* ══════════════════════════════════════════════════════
+   LAYOUT: MASTERPIECE JCARD
+   ══════════════════════════════════════════════════════ */
+#poster-root[data-layout="masterpiece-jcard"] {
+  flex-direction: row;
+  padding: 0;
+  gap: 0;
+  background: var(--fp-bg);
+}
+#poster-root[data-layout="masterpiece-jcard"] .jcard-spine {
+  width: 15%;
+  border-right: 2px solid color-mix(in srgb, var(--fp-heading-color) 20%, transparent);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 5% 0;
+  gap: 20px;
+}
+#poster-root[data-layout="masterpiece-jcard"] .jcard-spine-icon {
+  margin-bottom: 5px;
+  opacity: 1;
+}
+#poster-root[data-layout="masterpiece-jcard"] .jcard-spine-dolby {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--fp-heading-color);
+  color: var(--fp-bg);
+  padding: 2px 4px;
+  border-radius: 2px;
+  font-family: sans-serif;
+  font-weight: 900;
+  font-size: calc(var(--fp-meta-size) * 1.5);
+  line-height: 1;
+}
+#poster-root[data-layout="masterpiece-jcard"] .dolby-d.flipped {
+  transform: scaleX(-1);
+  margin-left: -2px;
+}
+#poster-root[data-layout="masterpiece-jcard"] .jcard-spine-text {
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+  font-family: var(--fp-heading-font);
+  font-size: calc(var(--fp-heading-size) * 0.55);
+  font-weight: 700;
+  color: var(--fp-heading-color);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  flex: 1;
+  text-align: center;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
+}
+#poster-root[data-layout="masterpiece-jcard"] .jcard-front {
+  width: 45%;
+  border-right: 2px solid color-mix(in srgb, var(--fp-heading-color) 20%, transparent);
+  padding: 4%;
+  display: flex;
+  flex-direction: column;
+  background: var(--fp-bg);
+}
+#poster-root[data-layout="masterpiece-jcard"] .poster-cover {
+  width: 100%;
+  aspect-ratio: 1;
+  object-fit: cover;
+  margin-top: auto;
+  margin-bottom: auto;
+  border-radius: var(--fp-image-radius);
+}
+#poster-root[data-layout="masterpiece-jcard"] .jcard-back {
+  flex: 1;
+  padding: 4%;
+  display: flex;
+  flex-direction: column;
+}
+#poster-root[data-layout="masterpiece-jcard"] .jcard-back-header {
+  margin-bottom: 0.5em;
+}
+#poster-root[data-layout="masterpiece-jcard"] .poster-tracklist {
+  column-count: var(--fp-track-columns);
+  font-size: calc(var(--fp-track-size) * 0.9);
+}
+#poster-root[data-layout="masterpiece-jcard"] .poster-quote {
+  margin-top: auto;
+  text-align: left;
+  font-size: calc(var(--fp-quote-size) * 0.6);
+}
+
+/* ══════════════════════════════════════════════════════
+   LAYOUT: MASTERPIECE COMIC
+   ══════════════════════════════════════════════════════ */
+#poster-root[data-layout="masterpiece-comic"] {
+  padding: 0;
+  border: var(--fp-border-width) solid var(--fp-border-color);
+  background: var(--fp-bg);
+  gap: 0;
+}
+#poster-root[data-layout="masterpiece-comic"] .comic-header {
+  background: var(--fp-bg);
+  padding: 5% 5% 3%;
+  font-family: var(--fp-heading-font);
+  text-align: center;
+}
+#poster-root[data-layout="masterpiece-comic"] .poster-title {
+  font-size: calc(var(--fp-heading-size) * 1.5);
+  text-transform: uppercase;
+  line-height: 0.9;
+  letter-spacing: -1px;
+  color: var(--fp-heading-color);
+  text-shadow: 2px 2px 0 var(--fp-border-color);
+}
+#poster-root[data-layout="masterpiece-comic"] .comic-image-container {
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+  border-top: 4px solid var(--fp-border-color);
+  border-bottom: 4px solid var(--fp-border-color);
+  background: black;
+}
+#poster-root[data-layout="masterpiece-comic"] .poster-cover {
+  width: 100%; height: 100%; object-fit: cover;
+  filter: var(--fp-image-filter);
+}
+#poster-root[data-layout="masterpiece-comic"] .comic-price {
+  position: absolute; top: 15px; right: 15px;
+  background: white; color: black;
+  border-radius: 50%; width: 45px; height: 45px;
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 900; font-family: sans-serif;
+  z-index: 10;
+  font-size: 14px;
+  border: 2px solid black;
+  transform: rotate(15deg);
+}
+#poster-root[data-layout="masterpiece-comic"] .comic-quote-bubble {
+  position: absolute; bottom: 15px; left: 15px;
+  background: var(--fp-bg);
+  border: 3px solid var(--fp-border-color);
+  padding: 10px 15px;
+  border-radius: 20px;
+  z-index: 10;
+  box-shadow: 3px 3px 0 var(--fp-border-color);
+}
+#poster-root[data-layout="masterpiece-comic"] .poster-quote,
+#poster-root[data-layout="masterpiece-comic"] .poster-artist {
+  color: var(--fp-heading-color);
+  font-family: var(--fp-quote-font);
+  font-weight: bold;
+  font-size: calc(var(--fp-quote-size) * 0.8);
+  margin: 0;
+}
+#poster-root[data-layout="masterpiece-comic"] .comic-footer {
+  background: var(--fp-bg);
+  padding: 4%;
+  display: flex;
+  justify-content: space-between;
+}
+#poster-root[data-layout="masterpiece-comic"] .poster-tracklist {
+  column-count: var(--fp-track-columns);
+  font-size: calc(var(--fp-track-size) * 0.8);
+  flex: 1;
+}
+#poster-root[data-layout="masterpiece-comic"] .comic-footer-right {
+  flex-shrink: 0;
+  display: flex;
+  align-items: flex-end;
+  padding-left: 10px;
+}
+
+/* ══════════════════════════════════════════════════════
+   LAYOUT: MASTERPIECE PLAYLIST
+   ══════════════════════════════════════════════════════ */
+#poster-root[data-layout="masterpiece-playlist"] {
+  background: var(--fp-bg);
+  padding: 6%;
+  gap: 1.2em;
+  align-items: center;
+}
+#poster-root[data-layout="masterpiece-playlist"] .playlist-title {
+  font-size: calc(var(--fp-heading-size) * 1.4);
+  color: var(--fp-heading-color);
+  font-family: var(--fp-heading-font);
+  font-weight: var(--fp-heading-weight);
+  text-transform: uppercase;
+  letter-spacing: -1px;
+  line-height: 1;
+}
+#poster-root[data-layout="masterpiece-playlist"] .playlist-image {
+  width: 75%;
+  border: 10px solid white;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+  border-radius: var(--fp-image-radius);
+  margin: 0.5em 0;
+}
+#poster-root[data-layout="masterpiece-playlist"] .poster-quote {
+  font-family: var(--fp-quote-font);
+  font-size: var(--fp-quote-size);
+  color: var(--fp-bg);
+  background: var(--fp-heading-color);
+  padding: 8px 16px;
+  border-radius: 2px;
+  font-style: italic;
+  margin-top: -1.5em;
+  z-index: 10;
+  transform: rotate(-2deg);
+}
+#poster-root[data-layout="masterpiece-playlist"] .playlist-tracks {
+  width: 100%;
+  display: flex;
+  gap: 1.5em;
+  margin-top: 0.5em;
+}
+#poster-root[data-layout="masterpiece-playlist"] .poster-tracklist {
+  flex: 1;
+  column-count: var(--fp-track-columns);
+  font-size: calc(var(--fp-track-size) * 0.9);
+}
+#poster-root[data-layout="masterpiece-playlist"] .playlist-side {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 1em;
+  flex-shrink: 0;
+}
+#poster-root[data-layout="masterpiece-playlist"] .playlist-palette {
+  display: flex;
+  gap: 5px;
+}
+#poster-root[data-layout="masterpiece-playlist"] .playlist-swatch {
+  width: 25px;
+  height: 25px;
+  border-radius: 4px;
+  border: 1px solid rgba(0,0,0,0.1);
+}
+
+/* ══════════════════════════════════════════════════════
+   LAYOUT: MASTERPIECE GRADUATION
+   ══════════════════════════════════════════════════════ */
+#poster-root[data-layout="masterpiece-graduation"] {
+  padding: 0;
+}
+#poster-root[data-layout="masterpiece-graduation"] .grad-bg {
+  position: absolute; inset: 0; z-index: 0;
+  width: 100%; height: 100%; object-fit: cover;
+  filter: var(--fp-image-filter);
+}
+#poster-root[data-layout="masterpiece-graduation"] .grad-text-plate {
+  position: absolute; top: 6%; right: 6%; max-height: 88%;
+  background: rgba(255,255,255,0.85); backdrop-filter: blur(8px);
+  padding: 5% 6%; border-radius: 20px;
+  width: 65%;
+  z-index: 2;
+  box-shadow: 0 20px 40px rgba(0,0,0,0.25);
+  display: flex;
+  flex-direction: column;
+  gap: 0.8em;
+  border: 1px solid rgba(255,255,255,1);
+  overflow: hidden;
+}
+#poster-root[data-layout="masterpiece-graduation"] .grad-header {
+  text-align: right;
+  flex-shrink: 0;
+}
+#poster-root[data-layout="masterpiece-graduation"] .poster-artist {
+  font-size: calc(var(--fp-subtitle-size) * 0.7);
+  letter-spacing: 0.1em;
+}
+#poster-root[data-layout="masterpiece-graduation"] .poster-title {
+  font-size: calc(var(--fp-heading-size) * 1.5);
+}
+#poster-root[data-layout="masterpiece-graduation"] .poster-tracklist {
+  column-count: var(--fp-track-columns);
+  font-size: calc(var(--fp-track-size) * 0.8);
+  flex: 1;
+  min-height: 0;
+}
+#poster-root[data-layout="masterpiece-graduation"] .grad-footer-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 0.5em;
+  padding-top: 0.5em;
+  border-top: 1px solid rgba(0,0,0,0.1);
+}
+
+/* ══════════════════════════════════════════════════════
+   MASTERPIECE: 8-BIT ARCADE
+   ══════════════════════════════════════════════════════ */
+
+#poster-root[data-layout="masterpiece-8bit"] {
+  gap: 0;
+  padding: 5%;
+}
+
+#poster-root[data-layout="masterpiece-8bit"] .poster-8bit-scanlines {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to bottom,
+    rgba(255, 255, 255, 0),
+    rgba(255, 255, 255, 0) 50%,
+    rgba(0, 0, 0, 0.15) 50%,
+    rgba(0, 0, 0, 0.15)
+  );
+  background-size: 100% 4px;
+  z-index: 5;
+  pointer-events: none;
+}
+
+#poster-root[data-layout="masterpiece-8bit"] .poster-8bit-content {
+  display: flex;
+  flex-direction: column;
+  gap: 1em;
+  z-index: 6;
+  width: 100%;
+  height: 100%;
+}
+
+#poster-root[data-layout="masterpiece-8bit"] .poster-title {
+  text-align: center;
+  margin-top: 5%;
+}
+
+#poster-root[data-layout="masterpiece-8bit"] .poster-8bit-artist {
+  text-align: center;
+  font-family: var(--fp-track-font);
+  font-size: var(--fp-track-size);
+  color: var(--fp-heading-color);
+  margin-top: -0.5em;
+  margin-bottom: 0.5em;
+}
+
+#poster-root[data-layout="masterpiece-8bit"] .poster-8bit-art-container {
+  border: 4px solid var(--fp-border-color);
+  padding: 4px;
+  background: var(--fp-bg);
+}
+
+#poster-root[data-layout="masterpiece-8bit"] .poster-8bit-cover {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  filter: var(--fp-image-filter);
+  image-rendering: pixelated;
+}
+
+#poster-root[data-layout="masterpiece-8bit"] .poster-8bit-tracklist {
+  flex: 1;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  flex-wrap: wrap;
+  column-gap: 2em;
+  row-gap: 0.8em;
+  margin-top: 1em;
+  min-height: 0;
+}
+
+#poster-root[data-layout="masterpiece-8bit"] .poster-track-num {
+  display: inline-block;
+  min-width: 2em;
+}
+
+
+/* ══════════════════════════════════════════════════════
+   LAYOUT: MASTERPIECE RECEIPT
+   ══════════════════════════════════════════════════════ */
+#poster-root[data-layout="masterpiece-receipt"] {
+  background: var(--fp-bg);
+  align-items: center;
+  font-family: var(--fp-track-font);
+}
+#poster-root[data-layout="masterpiece-receipt"] .receipt-container {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+#poster-root[data-layout="masterpiece-receipt"] .receipt-header {
+  text-align: center;
+  margin-bottom: 0.5em;
+  flex-shrink: 0;
+}
+#poster-root[data-layout="masterpiece-receipt"] .poster-title {
+  text-transform: uppercase;
+}
+#poster-root[data-layout="masterpiece-receipt"] .poster-artist {
+  margin-top: 0.5em;
+  font-size: calc(var(--fp-subtitle-size) * 0.9);
+}
+#poster-root[data-layout="masterpiece-receipt"] .receipt-divider {
+  border-top: 2px dashed var(--fp-border-color);
+  margin: 0.8em 0;
+  flex-shrink: 0;
+}
+#poster-root[data-layout="masterpiece-receipt"] .poster-tracklist {
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+  column-count: 1;
+}
+#poster-root[data-layout="masterpiece-receipt"] .poster-track {
+  justify-content: space-between;
+  display: flex;
+  border-bottom: 1px dotted color-mix(in srgb, var(--fp-border-color) 30%, transparent);
+  padding: 0.15em 0;
+}
+#poster-root[data-layout="masterpiece-receipt"] .poster-track:last-child {
+  border-bottom: none;
+}
+#poster-root[data-layout="masterpiece-receipt"] .receipt-footer {
+  margin-top: auto;
+  text-align: center;
+  flex-shrink: 0;
+}
+#poster-root[data-layout="masterpiece-receipt"] .receipt-total-row {
+  display: flex;
+  justify-content: space-between;
+  font-weight: bold;
+  font-size: calc(var(--fp-meta-size) * 1.8);
+  padding: 0.3em 0;
+}
+#poster-root[data-layout="masterpiece-receipt"] .receipt-barcode {
+  display: flex;
+  justify-content: center;
+  margin: 1em 0;
+}
+#poster-root[data-layout="masterpiece-receipt"] .receipt-thanks {
+  font-weight: bold;
+  letter-spacing: 0.15em;
+  font-size: calc(var(--fp-meta-size) * 1.2);
+}
+
+/* ── 8-Bit supplemental (consolidated) ── */
+#poster-root[data-layout="masterpiece-8bit"] .poster-track-name {
+  word-wrap: break-word;
+  word-break: break-word;
+  line-height: 1.4;
+}
+#poster-root[data-layout="masterpiece-8bit"] .poster-8bit-press {
+  font-family: var(--fp-track-font);
+  font-size: calc(var(--fp-track-size) * 1.2);
+  color: var(--fp-heading-color);
+}
+#poster-root[data-layout="masterpiece-8bit"] .poster-bottom-row {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  margin-top: auto;
+  flex-shrink: 0;
 }

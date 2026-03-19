@@ -4,12 +4,191 @@
 /* TrashFrame styles */
 
 :root {
-  --background: #fafafa;
-  --foreground: #171717;
+  --background: #f4f4f5;
+  --foreground: #18181b;
+  --gallery-wall: radial-gradient(circle at 50% 0%, #ffffff 0%, #e4e4e7 60%, #d4d4d8 100%);
 }
 
 body {
   color: var(--foreground);
-  background: var(--background);
+  background: var(--gallery-wall);
   font-family: "Geist", Arial, Helvetica, sans-serif;
+  min-height: 100vh;
+}
+
+/* Realistic Frame Wrapper Magic */
+.gallery-frame {
+  background: white;
+  padding: 3rem;
+  border-radius: 4px;
+  box-shadow: 
+    0 40px 80px -20px rgba(0,0,0,0.3),
+    0 20px 40px -10px rgba(0,0,0,0.2),
+    inset 0 0 0 1px rgba(0,0,0,0.05); /* Matting shadow */
+  position: relative;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.gallery-frame::before {
+  content: "";
+  position: absolute;
+  inset: -16px;
+  border-radius: 6px;
+  background: #1a1a1a; /* Dark wood/metal outer frame */
+  box-shadow: 
+    inset 0 2px 4px rgba(255,255,255,0.1),
+    inset 0 -2px 4px rgba(0,0,0,0.5),
+    0 10px 30px rgba(0,0,0,0.2);
+  z-index: -1;
+}
+
+.gallery-frame-inner {
+  box-shadow: inset 0 10px 20px -10px rgba(0,0,0,0.15);
+  position: relative;
+}
+
+/* ─── Landing Page: Fun Sketchy Minimal ─── */
+
+.landing-page {
+  position: relative;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  background: #fafaf9;
+}
+
+/* Scattered sketchy doodles */
+.landing-doodles {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.doodle {
+  position: absolute;
+  opacity: 0.08;
+  animation: doodle-float 18s ease-in-out infinite alternate;
+}
+.doodle:nth-child(odd)  { animation-direction: alternate-reverse; }
+.doodle:nth-child(1) { top: 8%; left: 5%;  animation-duration: 22s; }
+.doodle:nth-child(2) { top: 12%; right: 8%; animation-duration: 17s; }
+.doodle:nth-child(3) { bottom: 18%; left: 12%; animation-duration: 25s; }
+.doodle:nth-child(4) { bottom: 10%; right: 5%; animation-duration: 20s; }
+.doodle:nth-child(5) { top: 45%; left: 2%;  animation-duration: 30s; }
+.doodle:nth-child(6) { top: 35%; right: 3%; animation-duration: 23s; }
+.doodle:nth-child(7) { top: 5%;  left: 45%; animation-duration: 19s; }
+.doodle:nth-child(8) { bottom: 5%; left: 50%; animation-duration: 26s; }
+
+/* Soft pastel accent circles */
+.landing-accent {
+  position: absolute;
+  border-radius: 50%;
+  opacity: 0.12;
+  filter: blur(60px);
+  pointer-events: none;
+}
+.accent-1 {
+  width: 400px; height: 400px;
+  background: #f9a8d4;
+  top: -5%; left: -5%;
+}
+.accent-2 {
+  width: 350px; height: 350px;
+  background: #93c5fd;
+  bottom: -5%; right: -5%;
+}
+.accent-3 {
+  width: 300px; height: 300px;
+  background: #fde68a;
+  top: 50%; left: 55%;
+  transform: translate(-50%, -50%);
+}
+
+/* Landing content card */
+.landing-content {
+  position: relative;
+  z-index: 10;
+  text-align: center;
+}
+
+.landing-title {
+  font-size: 3.5rem;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  color: #18181b;
+  line-height: 1;
+  margin-bottom: 0.4em;
+}
+
+.landing-subtitle {
+  font-size: 1.1rem;
+  color: #71717a;
+  font-weight: 400;
+  margin-bottom: 2.5em;
+}
+
+.landing-form {
+  display: flex;
+  gap: 0.75rem;
+  width: 100%;
+  max-width: 520px;
+  margin: 0 auto;
+}
+
+.landing-input {
+  flex: 1;
+  border: 1.5px solid #d4d4d8;
+  border-radius: 14px;
+  padding: 0.9rem 1.2rem;
+  font-size: 0.95rem;
+  color: #18181b;
+  background: white;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.landing-input::placeholder { color: #a1a1aa; }
+.landing-input:focus {
+  border-color: #a1a1aa;
+  box-shadow: 0 0 0 3px rgba(161, 161, 170, 0.15);
+}
+
+.landing-btn {
+  border: none;
+  border-radius: 14px;
+  padding: 0.9rem 1.8rem;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: white;
+  background: #18181b;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.1s;
+}
+.landing-btn:hover { background: #27272a; }
+.landing-btn:active { transform: scale(0.97); }
+.landing-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+.landing-error {
+  color: #ef4444;
+  font-size: 0.85rem;
+  margin-top: 0.75rem;
+}
+
+/* Tiny tagline under the form */
+.landing-tag {
+  margin-top: 2rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #a1a1aa;
+  font-size: 0.8rem;
+}
+.landing-tag svg { opacity: 0.5; }
+
+@keyframes doodle-float {
+  0%   { transform: translate(0, 0) rotate(0deg); }
+  100% { transform: translate(8px, -12px) rotate(6deg); }
 }

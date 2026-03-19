@@ -121,7 +121,7 @@ export async function extractPalette(imageUrl) {
       "--fp-bg-overlay": "rgba(0,0,0,0.55)",
       "--fp-vignette-color": `rgba(${dominant[0]},${dominant[1]},${dominant[2]},0.4)`,
       "--fp-qr-fg": "#cccccc",
-      "--fp-qr-bg": darken(dominant, 0.2),
+      "--fp-qr-bg": "transparent",
       "--fp-border-color": "rgba(255,255,255,0.08)",
       "--fp-track-num-color": "#666666",
     };
@@ -136,7 +136,7 @@ export async function extractPalette(imageUrl) {
       "--fp-bg-overlay": "rgba(255,255,255,0.45)",
       "--fp-vignette-color": `rgba(${dominant[0]},${dominant[1]},${dominant[2]},0.4)`,
       "--fp-qr-fg": "#111111",
-      "--fp-qr-bg": "#fafafa",
+      "--fp-qr-bg": "transparent",
       "--fp-border-color": "#e0e0e0",
       "--fp-track-num-color": "#aaaaaa",
     };
