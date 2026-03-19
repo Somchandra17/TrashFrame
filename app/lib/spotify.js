@@ -14,44 +14,11 @@ function msToTime(ms) {
   return `${m}:${sec.toString().padStart(2, "0")}`;
 }
 
-// Token cache for client-side
-let tokenCache = { token: null, expiry: 0 };
-
-export async function getToken() {
-  // Check client-side cache first
-  if (tokenCache.token && Date.now() < tokenCache.expiry) {
-    return tokenCache.token;
-  }
-
-  // Fetch new token from server (server uses env vars)
-  const res = await fetch("/api/spotify/token", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-  });
-
-  if (!res.ok) {
-    const err = await res.json().catch(() => ({}));
-    throw new Error(err.error || "Failed to get Spotify token");
-  }
-
-  const data = await res.json();
-  
-  // Cache the token client-side
-  tokenCache = {
-    token: data.access_token,
-    expiry: Date.now() + data.expires_in * 1000 - 60_000,
-  };
-
-  return data.access_token;
-}
-
 export async function fetchAlbum(url) {
   const id = extractAlbumId(url);
-  const token = await getToken();
 
-  const res = await fetch(`/api/spotify/album/${id}`, {
-    headers: { Authorization: `Bearer ${token}` },
-  });
+  // The Next.js API route handles Spotify tokens securely on the server-side.
+  const res = await fetch(`/api/spotify/album/${id}`);
 
   if (!res.ok) {
     const err = await res.json().catch(() => ({}));
