@@ -475,36 +475,36 @@ export const PRESET_THEMES = [
     name: "Retro",
     layout: "retro",
     desc: "Bold colors, huge title, framed art, quote bottom",
-    colors: ["#e8b931", "#1a2744", "#c49a22"],
+    colors: ["#f4c44f", "#6e1730", "#148588"],
     css: `#poster-root {
-  --fp-bg: #e8b931;
-  --fp-image-filter: sepia(30%) contrast(1.2) saturate(0.9);
+  --fp-bg: #f2ba53;
+  --fp-image-filter: sepia(22%) saturate(1.35) contrast(1.12);
   --fp-image-radius: 0px;
-  --fp-heading-font: 'Righteous', sans-serif;
-  --fp-heading-size: 3.5em;
-  --fp-heading-color: #1a2744;
+  --fp-heading-font: 'Bungee', sans-serif;
+  --fp-heading-size: 2.95em;
+  --fp-heading-color: #6e1730;
   --fp-heading-weight: 400;
   --fp-heading-spacing: 0.02em;
-  --fp-subtitle-color: #2a3a5a;
-  --fp-subtitle-size: 0.45em;
-  --fp-meta-color: #4a5a7a;
+  --fp-subtitle-color: #148588;
+  --fp-subtitle-size: 0.56em;
+  --fp-meta-color: #6e1730;
   --fp-meta-size: 0.36em;
-  --fp-quote-font: 'Merriweather', serif;
-  --fp-quote-size: 0.5em;
-  --fp-quote-color: #1a2744;
+  --fp-quote-font: 'Cormorant Garamond', serif;
+  --fp-quote-size: 0.58em;
+  --fp-quote-color: #fff2cb;
   --fp-quote-style: italic;
-  --fp-track-font: 'Courier Prime', monospace;
-  --fp-track-size: 0.28em;
-  --fp-track-color: #1a2744;
-  --fp-track-num-color: #8a7020;
+  --fp-track-font: 'Space Grotesk', sans-serif;
+  --fp-track-size: 0.29em;
+  --fp-track-color: #1f2332;
+  --fp-track-num-color: #d88d17;
   --fp-track-columns: 2;
-  --fp-track-gap: 0.06em;
-  --fp-border-color: #1a2744;
+  --fp-track-gap: 0.08em;
+  --fp-border-color: #1f2332;
   --fp-border-width: 6px;
-  --fp-qr-size: 26px;
-  --fp-qr-fg: #1a2744;
+  --fp-qr-size: 28px;
+  --fp-qr-fg: #1f2332;
   --fp-qr-bg: transparent;
-  --fp-padding: 5%;
+  --fp-padding: 4.8%;
   --fp-gap: 0em;
   --fp-bg-art-opacity: 0;
   --fp-vignette-opacity: 0;
@@ -675,27 +675,28 @@ export const PRESET_THEMES = [
     name: "8-Bit Arcade",
     layout: "masterpiece-8bit",
     desc: "Retro game aesthetic with pixelated art and typography.",
-    colors: ["#000000", "#ffffff"],
+    colors: ["#120625", "#f7ff65", "#63f4ff"],
     css: `#poster-root {
-  --fp-bg: #000000;
+  --fp-bg: #120625;
   --fp-heading-font: 'Press Start 2P', monospace;
-  --fp-heading-size: 1.3em;
-  --fp-heading-color: #ffffff;
-  --fp-subtitle-color: #cccccc;
-  --fp-track-font: 'Press Start 2P', monospace;
-  --fp-track-size: 0.35em;
-  --fp-track-color: #cccccc;
-  --fp-meta-size: 0.35em;
-  --fp-meta-color: #888888;
-  --fp-quote-font: 'Press Start 2P', monospace;
-  --fp-quote-size: 0.45em;
+  --fp-heading-size: 1.26em;
+  --fp-heading-color: #f7ff65;
+  --fp-subtitle-color: #63f4ff;
+  --fp-track-font: 'VT323', monospace;
+  --fp-track-size: 0.42em;
+  --fp-track-color: #f6f3ff;
+  --fp-track-num-color: #ff9d2e;
+  --fp-meta-size: 0.36em;
+  --fp-meta-color: #ff7bd5;
+  --fp-quote-font: 'VT323', monospace;
+  --fp-quote-size: 0.78em;
   --fp-quote-style: normal;
-  --fp-quote-color: #aaaaaa;
-  --fp-border-color: #ffffff;
-  --fp-qr-size: 40px;
-  --fp-qr-fg: #ffffff;
+  --fp-quote-color: #63f4ff;
+  --fp-border-color: #4cffb0;
+  --fp-qr-size: 36px;
+  --fp-qr-fg: #63f4ff;
   --fp-qr-bg: transparent;
-  --fp-image-filter: grayscale(100%) contrast(150%);
+  --fp-image-filter: saturate(1.05) contrast(1.35) brightness(0.95);
   --fp-border-width: 0px;
   --fp-padding: 0%;
   --fp-gap: 0em;

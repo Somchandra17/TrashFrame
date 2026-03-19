@@ -9,28 +9,39 @@ import { DEFAULT_FRAME, PRESET_THEMES } from "./lib/constants";
 
 function extractFontsFromCss(css) {
   const fonts = new Set();
-  const re = /--fp-(?:quote|heading|track)-font:\s*'([^']+)'/g;
+  
+  // 1. Match --fp-*-font variables (single or double quotes)
+  const varRe = /--fp-(?:quote|heading|track)-font:\s*['"]([^'"]+)['"]/g;
   let m;
-  while ((m = re.exec(css)) !== null) {
-    const name = m[1];
-    const system = [
-      "Arial", "Helvetica", "Courier New", "Georgia",
-      "Times New Roman", "sans-serif", "serif", "monospace",
-    ];
-    if (!system.includes(name) && !name.startsWith("Geist")) {
-      fonts.add(name);
-    }
+  while ((m = varRe.exec(css)) !== null) {
+    const name = m[1]?.trim();
+    if (name) fonts.add(name);
   }
-  return [...fonts];
+
+  // 2. Match Google Font names in @import statements
+  // Example: @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap');
+  const importRe = /family=([^&:'"]+)/g;
+  while ((m = importRe.exec(css)) !== null) {
+    const name = decodeURIComponent(m[1].replace(/\+/g, " "))?.trim();
+    if (name) fonts.add(name);
+  }
+
+  const system = [
+    "Arial", "Helvetica", "Courier New", "Georgia",
+    "Times New Roman", "sans-serif", "serif", "monospace", "cursive", "fantasy", "system-ui"
+  ];
+
+  return [...fonts].filter(f => !system.includes(f) && !f.startsWith("Geist"));
 }
 
 function loadGoogleFonts(fonts) {
   fonts.forEach((f) => {
-    const id = `gf-${f.replace(/\s+/g, "-")}`;
+    const id = `gf-${f.replace(/\s+/g, "-").toLowerCase()}`;
     if (document.getElementById(id)) return;
     const link = document.createElement("link");
     link.id = id;
     link.rel = "stylesheet";
+    link.crossOrigin = "anonymous";
     link.href = `https://fonts.googleapis.com/css2?family=${encodeURIComponent(f)}:wght@400;700;900&display=swap`;
     document.head.appendChild(link);
   });

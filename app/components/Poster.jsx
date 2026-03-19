@@ -385,16 +385,31 @@ function LayoutRetro({ album, quote, codeType, barColor }) {
   return (
     <>
       <TextureOverlay type="vintage" />
+      <div className="poster-retro-glow" />
       <MusicNote className="poster-retro-note poster-retro-note-1" size={20} />
       <DoubleNote className="poster-retro-note poster-retro-note-2" size={28} />
       <MusicNote className="poster-retro-note poster-retro-note-3" size={16} />
       <div className="poster-retro-header">
+        <span className="poster-retro-kicker">{album.albumType} EDITION</span>
         <p className="poster-artist">{album.artists}</p>
         <h1 className="poster-title">{album.name}</h1>
       </div>
-      <div className="poster-retro-image-frame">
-        <VinylRecord className="poster-retro-vinyl" size={50} />
-        <Cover src={album.coverUrl} name={album.name} />
+      <div className="poster-retro-stage">
+        <div className="poster-retro-image-frame">
+          <VinylRecord className="poster-retro-vinyl" size={54} />
+          <Cover src={album.coverUrl} name={album.name} />
+        </div>
+        <div className="poster-retro-track-panel">
+          <div className="poster-retro-track-header">
+            <span>SIDE A / SIDE B</span>
+            <span>{album.totalTracks} TRACKS</span>
+          </div>
+          <div className="poster-tracklist poster-retro-tracklist">
+            {album.tracks.map((t) => (
+              <TrackRow key={t.number} t={t} hideArtists hideDur />
+            ))}
+          </div>
+        </div>
       </div>
       <div className="poster-retro-footer">
         {quote && <p className="poster-quote">&ldquo;{quote}&rdquo;</p>}
@@ -554,24 +569,49 @@ function LayoutMasterpieceGraduation({ album, quote, codeType, barColor }) {
 /* ═══════════════════════ MASTERPIECE: 8-BIT ARCADE ═══════════════════════ */
 
 function LayoutMasterpiece8Bit({ album, quote, codeType, barColor }) {
+  const hiScore = String(album.totalTracks * 1250).padStart(6, "0");
+
   return (
     <>
+      <div className="poster-8bit-grid" />
       <div className="poster-8bit-scanlines" />
       <div className="poster-8bit-content">
-        <h1 className="poster-title">{album.name}</h1>
-        <p className="poster-8bit-artist">PLAYER 1: {album.artists}</p>
-        <div className="poster-8bit-art-container">
-          <Cover src={album.coverUrl} name={album.name} className="poster-8bit-cover" />
+        <div className="poster-8bit-hud">
+          <span className="poster-8bit-chip">1UP {album.releaseYear || "0000"}</span>
+          <span className="poster-8bit-chip">HI-SCORE {hiScore}</span>
+          <span className="poster-8bit-chip">TIME {album.totalDuration}</span>
         </div>
-        <div className="poster-8bit-tracklist">
-          {album.tracks.map((t) => <TrackRow key={t.number} t={t} hideDur />)}
+        <div className="poster-8bit-marquee">
+          <span className="poster-8bit-label">{album.albumType}</span>
+          <h1 className="poster-title">{album.name}</h1>
+          <p className="poster-8bit-artist">PLAYER 1: {album.artists}</p>
+        </div>
+        <div className="poster-8bit-main">
+          <div className="poster-8bit-art-container">
+            <span className="poster-8bit-art-label">NOW LOADING</span>
+            <Cover src={album.coverUrl} name={album.name} className="poster-8bit-cover" />
+          </div>
+          <div className="poster-8bit-panel">
+            <div className="poster-8bit-panel-header">
+              <span>STAGE SELECT</span>
+              <span>{album.totalTracks} LEVELS</span>
+            </div>
+            <div className="poster-8bit-tracklist">
+              {album.tracks.map((t) => (
+                <TrackRow key={t.number} t={t} hideArtists hideDur />
+              ))}
+            </div>
+          </div>
         </div>
         {quote && <p className="poster-quote">&ldquo;{quote}&rdquo;</p>}
         <div className="poster-bottom-row">
           <div className="poster-8bit-footer-left">
             <span className="poster-8bit-press">PRESS START</span>
+            <span className="poster-8bit-credit">CREDIT 01 / {album.releaseYear || "----"}</span>
           </div>
-          <BottomCode url={album.spotifyUrl} uri={album.uri} codeType={codeType} barColor={barColor} />
+          <div className="poster-8bit-code-frame">
+            <BottomCode url={album.spotifyUrl} uri={album.uri} codeType={codeType} barColor={barColor} />
+          </div>
         </div>
       </div>
     </>
