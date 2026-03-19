@@ -6,12 +6,12 @@ Turn any **Spotify album** into a stunning, **printable poster** — choose from
 
 ---
 
-## ✨ Features
+## Features
 
-### 🎵 Spotify Integration
+### Spotify Integration
 - Paste any **Spotify album link** — tracks, durations, cover art, and URI load instantly via client-credentials flow (proxied through Next.js API routes).
 
-### 🖼 15 Poster Layouts
+### 15 Poster Layouts
 - **Classic** — Clean album poster with big cover, tracklist, and QR code.
 - **Gallery** — Drake "More Life" inspired cream/dark panel with palette swatches.
 - **Overlay** — Frosted glassmorphism card over a blurred full-bleed cover.
@@ -28,26 +28,27 @@ Turn any **Spotify album** into a stunning, **printable poster** — choose from
 - **Minimal** — Stripped-down, type-focused layout.
 - **Playlist** — Polaroid-style with palette swatches.
 
-### 🎨 Album Art Controls
+### Album Art Controls
 - **B&W / Color** toggle for the cover art.
-- **Zoom** slider (0.5x–2.0x) — shrink to fit or crop into detail.
-- **Horizontal & Vertical Position** — shift the crop focus point.
-- **Brightness & Contrast** sliders — lighten, darken, or punch up the art.
+- **Custom Frame Art** — Fine-tune how the artwork fits your poster layout to perfectly match your physical frame:
+  - **Zoom** slider (0.5x–2.0x) — shrink to fit or crop into detail.
+  - **Horizontal & Vertical Position** — shift the crop focus point.
+  - **Brightness & Contrast** sliders — lighten, darken, or punch up the art.
 
-### ✏️ Typography & Color
+### Typography & Color
 - Independent **Title Scale** and **Tracklist Scale** sliders.
 - **Font color** presets (Auto, White, Black, Cream, Gold) + custom color picker.
 - **Quote font** selector (Dancing Script, Pacifico, Inter, Space Mono, Playfair Display, Caveat).
 - Show/hide toggles for **Timestamp** and **Artist** metadata.
 
-### 🤖 AI Theme Builder
-- Copy a built-in AI prompt, paste it (with a reference poster image) into **ChatGPT** or **Claude**, then upload the generated CSS to instantly restyle your poster.
+### AI Theme Builder
+- Copy a built-in AI prompt, paste it (with a reference poster image) into **ChatGPT**, **Claude**, or **Gemini**, then upload the generated CSS to instantly restyle your poster.
 
-### 📦 Export
+### Export
 - **PNG** and **PDF** at **300 DPI** for print-ready output.
 - Frame sizes: **4×6"**, **5×7"**, **A5**, **A4**, **30×40 cm**.
 
-### 🎭 Background Effects
+### Background Effects
 - Blurred album bloom, dominant-color overlay & vignette (ColorThief).
 - Optional ghost watermark layer.
 - Solid or gradient background from album palette.
@@ -55,7 +56,7 @@ Turn any **Spotify album** into a stunning, **printable poster** — choose from
 
 ---
 
-## 🚀 Getting Started
+## Getting Started
 
 ```bash
 npm install
@@ -76,7 +77,7 @@ Open [http://localhost:3000](http://localhost:3000).
 
 ---
 
-## 📁 Project Structure
+## Project Structure
 
 | Path | Role |
 |------|------|
@@ -92,7 +93,7 @@ Open [http://localhost:3000](http://localhost:3000).
 
 ---
 
-## 🏗 Build & Deploy
+## Build & Deploy
 
 ```bash
 npm run build
@@ -103,7 +104,7 @@ Deploy anywhere that supports Next.js 14 (e.g. Vercel). Ensure album cover host 
 
 ---
 
-## 🛠 Tech Stack
+## Tech Stack
 
 - **Next.js 14** (App Router)
 - **React**
@@ -115,6 +116,6 @@ Deploy anywhere that supports Next.js 14 (e.g. Vercel). Ensure album cover host 
 
 ---
 
-## 📄 License
+## License
 
 MIT
