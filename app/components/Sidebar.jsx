@@ -150,7 +150,7 @@ export default function Sidebar({
       else await downloadPdf(frameSize, albumName);
     } catch (err) {
       console.error("Export failed:", err);
-      alert("Export failed – see console for details.");
+      alert("Export failed \u2013 see console for details.");
     } finally {
       setExporting(null);
     }
@@ -210,7 +210,7 @@ export default function Sidebar({
           <textarea
             value={quote}
             onChange={(e) => setQuote(e.target.value)}
-            placeholder="Add a lyric or quote…"
+            placeholder="Add a lyric or quote\u2026"
             className="w-full rounded-lg border border-zinc-200 bg-white px-3 py-2 text-sm text-zinc-800 placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-zinc-300 transition resize-none h-16"
           />
         </div>
@@ -423,16 +423,25 @@ export default function Sidebar({
 
       {/* ───────── 5. AI THEME BUILDER ───────── */}
       <Section icon={icons.brush} title="AI Theme Builder" defaultOpen={false}>
-        <p className="text-[11px] text-zinc-500 leading-relaxed">
-          Find a poster you love on Pinterest or Instagram, then use AI to generate a matching CSS theme.
-        </p>
+        {/* Intro card */}
+        <div className="rounded-lg bg-zinc-50 p-3 border border-zinc-100">
+          <p className="text-[11px] font-semibold text-zinc-700 mb-1">How it works</p>
+          <p className="text-[11px] text-zinc-500 leading-relaxed">
+            Found a poster aesthetic you love? Use any AI chatbot to
+            automatically generate a matching CSS theme for your poster.
+            Just 3 steps &mdash; no coding needed.
+          </p>
+        </div>
 
         {/* Step 1 */}
         <div>
-          <span className="text-[10px] font-medium uppercase tracking-wider text-zinc-400 block mb-1">Step 1 — Copy prompt</span>
+          <div className="flex items-center gap-2 mb-1.5">
+            <span className="w-5 h-5 rounded-full bg-zinc-900 text-white text-[10px] font-bold flex items-center justify-center flex-shrink-0">1</span>
+            <span className="text-[11px] font-semibold text-zinc-700">Copy the theme prompt</span>
+          </div>
           <button
             onClick={handleCopyPrompt}
-            className={`w-full rounded-lg px-3 py-2 text-sm font-medium transition-all flex items-center justify-center gap-1.5
+            className={`w-full rounded-lg px-3 py-2.5 text-sm font-medium transition-all flex items-center justify-center gap-1.5
               ${copied
                 ? "bg-emerald-600 text-white"
                 : "bg-zinc-900 text-white hover:bg-zinc-800"
@@ -441,7 +450,7 @@ export default function Sidebar({
             {copied ? (
               <>
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12" /></svg>
-                Copied!
+                Copied to clipboard!
               </>
             ) : (
               <>
@@ -450,40 +459,49 @@ export default function Sidebar({
               </>
             )}
           </button>
+          <p className="text-[10px] text-zinc-400 mt-1.5 leading-relaxed">
+            This copies a pre-written prompt that tells the AI exactly how to format the CSS for TrashFrame.
+          </p>
         </div>
 
         {/* Step 2 */}
         <div>
-          <span className="text-[10px] font-medium uppercase tracking-wider text-zinc-400 block mb-1">Step 2 — Paste into AI</span>
+          <div className="flex items-center gap-2 mb-1.5">
+            <span className="w-5 h-5 rounded-full bg-zinc-900 text-white text-[10px] font-bold flex items-center justify-center flex-shrink-0">2</span>
+            <span className="text-[11px] font-semibold text-zinc-700">Paste into any AI + upload your inspo image</span>
+          </div>
           <div className="flex gap-1.5">
-            <a
-              href="https://chat.openai.com"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex-1 rounded-lg border border-zinc-200 bg-white px-2.5 py-1.5 text-xs font-medium text-zinc-700 hover:bg-zinc-100 transition text-center"
-            >
-              ChatGPT ↗
+            <a href="https://chat.openai.com" target="_blank" rel="noopener noreferrer"
+              className="flex-1 rounded-lg border border-zinc-200 bg-white px-2.5 py-2 text-xs font-medium text-zinc-700 hover:bg-zinc-100 transition text-center">
+              ChatGPT &#8599;
             </a>
-            <a
-              href="https://claude.ai"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex-1 rounded-lg border border-zinc-200 bg-white px-2.5 py-1.5 text-xs font-medium text-zinc-700 hover:bg-zinc-100 transition text-center"
-            >
-              Claude ↗
+            <a href="https://claude.ai" target="_blank" rel="noopener noreferrer"
+              className="flex-1 rounded-lg border border-zinc-200 bg-white px-2.5 py-2 text-xs font-medium text-zinc-700 hover:bg-zinc-100 transition text-center">
+              Claude &#8599;
+            </a>
+            <a href="https://gemini.google.com" target="_blank" rel="noopener noreferrer"
+              className="flex-1 rounded-lg border border-zinc-200 bg-white px-2.5 py-2 text-xs font-medium text-zinc-700 hover:bg-zinc-100 transition text-center">
+              Gemini &#8599;
             </a>
           </div>
+          <p className="text-[10px] text-zinc-400 mt-1.5 leading-relaxed">
+            Upload your inspiration poster image alongside the copied prompt. The AI will analyze the colors, fonts, and mood,
+            then return a <span className="font-semibold text-zinc-500">.css</span> file tailored for TrashFrame.
+          </p>
         </div>
 
         {/* Step 3 */}
         <div>
-          <span className="text-[10px] font-medium uppercase tracking-wider text-zinc-400 block mb-1">Step 3 — Upload CSS</span>
+          <div className="flex items-center gap-2 mb-1.5">
+            <span className="w-5 h-5 rounded-full bg-zinc-900 text-white text-[10px] font-bold flex items-center justify-center flex-shrink-0">3</span>
+            <span className="text-[11px] font-semibold text-zinc-700">Upload the generated CSS here</span>
+          </div>
           <button
             onClick={() => fileRef.current?.click()}
-            className="w-full rounded-lg border border-dashed border-zinc-300 bg-white px-3 py-2 text-sm text-zinc-600 hover:bg-zinc-100 transition flex items-center justify-center gap-1.5"
+            className="w-full rounded-lg border-2 border-dashed border-zinc-300 bg-white px-3 py-3 text-sm text-zinc-600 hover:bg-zinc-50 hover:border-zinc-400 transition flex items-center justify-center gap-2"
           >
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline points="17 8 12 3 7 8" /><line x1="12" y1="3" x2="12" y2="15" /></svg>
-            Upload CSS from AI
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline points="17 8 12 3 7 8" /><line x1="12" y1="3" x2="12" y2="15" /></svg>
+            Upload .css file
           </button>
           <input
             ref={fileRef}
@@ -492,38 +510,44 @@ export default function Sidebar({
             className="hidden"
             onChange={handleFileUpload}
           />
+          <p className="text-[10px] text-zinc-400 mt-1.5 leading-relaxed">
+            Save the AI&apos;s output as a <span className="font-semibold text-zinc-500">.css</span> file, then upload it here. Your poster will instantly restyle to match.
+          </p>
         </div>
 
-        {/* Status */}
-        <div className="flex items-center gap-2">
+        {/* Status badge */}
+        <div className="flex items-center justify-between">
           {customTheme ? (
-            <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2.5 py-0.5 text-xs font-medium text-emerald-700">
+            <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 px-3 py-1 text-xs font-medium text-emerald-700 ring-1 ring-emerald-200">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
               AI theme active
               <button
                 onClick={onResetTheme}
-                className="ml-0.5 text-emerald-500 hover:text-emerald-800 transition"
-                title="Reset to default"
+                className="ml-1 text-emerald-400 hover:text-emerald-800 transition text-sm leading-none"
+                title="Remove AI theme"
               >
-                ×
+                &times;
               </button>
             </span>
           ) : (
-            <span className="inline-flex items-center rounded-full bg-zinc-100 px-2.5 py-0.5 text-xs font-medium text-zinc-500">
-              {activeLabel}
+            <span className="inline-flex items-center rounded-full bg-zinc-100 px-3 py-1 text-xs font-medium text-zinc-500">
+              Using: {activeLabel}
             </span>
           )}
         </div>
 
-        <div className="flex items-center gap-2 pt-0.5">
+        {/* Divider + blank template */}
+        <div className="flex items-center gap-2 pt-1">
           <span className="flex-1 h-px bg-zinc-200" />
-          <span className="text-[10px] text-zinc-400">or</span>
+          <span className="text-[10px] text-zinc-400">or start from scratch</span>
           <span className="flex-1 h-px bg-zinc-200" />
         </div>
         <button
           onClick={handleDownloadTemplate}
-          className="text-[11px] text-zinc-400 hover:text-zinc-600 transition text-center"
+          className="w-full rounded-lg border border-zinc-200 bg-white px-3 py-2 text-[11px] font-medium text-zinc-500 hover:bg-zinc-50 hover:text-zinc-700 transition flex items-center justify-center gap-1.5"
         >
-          Download blank template CSS
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4" /><polyline points="7 10 12 15 17 10" /><line x1="12" y1="15" x2="12" y2="3" /></svg>
+          Download blank CSS template
         </button>
       </Section>
 
@@ -534,14 +558,14 @@ export default function Sidebar({
           disabled={!!exporting}
           className="w-full rounded-lg bg-zinc-900 px-3 py-2.5 text-sm font-medium text-white hover:bg-zinc-800 disabled:opacity-50 transition"
         >
-          {exporting === "png" ? "Exporting…" : "Download PNG"}
+          {exporting === "png" ? "Exporting\u2026" : "Download PNG"}
         </button>
         <button
           onClick={() => handleExport("pdf")}
           disabled={!!exporting}
           className="w-full rounded-lg border border-zinc-900 px-3 py-2.5 text-sm font-medium text-zinc-900 hover:bg-zinc-50 disabled:opacity-50 transition"
         >
-          {exporting === "pdf" ? "Exporting…" : "Download PDF"}
+          {exporting === "pdf" ? "Exporting\u2026" : "Download PDF"}
         </button>
       </Section>
     </aside>
