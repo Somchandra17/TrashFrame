@@ -68,6 +68,31 @@ const DEFAULT_OVERRIDES = {
 
 const EMPTY_COLORS = [];
 
+function AuthorCredit({ className = "" }) {
+  const links = [
+    { label: "GitHub", href: "https://github.com/Somchandra17" },
+    { label: "LinkedIn", href: "https://www.linkedin.com/in/somchandra17/" },
+    { label: "Website", href: "https://somm.tf" },
+  ];
+
+  return (
+    <footer className={`relative z-10 flex flex-wrap items-center justify-center gap-x-3 gap-y-1 text-xs text-zinc-500 ${className}`.trim()}>
+      <span className="font-medium text-zinc-600">Made by Som</span>
+      {links.map(({ label, href }) => (
+        <a
+          key={label}
+          href={href}
+          target="_blank"
+          rel="noreferrer"
+          className="transition hover:text-zinc-900"
+        >
+          {label}
+        </a>
+      ))}
+    </footer>
+  );
+}
+
 export default function Home() {
   const [url, setUrl] = useState("");
   const [album, setAlbum] = useState(null);
@@ -316,6 +341,8 @@ export default function Home() {
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><rect x="3" y="3" width="18" height="18" rx="2" /><rect x="7" y="7" width="10" height="10" rx="1" /></svg>
             Frame it. Print it. Hang it.
           </div>
+
+          <AuthorCredit className="mt-6" />
         </div>
       </div>
     );
@@ -371,6 +398,8 @@ export default function Home() {
             onChangeOverrides={handleOverridesChange}
           />
         </div>
+
+        <AuthorCredit className="border-t border-zinc-200/80 px-6 py-4 bg-white/50 backdrop-blur-sm" />
       </div>
     </>
   );
