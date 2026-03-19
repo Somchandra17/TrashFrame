@@ -2,6 +2,7 @@
 
 import QRCode from "react-qr-code";
 import { frameAspect } from "../lib/constants";
+import { useState, useEffect } from "react";
 
 /* eslint-disable @next/next/no-img-element */
 
@@ -47,7 +48,10 @@ function SoundWave({ className = "", width = 120, height = 40, color = "currentC
       style={{ color }}
     >
       {Array.from({ length: bars }).map((_, i) => {
-        const h = Math.sin((i / bars) * Math.PI) * 0.7 + Math.random() * 0.3;
+        // Use a simple pseudo-random hash based on index `i` to ensure hydration consistency
+        const pseudoRandom1 = (Math.sin(i * 12.9898) * 43758.5453) % 1;
+        const pseudoRandom2 = (Math.cos(i * 78.233) * 43758.5453) % 1;
+        const h = Math.sin((i / bars) * Math.PI) * 0.7 + Math.abs(pseudoRandom1) * 0.3;
         const barHeight = h * height * 0.8;
         return (
           <rect
@@ -57,7 +61,7 @@ function SoundWave({ className = "", width = 120, height = 40, color = "currentC
             width={barWidth}
             height={barHeight}
             fill="currentColor"
-            opacity={0.6 + Math.random() * 0.4}
+            opacity={0.6 + Math.abs(pseudoRandom2) * 0.4}
             rx={barWidth / 2}
           />
         );
@@ -147,19 +151,33 @@ function Cover({ src, name, className }) {
 
 function BottomCode({ url, uri, codeType, barColor }) {
   const bar = barColor || "black";
+  const [svgStr, setSvgStr] = useState("");
+
+  useEffect(() => {
+    if (codeType === "scannable" && uri) {
+      const bg = bar === "black" ? "ffffff" : "000000";
+      const src = `https://scannables.scdn.co/uri/plain/svg/${bg}/${bar}/640/${uri}`;
+      
+      fetch(src)
+        .then((res) => res.text())
+        .then((text) => {
+          // Remove the first background rect so it is purely transparent, to support html-to-image exports
+          let transparentSvg = text.replace(/<rect[^>]*fill="[^"]*"[^>]*\/>/i, '');
+          // Inject our scaling class dynamically
+          transparentSvg = transparentSvg.replace('<svg ', '<svg class="poster-spotify-code" ');
+          setSvgStr(transparentSvg);
+        })
+        .catch((e) => console.error("Could not load Spotify Scannable SVG", e));
+    }
+  }, [codeType, uri, bar]);
 
   if (codeType === "scannable" && uri) {
-    // Use transparent background (000001 is Spotify's "transparent" code)
-    const src = `https://scannables.scdn.co/uri/plain/svg/000001/${bar}/640/${uri}`;
+    if (!svgStr) return <div className="poster-code-wrap" style={{ height: 'var(--fp-qr-size)' }} />;
     return (
-      <div className="poster-code-wrap">
-        <img
-          src={src}
-          alt="Spotify Code"
-          className="poster-spotify-code"
-          crossOrigin="anonymous"
-        />
-      </div>
+      <div 
+        className="poster-code-wrap" 
+        dangerouslySetInnerHTML={{ __html: svgStr }} 
+      />
     );
   }
 
@@ -189,9 +207,7 @@ function LayoutClassic({ album, quote, codeType, barColor }) {
   return (
     <>
       <TextureOverlay type="grain" />
-      <ArtisticBorder />
       <div className="poster-date">{album.releaseDate}</div>
-      <VinylRecord className="poster-decor-vinyl" size={60} />
       <Cover src={album.coverUrl} name={album.name} />
       <div className="poster-info">
         <h1 className="poster-title">{album.name}</h1>
@@ -201,13 +217,11 @@ function LayoutClassic({ album, quote, codeType, barColor }) {
         </p>
       </div>
       {quote && <p className="poster-quote">&ldquo;{quote}&rdquo;</p>}
-      <SoundWave className="poster-decor-wave" width={100} height={20} bars={24} />
       <div className="poster-bottom-row">
         <div className="poster-tracklist">
           {album.tracks.map((t) => <TrackRow key={t.number} t={t} />)}
         </div>
         <div className="poster-bottom-right">
-          <Signature artistName={album.artists} />
           <BottomCode url={album.spotifyUrl} uri={album.uri} codeType={codeType} barColor={barColor} />
         </div>
       </div>
@@ -329,66 +343,7 @@ function LayoutBoldBlock({ album, quote, codeType, barColor }) {
   );
 }
 
-/* ═══════════════════════ MINIMAL (The 1975) ═══════════════════════ */
 
-function LayoutMinimal({ album, quote, codeType, barColor }) {
-  return (
-    <>
-      <TextureOverlay type="scratch" />
-      <div className="poster-minimal-header">
-        <p className="poster-artist">{album.artists}</p>
-        <p className="poster-meta">
-          {album.releaseDate} &bull; {album.totalTracks} tracks &bull; {album.totalDuration}
-        </p>
-      </div>
-      <div className="poster-minimal-center">
-        <h1 className="poster-title">{album.name}</h1>
-        {quote && <p className="poster-quote">&ldquo;{quote}&rdquo;</p>}
-      </div>
-      <Cover src={album.coverUrl} name={album.name} className="poster-cover-small poster-minimal-cover-masked" />
-      <div className="poster-minimal-bottom">
-        <div className="poster-tracklist">
-          {album.tracks.map((t) => (
-            <span key={t.number} className="poster-track-inline">{t.name}</span>
-          ))}
-        </div>
-        <BottomCode url={album.spotifyUrl} uri={album.uri} codeType={codeType} barColor={barColor} />
-      </div>
-    </>
-  );
-}
-
-/* ═══════════════════════ RECEIPT (Tainy "DATA") ═══════════════════════ */
-
-function LayoutReceipt({ album, quote, codeType, barColor }) {
-  return (
-    <>
-      <h1 className="poster-title">{album.artists}</h1>
-      <p className="poster-artist poster-receipt-album">{album.name}</p>
-      <Cover src={album.coverUrl} name={album.name} className="poster-cover-small" />
-      <div className="poster-receipt-date-row">
-        <span className="poster-meta">{album.releaseDate}</span>
-        <span className="poster-meta">{album.totalTracks} tracks</span>
-      </div>
-      <div className="poster-receipt-divider" />
-      <div className="poster-tracklist">
-        {album.tracks.map((t) => <TrackRow key={t.number} t={t} hideArtists />)}
-      </div>
-      <div className="poster-receipt-divider poster-receipt-divider-dashed" />
-      <div className="poster-receipt-total">
-        <span>TOTAL</span>
-        <span>MINUTES</span>
-        <span>{album.totalDuration}</span>
-      </div>
-      <div className="poster-receipt-divider poster-receipt-divider-dashed" />
-      {quote && <p className="poster-quote">&ldquo;{quote}&rdquo;</p>}
-      <div className="poster-receipt-bottom">
-        <div className="poster-receipt-barcode" />
-        <BottomCode url={album.spotifyUrl} uri={album.uri} codeType={codeType} barColor={barColor} />
-      </div>
-    </>
-  );
-}
 
 /* ═══════════════════════ IMMERSIVE (SZA "SOS") ═══════════════════════ */
 
@@ -480,16 +435,199 @@ function LayoutOverlay({ album, quote, codeType, barColor }) {
   );
 }
 
+/* ═══════════════════════ MASTERPIECE: J-CARD ═══════════════════════ */
+
+function LayoutMasterpieceJCard({ album, quote, codeType, barColor }) {
+  return (
+    <>
+      <div className="jcard-spine">
+        <div className="jcard-spine-top">
+          <DoubleNote size={20} className="jcard-spine-icon" />
+          <div className="jcard-spine-dolby">
+            <span className="dolby-d">D</span><span className="dolby-d flipped">D</span>
+          </div>
+        </div>
+        <div className="jcard-spine-text">{album.artists} &mdash; {album.name}</div>
+        <div className="jcard-spine-bottom">
+          <BottomCode url={album.spotifyUrl} uri={album.uri} codeType={codeType} barColor={barColor} />
+        </div>
+      </div>
+      <div className="jcard-front">
+        <Cover src={album.coverUrl} name={album.name} />
+      </div>
+      <div className="jcard-back">
+        <div className="jcard-back-header">
+          <h1 className="poster-title">{album.name}</h1>
+          <p className="poster-artist">{album.artists}</p>
+        </div>
+        <div className="poster-tracklist">
+          {album.tracks.map((t) => <TrackRow key={t.number} t={t} hideArtists />)}
+        </div>
+        {quote && <p className="poster-quote">&ldquo;{quote}&rdquo;</p>}
+      </div>
+    </>
+  );
+}
+
+/* ═══════════════════════ MASTERPIECE: COMIC ═══════════════════════ */
+
+function LayoutMasterpieceComic({ album, quote, codeType, barColor }) {
+  return (
+    <>
+      <TextureOverlay type="halftone" />
+      <div className="comic-header">
+        <h1 className="poster-title">{album.name}</h1>
+      </div>
+      <div className="comic-image-container">
+        <div className="comic-price">99¢</div>
+        <Cover src={album.coverUrl} name={album.name} />
+        <div className="comic-quote-bubble">
+          {quote ? <p className="poster-quote">&ldquo;{quote}&rdquo;</p> : <p className="poster-artist">STARRING {album.artists}</p>}
+        </div>
+      </div>
+      <div className="comic-footer">
+        <div className="poster-tracklist">
+          {album.tracks.map((t) => <TrackRow key={t.number} t={t} hideArtists />)}
+        </div>
+        <div className="comic-footer-right">
+          <BottomCode url={album.spotifyUrl} uri={album.uri} codeType={codeType} barColor={barColor} />
+        </div>
+      </div>
+    </>
+  );
+}
+
+/* ═══════════════════════ MASTERPIECE: PLAYLIST ═══════════════════════ */
+
+function LayoutMasterpiecePlaylist({ album, quote, codeType, albumColors, barColor }) {
+  const swatches = (albumColors && albumColors.length >= 2) ? albumColors.slice(0, 5) : null;
+  return (
+    <>
+      <TextureOverlay type="paper" />
+      <h1 className="playlist-title">{album.name}</h1>
+      <Cover src={album.coverUrl} name={album.name} className="playlist-image" />
+      {quote && <p className="poster-quote">&ldquo;{quote}&rdquo;</p>}
+      <div className="playlist-tracks">
+        <div className="poster-tracklist">
+          {album.tracks.map((t) => <TrackRow key={t.number} t={t} hideArtists hideDur />)}
+        </div>
+        <div className="playlist-side">
+          {swatches && (
+            <div className="playlist-palette">
+              {swatches.map((c) => (
+                <span key={c} className="playlist-swatch" style={{ background: c }} />
+              ))}
+            </div>
+          )}
+          <Signature artistName={album.artists} />
+          <BottomCode url={album.spotifyUrl} uri={album.uri} codeType={codeType} barColor={barColor} />
+        </div>
+      </div>
+    </>
+  );
+}
+
+/* ═══════════════════════ MASTERPIECE: GRADUATION ═══════════════════════ */
+
+function LayoutMasterpieceGraduation({ album, quote, codeType, barColor }) {
+  return (
+    <>
+      <Cover src={album.coverUrl} name={album.name} className="grad-bg" />
+      <TextureOverlay type="grain" />
+      <div className="grad-text-plate">
+        <div className="grad-header">
+          <p className="poster-artist">{album.artists}</p>
+          <h1 className="poster-title">{album.name}</h1>
+        </div>
+        <div className="poster-tracklist">
+          {album.tracks.map((t) => <TrackRow key={t.number} t={t} hideArtists />)}
+        </div>
+        <div className="grad-footer-row">
+          <BottomCode url={album.spotifyUrl} uri={album.uri} codeType={codeType} barColor={barColor} />
+          <SoundWave className="poster-decor-wave" width={80} height={20} bars={20} />
+        </div>
+      </div>
+    </>
+  );
+}
+
+/* ═══════════════════════ MASTERPIECE: 8-BIT ARCADE ═══════════════════════ */
+
+function LayoutMasterpiece8Bit({ album, quote, codeType, barColor }) {
+  return (
+    <>
+      <div className="poster-8bit-scanlines" />
+      <div className="poster-8bit-content">
+        <h1 className="poster-title">{album.name}</h1>
+        <p className="poster-8bit-artist">PLAYER 1: {album.artists}</p>
+        <div className="poster-8bit-art-container">
+          <Cover src={album.coverUrl} name={album.name} className="poster-8bit-cover" />
+        </div>
+        <div className="poster-8bit-tracklist">
+          {album.tracks.map((t) => <TrackRow key={t.number} t={t} hideDur />)}
+        </div>
+        {quote && <p className="poster-quote">&ldquo;{quote}&rdquo;</p>}
+        <div className="poster-bottom-row">
+          <div className="poster-8bit-footer-left">
+            <span className="poster-8bit-press">PRESS START</span>
+          </div>
+          <BottomCode url={album.spotifyUrl} uri={album.uri} codeType={codeType} barColor={barColor} />
+        </div>
+      </div>
+    </>
+  );
+}
+/* ═══════════════════════ MASTERPIECE: RECEIPT ═══════════════════════ */
+
+function LayoutMasterpieceReceipt({ album, quote, codeType, barColor }) {
+  return (
+    <>
+      <div className="receipt-container">
+        <div className="receipt-header">
+          <h1 className="poster-title">{album.name}</h1>
+          <p className="poster-artist">{album.artists}</p>
+          <div className="receipt-divider" />
+          <p className="poster-meta">DATE: {album.releaseDate}</p>
+          <p className="poster-meta">ITEMS: {album.totalTracks}</p>
+          <div className="receipt-divider" />
+        </div>
+        
+        <div className="poster-tracklist">
+          {album.tracks.map((t) => <TrackRow key={t.number} t={t} hideArtists />)}
+        </div>
+        
+        <div className="receipt-footer">
+          <div className="receipt-divider" />
+          <div className="receipt-total-row">
+            <span className="poster-meta">TOTAL DURATION</span>
+            <span className="poster-meta">{album.totalDuration}</span>
+          </div>
+          <div className="receipt-divider" />
+          {quote && <p className="poster-quote">&ldquo;{quote}&rdquo;</p>}
+          <div className="receipt-barcode">
+            <BottomCode url={album.spotifyUrl} uri={album.uri} codeType={codeType} barColor={barColor} />
+          </div>
+          <p className="poster-meta receipt-thanks">*** THANK YOU ***</p>
+        </div>
+      </div>
+    </>
+  );
+}
+
 const LAYOUTS = {
   classic: LayoutClassic,
   gallery: LayoutGallery,
   overlay: LayoutOverlay,
   editorial: LayoutEditorial,
   "bold-block": LayoutBoldBlock,
-  minimal: LayoutMinimal,
-  receipt: LayoutReceipt,
   immersive: LayoutImmersive,
   retro: LayoutRetro,
+  "masterpiece-jcard": LayoutMasterpieceJCard,
+  "masterpiece-comic": LayoutMasterpieceComic,
+  "masterpiece-playlist": LayoutMasterpiecePlaylist,
+  "masterpiece-graduation": LayoutMasterpieceGraduation,
+  "masterpiece-8bit": LayoutMasterpiece8Bit,
+  "masterpiece-receipt": LayoutMasterpieceReceipt,
 };
 
 export default function Poster({ album, quote, frameSize, layout, codeType, albumColors, barColor }) {

@@ -50,7 +50,7 @@ export const DEFAULT_THEME_CSS = `/* TrashFrame – Poster Theme Variables
   --fp-border-width: 2px;
   --fp-qr-size: 48px;
   --fp-qr-fg: #111111;
-  --fp-qr-bg: #ffffff;
+  --fp-qr-bg: transparent;
   --fp-padding: 5%;
   --fp-gap: 0.6em;
 
@@ -151,7 +151,7 @@ Here is the template to fill:
   /* QR / Spotify code sizing */
   --fp-qr-size: ;
   --fp-qr-fg: ;
-  --fp-qr-bg: ;
+  --fp-qr-bg: transparent;
 
   /* Layout spacing */
   --fp-padding: ;
@@ -227,7 +227,7 @@ export const PRESET_THEMES = [
   --fp-border-width: 0px;
   --fp-qr-size: 34px;
   --fp-qr-fg: #1a1a1a;
-  --fp-qr-bg: #f0e6d3;
+  --fp-qr-bg: transparent;
   --fp-padding: 4%;
   --fp-gap: 0em;
   --fp-bg-art-opacity: 0;
@@ -267,7 +267,7 @@ export const PRESET_THEMES = [
   --fp-border-width: 0px;
   --fp-qr-size: 40px;
   --fp-qr-fg: #6b2fa0;
-  --fp-qr-bg: rgba(230,221,208,0.85);
+  --fp-qr-bg: transparent;
   --fp-padding: 5%;
   --fp-gap: 0.4em;
 }`,
@@ -305,7 +305,7 @@ export const PRESET_THEMES = [
   --fp-border-width: 0px;
   --fp-qr-size: 36px;
   --fp-qr-fg: #0a0a0a;
-  --fp-qr-bg: #ffffff;
+  --fp-qr-bg: transparent;
   --fp-padding: 5%;
   --fp-gap: 0.1em;
   --fp-bg-art-opacity: 0;
@@ -345,7 +345,7 @@ export const PRESET_THEMES = [
   --fp-border-width: 5px;
   --fp-qr-size: 26px;
   --fp-qr-fg: #1a1a1a;
-  --fp-qr-bg: #d4c5a9;
+  --fp-qr-bg: transparent;
   --fp-padding: 0%;
   --fp-gap: 0em;
   --fp-bg-art-opacity: 0;
@@ -385,7 +385,7 @@ export const PRESET_THEMES = [
   --fp-border-width: 0px;
   --fp-qr-size: 22px;
   --fp-qr-fg: #2a3a3a;
-  --fp-qr-bg: #f5f3ef;
+  --fp-qr-bg: transparent;
   --fp-padding: 5%;
   --fp-gap: 0em;
   --fp-bg-art-opacity: 0;
@@ -425,7 +425,7 @@ export const PRESET_THEMES = [
   --fp-border-width: 2px;
   --fp-qr-size: 38px;
   --fp-qr-fg: #c0392b;
-  --fp-qr-bg: #ece4d8;
+  --fp-qr-bg: transparent;
   --fp-padding: 5%;
   --fp-gap: 0.25em;
 }`,
@@ -463,7 +463,7 @@ export const PRESET_THEMES = [
   --fp-border-width: 0px;
   --fp-qr-size: 32px;
   --fp-qr-fg: rgba(255,255,255,0.6);
-  --fp-qr-bg: rgba(0,0,0,0.3);
+  --fp-qr-bg: transparent;
   --fp-padding: 0%;
   --fp-gap: 0em;
   --fp-bg-art-opacity: 0;
@@ -503,11 +503,244 @@ export const PRESET_THEMES = [
   --fp-border-width: 6px;
   --fp-qr-size: 26px;
   --fp-qr-fg: #1a2744;
-  --fp-qr-bg: #e8b931;
+  --fp-qr-bg: transparent;
   --fp-padding: 5%;
   --fp-gap: 0em;
   --fp-bg-art-opacity: 0;
   --fp-vignette-opacity: 0;
 }`,
   },
+  {
+    id: "masterpiece-jcard",
+    name: "Cassette J-Card",
+    layout: "masterpiece-jcard",
+    desc: "Retro cassette J-card layout with Dolby spine",
+    colors: ["#e4e2de", "#1a1a1a", "#777777"],
+    css: `#poster-root {
+  --fp-bg: #e4e2de;
+  --fp-image-filter: contrast(1.1) saturate(0.95);
+  --fp-image-radius: 4px;
+  --fp-heading-font: 'Arial', sans-serif;
+  --fp-heading-size: 2.2em;
+  --fp-heading-color: #1a1a1a;
+  --fp-heading-weight: 800;
+  --fp-heading-spacing: -0.02em;
+  --fp-subtitle-color: #555555;
+  --fp-subtitle-size: 0.6em;
+  --fp-meta-color: #777777;
+  --fp-meta-size: 0.4em;
+  --fp-quote-font: 'Courier New', monospace;
+  --fp-quote-size: 0.7em;
+  --fp-quote-color: #333333;
+  --fp-quote-style: normal;
+  --fp-track-font: 'Arial', sans-serif;
+  --fp-track-size: 0.35em;
+  --fp-track-color: #1a1a1a;
+  --fp-track-num-color: #999999;
+  --fp-track-columns: 1;
+  --fp-track-gap: 0.15em;
+  --fp-border-color: #cccccc;
+  --fp-border-width: 0px;
+  --fp-qr-size: 32px;
+  --fp-qr-fg: #1a1a1a;
+  --fp-qr-bg: transparent;
+  --fp-padding: 0%;
+  --fp-gap: 0em;
+  --fp-bg-art-opacity: 0;
+  --fp-vignette-opacity: 0;
+}`,
+  },
+  {
+    id: "masterpiece-comic",
+    name: "Comic Strip",
+    layout: "masterpiece-comic",
+    desc: "Graphic novel style bold comic book cover",
+    colors: ["#222222", "#ffffff", "#e82e2e"],
+    css: `#poster-root {
+  --fp-bg: #222222;
+  --fp-image-filter: none;
+  --fp-image-radius: 0px;
+  --fp-heading-font: 'Bangers', cursive;
+  --fp-heading-size: 3.5em;
+  --fp-heading-color: #fce205;
+  --fp-heading-weight: 400;
+  --fp-heading-spacing: 0.05em;
+  --fp-subtitle-color: #ffffff;
+  --fp-subtitle-size: 0.8em;
+  --fp-meta-color: #ffaa00;
+  --fp-meta-size: 0.5em;
+  --fp-quote-font: 'Comic Sans MS', cursive;
+  --fp-quote-size: 0.8em;
+  --fp-quote-color: #111111;
+  --fp-quote-style: italic;
+  --fp-track-font: 'Impact', sans-serif;
+  --fp-track-size: 0.45em;
+  --fp-track-color: #ffffff;
+  --fp-track-num-color: #fce205;
+  --fp-track-columns: 2;
+  --fp-track-gap: 0.2em;
+  --fp-border-color: #ffffff;
+  --fp-border-width: 12px;
+  --fp-qr-size: 40px;
+  --fp-qr-fg: #ffffff;
+  --fp-qr-bg: transparent;
+  --fp-padding: 4%;
+  --fp-gap: 0em;
+  --fp-bg-art-opacity: 0;
+  --fp-vignette-opacity: 0;
+}`,
+  },
+  {
+    id: "masterpiece-playlist",
+    name: "Retro Playlist",
+    layout: "masterpiece-playlist",
+    desc: "Vintage polaroid layout with color swatches",
+    colors: ["#f7f5f0", "#111111", "#444444"],
+    css: `#poster-root {
+  --fp-bg: #f7f5f0;
+  --fp-image-filter: sepia(0.2) contrast(1.05);
+  --fp-image-radius: 2px;
+  --fp-heading-font: 'Arial Black', sans-serif;
+  --fp-heading-size: 2.5em;
+  --fp-heading-color: #111111;
+  --fp-heading-weight: 900;
+  --fp-heading-spacing: -0.02em;
+  --fp-subtitle-color: #444444;
+  --fp-subtitle-size: 0.6em;
+  --fp-meta-color: #888888;
+  --fp-meta-size: 0.45em;
+  --fp-quote-font: 'Georgia', serif;
+  --fp-quote-size: 1.2em;
+  --fp-quote-color: #ffffff;
+  --fp-quote-style: italic;
+  --fp-track-font: 'Arial', sans-serif;
+  --fp-track-size: 0.4em;
+  --fp-track-color: #333333;
+  --fp-track-num-color: #888888;
+  --fp-track-columns: 2;
+  --fp-track-gap: 0.15em;
+  --fp-border-color: transparent;
+  --fp-border-width: 0px;
+  --fp-qr-size: 38px;
+  --fp-qr-fg: #111111;
+  --fp-qr-bg: transparent;
+  --fp-padding: 5%;
+  --fp-gap: 0em;
+  --fp-bg-art-opacity: 0;
+  --fp-vignette-opacity: 0;
+}`,
+  },
+  {
+    id: "masterpiece-graduation",
+    name: "Wave Overlay",
+    layout: "masterpiece-graduation",
+    desc: "Full bleed art with frosted glass text overlay",
+    colors: ["#332244", "#ffffff", "#ff0099"],
+    css: `#poster-root {
+  --fp-bg: #332244;
+  --fp-image-filter: saturate(1.2) contrast(1.1);
+  --fp-image-radius: 0px;
+  --fp-heading-font: 'Arial', sans-serif;
+  --fp-heading-size: 2.8em;
+  --fp-heading-color: #ff0099;
+  --fp-heading-weight: 900;
+  --fp-heading-spacing: 0.05em;
+  --fp-subtitle-color: #aa11aa;
+  --fp-subtitle-size: 0.8em;
+  --fp-meta-color: #ff55bb;
+  --fp-meta-size: 0.5em;
+  --fp-quote-font: 'Courier', monospace;
+  --fp-quote-size: 0.9em;
+  --fp-quote-color: #ffffff;
+  --fp-quote-style: normal;
+  --fp-track-font: 'Helvetica', sans-serif;
+  --fp-track-size: 0.42em;
+  --fp-track-color: #222222;
+  --fp-track-num-color: #aaaaaa;
+  --fp-track-columns: 1;
+  --fp-track-gap: 0.2em;
+  --fp-border-color: transparent;
+  --fp-border-width: 0px;
+  --fp-qr-size: 42px;
+  --fp-qr-fg: #ff0099;
+  --fp-qr-bg: transparent;
+  --fp-padding: 0%;
+  --fp-gap: 0em;
+  --fp-bg-art-opacity: 0;
+  --fp-vignette-opacity: 0;
+}`,
+  },
+  {
+    id: "masterpiece-8bit",
+    name: "8-Bit Arcade",
+    layout: "masterpiece-8bit",
+    desc: "Retro game aesthetic with pixelated art and typography.",
+    colors: ["#000000", "#ffffff"],
+    css: `#poster-root {
+  --fp-bg: #000000;
+  --fp-heading-font: 'Press Start 2P', monospace;
+  --fp-heading-size: 1.3em;
+  --fp-heading-color: #ffffff;
+  --fp-subtitle-color: #cccccc;
+  --fp-track-font: 'Press Start 2P', monospace;
+  --fp-track-size: 0.35em;
+  --fp-track-color: #cccccc;
+  --fp-meta-size: 0.35em;
+  --fp-meta-color: #888888;
+  --fp-quote-font: 'Press Start 2P', monospace;
+  --fp-quote-size: 0.45em;
+  --fp-quote-style: normal;
+  --fp-quote-color: #aaaaaa;
+  --fp-border-color: #ffffff;
+  --fp-qr-size: 40px;
+  --fp-qr-fg: #ffffff;
+  --fp-qr-bg: transparent;
+  --fp-image-filter: grayscale(100%) contrast(150%);
+  --fp-border-width: 0px;
+  --fp-padding: 0%;
+  --fp-gap: 0em;
+  --fp-bg-art-opacity: 0;
+  --fp-vignette-opacity: 0;
+}`,
+  },
+  {
+    id: "masterpiece-receipt",
+    name: "Receipt",
+    layout: "masterpiece-receipt",
+    desc: "A stylized supermarket receipt design",
+    colors: ["#f9f9f9", "#111111", "#333333"],
+    css: `#poster-root {
+  --fp-bg: #f9f9f9;
+  --fp-image-filter: grayscale(100%) contrast(1.2);
+  --fp-image-radius: 0px;
+  --fp-heading-font: 'Space Mono', monospace;
+  --fp-heading-size: 1.5em;
+  --fp-heading-color: #111111;
+  --fp-heading-weight: 700;
+  --fp-heading-spacing: -0.05em;
+  --fp-subtitle-color: #333333;
+  --fp-subtitle-size: 0.8em;
+  --fp-meta-color: #111111;
+  --fp-meta-size: 0.6em;
+  --fp-quote-font: 'Space Mono', monospace;
+  --fp-quote-size: 0.7em;
+  --fp-quote-color: #111111;
+  --fp-quote-style: italic;
+  --fp-track-font: 'Space Mono', monospace;
+  --fp-track-size: 0.55em;
+  --fp-track-color: #111111;
+  --fp-track-num-color: #111111;
+  --fp-track-columns: 1;
+  --fp-track-gap: 0.3em;
+  --fp-border-color: #111111;
+  --fp-border-width: 2px;
+  --fp-qr-size: 40px;
+  --fp-qr-fg: #111111;
+  --fp-qr-bg: transparent;
+  --fp-padding: 8% 12%;
+  --fp-gap: 0em;
+  --fp-bg-art-opacity: 0;
+  --fp-vignette-opacity: 0;
+}`,
+  }
 ];
