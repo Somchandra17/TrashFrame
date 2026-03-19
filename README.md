@@ -1,39 +1,40 @@
 # TrashFrame
 
-Turn any **Spotify album** into a stunning, **printable poster** — choose from 15 layout presets, fine-tune album art, tweak typography, and export at 300 DPI for real picture frames.
+Turn any **Spotify album** into a stunning, **printable poster**. Choose from 15 layout presets, fine-tune album art, tweak typography, and export at 300 DPI for real picture frames.
 
 **Live repo:** [github.com/Somchandra17/TrashFrame](https://github.com/Somchandra17/TrashFrame)
+**Live app:** [trash-frame.vercel.app](https://trash-frame.vercel.app/)
 
 ---
 
 ## Features
 
 ### Spotify Integration
-- Paste any **Spotify album link** — tracks, durations, cover art, and URI load instantly via client-credentials flow (proxied through Next.js API routes).
+- Paste any **Spotify album link**. Tracks, durations, cover art, and URI load instantly via a client-credentials flow proxied through Next.js API routes.
 
 ### 15 Poster Layouts
-- **Classic** — Clean album poster with big cover, tracklist, and QR code.
-- **Gallery** — Drake "More Life" inspired cream/dark panel with palette swatches.
-- **Overlay** — Frosted glassmorphism card over a blurred full-bleed cover.
-- **Editorial** — Magazine-style with massive title, italic year, labeled metadata columns.
-- **Bold Block** — Comic-book poster with colored panel, vertical genre strip, thick grid borders.
-- **Immersive** — Full-bleed cover with outlined title and flowing track names over gradient.
-- **Retro** — Crazy 80s synthwave with neon 3D shadows, skewed titles, duo-tone art.
-- **Cassette J-Card** — Three-panel cassette insert with spine, front cover, and tracklist back.
-- **Comic Strip** — Pop-art poster with speech bubbles, price tag, halftone dots.
-- **Retro Playlist** — Vintage polaroid with rotated quote and color swatches.
-- **Wave Overlay** — Floating frosted glass text plate over full album art.
-- **8-Bit Arcade** — Minimal black & white pixelated cover with scanlines (print-safe).
-- **Receipt** — Stylized supermarket receipt with dashed dividers and dotted track rows.
-- **Minimal** — Stripped-down, type-focused layout.
-- **Playlist** — Polaroid-style with palette swatches.
+- **Classic** - Clean album poster with big cover, tracklist, and QR code.
+- **Gallery** - Drake "More Life" inspired cream/dark panel with palette swatches.
+- **Overlay** - Frosted glassmorphism card over a blurred full-bleed cover.
+- **Editorial** - Magazine-style with massive title, italic year, labeled metadata columns.
+- **Bold Block** - Comic-book poster with colored panel, vertical genre strip, thick grid borders.
+- **Immersive** - Full-bleed cover with outlined title and flowing track names over gradient.
+- **Retro** - 80s synthwave with neon shadows, skewed titles, and duo-tone art.
+- **Cassette J-Card** - Three-panel cassette insert with spine, front cover, and tracklist back.
+- **Comic Strip** - Pop-art poster with speech bubbles, price tag, and halftone dots.
+- **Retro Playlist** - Vintage polaroid with rotated quote and color swatches.
+- **Wave Overlay** - Floating frosted glass text plate over full album art.
+- **8-Bit Arcade** - Pixel-driven arcade layout with scanlines and cabinet-inspired framing.
+- **Receipt** - Stylized supermarket receipt with dashed dividers and dotted track rows.
+- **Minimal** - Stripped-down, type-focused layout.
+- **Playlist** - Polaroid-style layout with palette swatches.
 
 ### Album Art Controls
 - **B&W / Color** toggle for the cover art.
-- **Custom Frame Art** — Fine-tune how the artwork fits your poster layout to perfectly match your physical frame:
-  - **Zoom** slider (0.5x–2.0x) — shrink to fit or crop into detail.
-  - **Horizontal & Vertical Position** — shift the crop focus point.
-  - **Brightness & Contrast** sliders — lighten, darken, or punch up the art.
+- **Custom Frame Art** - Fine-tune how the artwork fits your poster layout to match your physical frame:
+  - **Zoom** slider (0.5x-2.0x) - shrink to fit or crop into detail.
+  - **Horizontal & Vertical Position** - shift the crop focus point.
+  - **Brightness & Contrast** sliders - lighten, darken, or punch up the art.
 
 ### Typography & Color
 - Independent **Title Scale** and **Tracklist Scale** sliders.
@@ -46,7 +47,7 @@ Turn any **Spotify album** into a stunning, **printable poster** — choose from
 
 ### Export
 - **PNG** and **PDF** at **300 DPI** for print-ready output.
-- Frame sizes: **4×6"**, **5×7"**, **A5**, **A4**, **30×40 cm**.
+- Frame sizes: **4x6"**, **5x7"**, **A5**, **A4**, **30x40 cm**.
 
 ### Background Effects
 - Blurred album bloom, dominant-color overlay & vignette (ColorThief).
@@ -69,7 +70,11 @@ Open [http://localhost:3000](http://localhost:3000).
 
 1. Create an app in the [Spotify Developer Dashboard](https://developer.spotify.com/dashboard).
 2. Copy your **Client ID** and **Client Secret**.
-3. Create a `.env` file in the project root:
+3. Copy `.env.example` to `.env` in the project root:
+   ```bash
+   cp .env.example .env
+   ```
+4. Add your Spotify credentials:
    ```
    SPOTIFY_CLIENT_ID=your_client_id
    SPOTIFY_CLIENT_SECRET=your_client_secret
@@ -109,10 +114,10 @@ Deploy anywhere that supports Next.js 14 (e.g. Vercel). Ensure album cover host 
 - **Next.js 14** (App Router)
 - **React**
 - **Tailwind CSS** (app UI only; poster is isolated CSS)
-- **ColorThief** — palette extraction
-- **react-qr-code** — QR code generation
-- **html-to-image** — DOM to PNG
-- **jsPDF** — PDF generation
+- **ColorThief** - palette extraction
+- **react-qr-code** - QR code generation
+- **html-to-image** - DOM to PNG
+- **jsPDF** - PDF generation
 
 ---
 
