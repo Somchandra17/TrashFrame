@@ -13,7 +13,7 @@ import "./themes/layouts/jcard.css";
 import "./themes/layouts/comic.css";
 import "./themes/layouts/playlist.css";
 import "./themes/layouts/graduation.css";
-import "./themes/layouts/8bit.css";
+
 import "./themes/layouts/receipt.css";
 import "./themes/layouts/polish.css";
 

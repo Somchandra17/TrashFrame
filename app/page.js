@@ -5,20 +5,24 @@ import { motion, AnimatePresence } from "framer-motion";
 import Poster from "./components/Poster";
 import Sidebar from "./components/Sidebar";
 import HelpModal from "./components/HelpModal";
+import Image from "next/image";
 import { fetchSpotifyItem } from "./lib/spotify";
 import { extractPalette, extractDominantColors } from "./lib/colors";
 import { DEFAULT_FRAME, PRESET_THEMES } from "./lib/constants";
 
 const RECENT_KEY = "trashframe_recent";
 const MAX_RECENT = 6;
+const DEMO_SPOTIFY_URL = "https://open.spotify.com/album/5poA9SAx0Xiz1cf17fWBLS?si=PtJAoI4ORvuLzorUZE9Q_Q";
 
 function loadRecent() {
+  if (typeof window === "undefined") return [];
   try {
     return JSON.parse(localStorage.getItem(RECENT_KEY)) || [];
   } catch { return []; }
 }
 
 function saveRecent(item) {
+  if (typeof window === "undefined") return;
   const recent = loadRecent().filter(r => r.spotifyUrl !== item.spotifyUrl);
   recent.unshift(item);
   localStorage.setItem(RECENT_KEY, JSON.stringify(recent.slice(0, MAX_RECENT)));
@@ -83,16 +87,26 @@ const DEFAULT_OVERRIDES = {
 
 const EMPTY_COLORS = [];
 
+const MOBILE_DISMISSED_KEY = "trashframe_mobile_dismissed";
+
 function MobilePrompt() {
   const [dismissed, setDismissed] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
+    if (typeof window !== "undefined" && localStorage.getItem(MOBILE_DISMISSED_KEY)) {
+      setDismissed(true);
+    }
     const check = () => setIsMobile(window.innerWidth < 1024);
     check();
     window.addEventListener("resize", check);
     return () => window.removeEventListener("resize", check);
   }, []);
+
+  const handleDismiss = () => {
+    setDismissed(true);
+    localStorage.setItem(MOBILE_DISMISSED_KEY, "1");
+  };
 
   const show = isMobile && !dismissed;
 
@@ -128,7 +142,7 @@ function MobilePrompt() {
             </p>
             <div className="mobile-prompt-actions">
               <button
-                onClick={() => setDismissed(true)}
+                onClick={handleDismiss}
                 className="mobile-prompt-continue"
               >
                 Continue Anyway
@@ -181,7 +195,9 @@ export default function Home() {
   const [fullscreen, setFullscreen] = useState(false);
   const [helpOpen, setHelpOpen] = useState(false);
   const [recentItems, setRecentItems] = useState([]);
+  const [isExporting, setIsExporting] = useState(false);
   const undoRef = useRef({ past: [], future: [] });
+  const [undoVersion, setUndoVersion] = useState(0);
 
   const currentPreset = (!customTheme && activePreset !== "default") 
     ? PRESET_THEMES.find((p) => p.id === activePreset) 
@@ -235,6 +251,7 @@ export default function Home() {
           undoRef.current.future = [];
           return { ...prev, gradientColors: colors };
         });
+        setUndoVersion(v => v + 1);
       })
       .catch(() => {});
     return () => { cancelled = true; };
@@ -257,17 +274,19 @@ export default function Home() {
   }, [fullscreen]);
 
   const handleOverridesChange = useCallback((next) => {
-    if (!next.gradientBg) {
-      next.gradientColors = null;
-    } else if (next.gradientBg && !next.gradientColors) {
-      next.gradientColors = null;
+    const cleaned = { ...next };
+    if (!cleaned.gradientBg) {
+      cleaned.gradientColors = null;
+    } else if (cleaned.gradientBg && !cleaned.gradientColors) {
+      cleaned.gradientColors = null;
     }
     setPosterOverrides(prev => {
       undoRef.current.past.push(prev);
       if (undoRef.current.past.length > 50) undoRef.current.past.shift();
       undoRef.current.future = [];
-      return next;
+      return cleaned;
     });
+    setUndoVersion(v => v + 1);
   }, []);
 
   const handleUndo = useCallback(() => {
@@ -278,6 +297,7 @@ export default function Home() {
       undoRef.current.future.push(current);
       return prev;
     });
+    setUndoVersion(v => v + 1);
   }, []);
 
   const handleRedo = useCallback(() => {
@@ -288,6 +308,7 @@ export default function Home() {
       undoRef.current.past.push(current);
       return next;
     });
+    setUndoVersion(v => v + 1);
   }, []);
 
   useEffect(() => {
@@ -342,6 +363,7 @@ export default function Home() {
       setAlbum(data);
       setPosterOverrides(DEFAULT_OVERRIDES);
       undoRef.current = { past: [], future: [] };
+      setUndoVersion(v => v + 1);
       const entry = { name: data.name, artists: data.artists, coverUrl: data.coverUrl, spotifyUrl: data.spotifyUrl };
       saveRecent(entry);
       setRecentItems(loadRecent());
@@ -401,6 +423,9 @@ export default function Home() {
     varOverrides.push(`--fp-border-color: ${o.fontColor}`);
     varOverrides.push(`--fp-qr-fg: ${o.fontColor}`);
   }
+  if (o.codeColor) {
+    varOverrides.push(`--fp-qr-fg: ${o.codeColor}`);
+  }
   if (o.hideDate) selectorOverrides.push(`#poster-root .poster-date { display: none !important; }`);
   if (o.hideArtist) selectorOverrides.push(`#poster-root .poster-artist { display: none !important; } #poster-root .poster-track-artists { display: none !important; }`);
   if (o.quoteFont) {
@@ -414,10 +439,10 @@ export default function Home() {
     varOverrides.push(`--fp-image-filter: ${artFilters.join(' ')}`);
   }
   if (o.artZoom != null && o.artZoom !== 1.0) {
-    selectorOverrides.push(`#poster-root .poster-cover, #poster-root .poster-8bit-cover, #poster-root .poster-cover-fullbleed, #poster-root .poster-cover-hero, #poster-root .poster-cover-bg { transform: scale(${o.artZoom}) !important; }`);
+    selectorOverrides.push(`#poster-root .poster-cover, #poster-root .poster-cover-fullbleed, #poster-root .poster-cover-hero, #poster-root .poster-cover-bg { transform: scale(${o.artZoom}) !important; }`);
   }
   if ((o.artPosX != null && o.artPosX !== 50) || (o.artPosY != null && o.artPosY !== 50)) {
-    selectorOverrides.push(`#poster-root .poster-cover, #poster-root .poster-8bit-cover, #poster-root .poster-cover-fullbleed, #poster-root .poster-cover-hero, #poster-root .poster-cover-bg { object-position: ${o.artPosX ?? 50}% ${o.artPosY ?? 50}% !important; }`);
+    selectorOverrides.push(`#poster-root .poster-cover, #poster-root .poster-cover-fullbleed, #poster-root .poster-cover-hero, #poster-root .poster-cover-bg { object-position: ${o.artPosX ?? 50}% ${o.artPosY ?? 50}% !important; }`);
   }
 
   let overridesCss = "";
@@ -433,66 +458,119 @@ export default function Home() {
       <>
         <MobilePrompt />
         <div className="landing-page">
-          <div className="landing-accent accent-1" />
-          <div className="landing-accent accent-2" />
-          <div className="landing-accent accent-3" />
+          <div className="landing-shell">
+            <motion.div
+              className="landing-center"
+              initial={{ opacity: 0, y: 16 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.55, ease: [0.4, 0, 0.2, 1] }}
+            >
+              <motion.span
+                className="landing-kicker"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.45, delay: 0.05, ease: [0.4, 0, 0.2, 1] }}
+              >
+                Album to poster
+              </motion.span>
+              <motion.h1
+                className="landing-title"
+                initial={{ opacity: 0, y: 14 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.55, delay: 0.1, ease: [0.4, 0, 0.2, 1] }}
+              >
+                Turn your favorite albums
+                <span className="landing-title-break">into something you can hang.</span>
+              </motion.h1>
+              <motion.p
+                className="landing-subtitle"
+                initial={{ opacity: 0, y: 14 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.55, delay: 0.16, ease: [0.4, 0, 0.2, 1] }}
+              >
+                Paste a Spotify album link and generate a clean, customizable poster in a few seconds.
+              </motion.p>
 
-          <div className="landing-doodles">
-            <svg className="doodle" width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="#18181b" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M9 18V5l12-2v13" /><circle cx="6" cy="18" r="3" /><circle cx="18" cy="16" r="3" />
-            </svg>
-            <svg className="doodle" width="100" height="100" viewBox="0 0 24 24" fill="none" stroke="#18181b" strokeWidth="1" strokeLinecap="round">
-              <circle cx="12" cy="12" r="10" /><circle cx="12" cy="12" r="6" /><circle cx="12" cy="12" r="2" />
-            </svg>
-            <svg className="doodle" width="70" height="70" viewBox="0 0 24 24" fill="none" stroke="#18181b" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M3 18v-6a9 9 0 0 1 18 0v6" /><path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z" />
-            </svg>
-            <svg className="doodle" width="90" height="90" viewBox="0 0 24 24" fill="none" stroke="#18181b" strokeWidth="1" strokeLinecap="round">
-              <rect x="2" y="3" width="20" height="18" rx="1" /><rect x="5" y="6" width="14" height="12" rx="0.5" />
-            </svg>
-            <svg className="doodle" width="65" height="65" viewBox="0 0 24 24" fill="none" stroke="#18181b" strokeWidth="1.2" strokeLinecap="round">
-              <rect x="4" y="2" width="16" height="20" rx="2" /><circle cx="12" cy="14" r="4" /><circle cx="12" cy="14" r="1.5" /><circle cx="12" cy="6" r="1.5" />
-            </svg>
-            <svg className="doodle" width="85" height="85" viewBox="0 0 24 24" fill="none" stroke="#18181b" strokeWidth="1" strokeLinecap="round">
-              <rect x="1" y="4" width="22" height="16" rx="2" /><circle cx="8" cy="12" r="3" /><circle cx="16" cy="12" r="3" /><path d="M8 15h8" /><path d="M6 20h12" />
-            </svg>
-            <svg className="doodle" width="50" height="50" viewBox="0 0 24 24" fill="none" stroke="#18181b" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M12 2l2.09 6.26L20 9.27l-4.74 3.74L16.18 20 12 16.77 7.82 20l.92-6.99L4 9.27l5.91-1.01z" />
-            </svg>
-            <svg className="doodle" width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="#18181b" strokeWidth="1.2" strokeLinecap="round">
-              <path d="M12 3v10.55A4 4 0 1 0 14 17V7h4V3h-6z" />
-            </svg>
+              <motion.form
+                onSubmit={handleGenerate}
+                className="landing-form"
+                initial={{ opacity: 0, y: 14 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.55, delay: 0.22, ease: [0.4, 0, 0.2, 1] }}
+              >
+                <input
+                  type="text"
+                  value={url}
+                  onChange={(e) => setUrl(e.target.value)}
+                  placeholder="Paste a Spotify link..."
+                  className="landing-input"
+                />
+                <button type="submit" disabled={loading || !url.trim()} className="landing-btn">
+                  {loading ? <><span className="landing-spinner" />Working...</> : "Create"}
+                </button>
+              </motion.form>
+
+              <motion.div
+                className="landing-actions"
+                initial={{ opacity: 0, y: 14 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.55, delay: 0.28, ease: [0.4, 0, 0.2, 1] }}
+              >
+                <button
+                  type="button"
+                  className="landing-link-btn"
+                  onClick={() => {
+                    setUrl(DEMO_SPOTIFY_URL);
+                    loadSpotifyItem(DEMO_SPOTIFY_URL);
+                  }}
+                  disabled={loading}
+                >
+                  Try demo album
+                </button>
+                <span className="landing-meta">Albums, tracks, and playlists. PNG + PDF export.</span>
+              </motion.div>
+
+              {error && <p className="landing-error">{error}</p>}
+            </motion.div>
+
+            <motion.div
+              className="landing-showcase"
+              initial={{ opacity: 0, scale: 0.96 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.8, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
+            >
+              <motion.div
+                className="landing-showcase-card landing-showcase-card-top"
+                animate={{ y: [0, -6, 0], rotate: [0, 1.2, 0] }}
+                transition={{ duration: 6.5, repeat: Infinity, ease: "easeInOut" }}
+              >
+                Framed print
+              </motion.div>
+              <motion.div
+                className="landing-showcase-card landing-showcase-card-bottom"
+                animate={{ y: [0, 7, 0], rotate: [0, -1.2, 0] }}
+                transition={{ duration: 7.2, repeat: Infinity, ease: "easeInOut", delay: 0.6 }}
+              >
+                Album art
+              </motion.div>
+              <motion.div
+                className="landing-showcase-image-wrap"
+                animate={{ y: [0, -10, 0], rotate: [-1.2, 1.2, -1.2] }}
+                transition={{ duration: 9, repeat: Infinity, ease: "easeInOut" }}
+              >
+                <Image
+                  src="/images/hero-frame-transparent.png"
+                  alt="Framed album poster preview"
+                  width={480}
+                  height={280}
+                  className="landing-showcase-img"
+                  priority
+                />
+              </motion.div>
+            </motion.div>
           </div>
 
-          <motion.div
-            className="landing-content"
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, ease: [0.4, 0, 0.2, 1] }}
-          >
-            <h1 className="landing-title">TrashFrame</h1>
-            <p className="landing-subtitle">Turn any Spotify album or song into a printable poster</p>
-
-            <form onSubmit={handleGenerate} className="landing-form">
-              <input
-                type="text"
-                value={url}
-                onChange={(e) => setUrl(e.target.value)}
-                placeholder="Paste a Spotify album or song link..."
-                className="landing-input"
-              />
-              <button type="submit" disabled={loading || !url.trim()} className="landing-btn">
-                {loading ? <><span className="landing-spinner" />Generating...</> : "Generate"}
-              </button>
-            </form>
-
-            {error && <p className="landing-error">{error}</p>}
-
-            <div className="landing-tag">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><rect x="3" y="3" width="18" height="18" rx="2" /><rect x="7" y="7" width="10" height="10" rx="1" /></svg>
-              Frame it. Print it. Hang it.
-            </div>
-
+          <div className="landing-bottom">
             {recentItems.length > 0 && (
               <div className="recent-section">
                 <div className="recent-header">
@@ -512,8 +590,18 @@ export default function Home() {
                       onClick={() => handleSelectRecent(item.spotifyUrl)}
                       disabled={loading}
                     >
-                      {item.coverUrl && (
-                        <img src={item.coverUrl} alt="" className="recent-card-img" crossOrigin="anonymous" />
+                      {item.coverUrl ? (
+                        <Image
+                          src={item.coverUrl}
+                          alt=""
+                          width={28}
+                          height={28}
+                          className="recent-card-img"
+                          unoptimized
+                          onError={(e) => { e.currentTarget.style.display = "none"; }}
+                        />
+                      ) : (
+                        <span className="recent-card-img-placeholder" />
                       )}
                       <div className="recent-card-info">
                         <span className="recent-card-name">{item.name}</span>
@@ -524,16 +612,16 @@ export default function Home() {
                 </div>
               </div>
             )}
-
-            <AuthorCredit className="mt-6" />
-          </motion.div>
+            <AuthorCredit />
+          </div>
         </div>
       </>
     );
   }
 
-  const canUndo = undoRef.current.past.length > 0;
-  const canRedo = undoRef.current.future.length > 0;
+  // undoVersion triggers re-evaluation when undo history changes
+  const canUndo = undoVersion >= 0 && undoRef.current.past.length > 0;
+  const canRedo = undoVersion >= 0 && undoRef.current.future.length > 0;
 
   return (
     <>
@@ -574,7 +662,22 @@ export default function Home() {
                   codeType={posterOverrides.codeType}
                   albumColors={albumColors}
                   barColor={paletteData?.barColor}
+                  codeColor={posterOverrides.codeColor}
                 />
+                <AnimatePresence>
+                  {isExporting && (
+                    <motion.div
+                      className="export-overlay"
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      exit={{ opacity: 0 }}
+                      transition={{ duration: 0.2 }}
+                    >
+                      <span className="export-overlay-spinner" />
+                      <span className="export-overlay-text">Rendering&hellip;</span>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
               </motion.div>
             </div>
             <div className="editor-preview-footer">
@@ -620,6 +723,7 @@ export default function Home() {
             canUndo={canUndo}
             canRedo={canRedo}
             onHelpOpen={() => setHelpOpen(true)}
+            onExportingChange={setIsExporting}
           />
         )}
       </div>

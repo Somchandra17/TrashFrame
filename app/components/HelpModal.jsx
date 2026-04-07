@@ -124,6 +124,15 @@ export default function HelpModal({ open, onClose }) {
           </section>
 
           <section className="help-modal-section">
+            <h3 className="help-modal-step-title">Keyboard Shortcuts</h3>
+            <div className="help-modal-shortcuts">
+              <div className="help-shortcut-row"><kbd className="help-kbd">Ctrl+Z</kbd><span>Undo override change</span></div>
+              <div className="help-shortcut-row"><kbd className="help-kbd">Ctrl+Shift+Z</kbd><span>Redo override change</span></div>
+              <div className="help-shortcut-row"><kbd className="help-kbd">Esc</kbd><span>Exit fullscreen preview</span></div>
+            </div>
+          </section>
+
+          <section className="help-modal-section">
             <h3 className="help-modal-step-title">AI Prompt for custom themes</h3>
             <p>
               Paste this into ChatGPT or Claude to generate a theme:

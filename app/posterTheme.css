@@ -180,6 +180,10 @@
   justify-content: flex-end;
   flex-shrink: 0;
 }
+.poster-code-wrap[style*="color"] .poster-spotify-code path,
+.poster-code-wrap[style*="color"] .poster-spotify-code rect {
+  fill: currentColor;
+}
 .poster-spotify-code {
   height: var(--fp-qr-size);
   width: auto;

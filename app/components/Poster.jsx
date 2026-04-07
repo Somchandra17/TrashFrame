@@ -6,6 +6,14 @@ import { useState, useEffect } from "react";
 
 /* eslint-disable @next/next/no-img-element */
 
+function isLightColor(hex) {
+  const c = hex.replace("#", "");
+  const r = parseInt(c.substring(0, 2), 16);
+  const g = parseInt(c.substring(2, 4), 16);
+  const b = parseInt(c.substring(4, 6), 16);
+  return (r * 299 + g * 587 + b * 114) / 1000 > 150;
+}
+
 /* ═══════════════════════ DECORATIVE SVG ELEMENTS ═══════════════════════ */
 
 function VinylRecord({ className = "", size = 80, color = "currentColor" }) {
@@ -149,7 +157,7 @@ function Cover({ src, name, className }) {
   );
 }
 
-function BottomCode({ url, uri, codeType, barColor }) {
+function BottomCode({ url, uri, codeType, barColor, codeColor }) {
   const bar = barColor || "black";
   const [svgStr, setSvgStr] = useState("");
   const [qrFg, setQrFg] = useState("#111");
@@ -160,7 +168,7 @@ function BottomCode({ url, uri, codeType, barColor }) {
     if (!root) return;
     const val = getComputedStyle(root).getPropertyValue("--fp-qr-fg").trim();
     setQrFg(val || "#111");
-  });
+  }, [codeType, codeColor]);
 
   useEffect(() => {
     if (codeType !== "scannable" || !uri) {
@@ -169,8 +177,9 @@ function BottomCode({ url, uri, codeType, barColor }) {
     }
 
     const controller = new AbortController();
-    const bg = bar === "black" ? "ffffff" : "000000";
-    const src = `https://scannables.scdn.co/uri/plain/svg/${bg}/${bar}/640/${uri}`;
+    const fetchBar = codeColor ? (isLightColor(codeColor) ? "white" : "black") : bar;
+    const bg = fetchBar === "black" ? "ffffff" : "000000";
+    const src = `https://scannables.scdn.co/uri/plain/svg/${bg}/${fetchBar}/640/${uri}`;
 
     fetch(src, { signal: controller.signal })
       .then((res) => {
@@ -180,9 +189,7 @@ function BottomCode({ url, uri, codeType, barColor }) {
         return res.text();
       })
       .then((text) => {
-        // Remove the first background rect so it is purely transparent, to support html-to-image exports
         let transparentSvg = text.replace(/<rect[^>]*fill="[^"]*"[^>]*\/>/i, "");
-        // Inject our scaling class dynamically
         transparentSvg = transparentSvg.replace("<svg ", '<svg class="poster-spotify-code" ');
         setSvgStr(transparentSvg);
       })
@@ -194,21 +201,26 @@ function BottomCode({ url, uri, codeType, barColor }) {
       });
 
     return () => controller.abort();
-  }, [codeType, uri, bar]);
+  }, [codeType, uri, bar, codeColor]);
+
+  const codeStyle = codeColor ? { color: codeColor } : undefined;
 
   if (codeType === "scannable" && uri) {
     if (!svgStr) return <div className="poster-code-wrap" style={{ height: 'var(--fp-qr-size)' }} />;
     return (
       <div 
         className="poster-code-wrap" 
+        style={codeStyle}
         dangerouslySetInnerHTML={{ __html: svgStr }} 
       />
     );
   }
 
+  const finalQrFg = codeColor || qrFg;
+
   return (
     <div className="poster-qr-wrap">
-      <QRCode value={url} size={48} fgColor={qrFg} bgColor="transparent" />
+      <QRCode value={url} size={48} fgColor={finalQrFg} bgColor="transparent" />
     </div>
   );
 }
@@ -284,13 +296,10 @@ function getRetroPanelLabel(album) {
   return isTrackItem(album) ? "TRACK DATA" : "SIDE A / SIDE B";
 }
 
-function getArcadePanelLabel(album) {
-  return isTrackItem(album) ? "TRACK SELECT" : "STAGE SELECT";
-}
 
 /* ═══════════════════════ CLASSIC ═══════════════════════ */
 
-function LayoutClassic({ album, quote, codeType, barColor }) {
+function LayoutClassic({ album, quote, codeType, barColor, codeColor }) {
   return (
     <>
       <TextureOverlay type="grain" />
@@ -309,7 +318,7 @@ function LayoutClassic({ album, quote, codeType, barColor }) {
           {album.tracks.map((t) => <TrackRow key={t.number} t={t} />)}
         </div>
         <div className="poster-bottom-right">
-          <BottomCode url={album.spotifyUrl} uri={album.uri} codeType={codeType} barColor={barColor} />
+          <BottomCode url={album.spotifyUrl} uri={album.uri} codeType={codeType} barColor={barColor} codeColor={codeColor} />
         </div>
       </div>
     </>
@@ -318,7 +327,7 @@ function LayoutClassic({ album, quote, codeType, barColor }) {
 
 /* ═══════════════════════ GALLERY (Drake "More Life") ═══════════════════════ */
 
-function LayoutGallery({ album, quote, codeType, albumColors, barColor }) {
+function LayoutGallery({ album, quote, codeType, albumColors, barColor, codeColor }) {
   const swatches = (albumColors && albumColors.length >= 2) ? albumColors.slice(0, 5) : null;
   return (
     <>
@@ -350,7 +359,7 @@ function LayoutGallery({ album, quote, codeType, albumColors, barColor }) {
         </div>
         <div className="poster-gallery-footer-right">
           <Signature artistName={album.artists} />
-          <BottomCode url={album.spotifyUrl} uri={album.uri} codeType={codeType} barColor={barColor} />
+          <BottomCode url={album.spotifyUrl} uri={album.uri} codeType={codeType} barColor={barColor} codeColor={codeColor} />
           <p className="poster-artist">{album.artists}</p>
           <p className="poster-title poster-title-sm">{album.name}</p>
         </div>
@@ -361,7 +370,7 @@ function LayoutGallery({ album, quote, codeType, albumColors, barColor }) {
 
 /* ═══════════════════════ EDITORIAL (Beatles "Hey Jude") ═══════════════════════ */
 
-function LayoutEditorial({ album, quote, codeType, barColor }) {
+function LayoutEditorial({ album, quote, codeType, barColor, codeColor }) {
   return (
     <>
       <div className="poster-editorial-topline">
@@ -395,7 +404,7 @@ function LayoutEditorial({ album, quote, codeType, barColor }) {
           </div>
           <div className="poster-editorial-meta-col poster-editorial-code-col">
             <span className="poster-meta-label">Listen</span>
-            <BottomCode url={album.spotifyUrl} uri={album.uri} codeType={codeType} barColor={barColor} />
+            <BottomCode url={album.spotifyUrl} uri={album.uri} codeType={codeType} barColor={barColor} codeColor={codeColor} />
           </div>
         </div>
       </div>
@@ -405,7 +414,7 @@ function LayoutEditorial({ album, quote, codeType, barColor }) {
 
 /* ═══════════════════════ BOLD BLOCK (Billie "No Time To Die") ═══════════════════════ */
 
-function LayoutBoldBlock({ album, quote, codeType, barColor }) {
+function LayoutBoldBlock({ album, quote, codeType, barColor, codeColor }) {
   return (
     <>
       <TextureOverlay type="halftone" />
@@ -436,7 +445,7 @@ function LayoutBoldBlock({ album, quote, codeType, barColor }) {
 
 /* ═══════════════════════ MINIMAL ═══════════════════════ */
 
-function LayoutMinimal({ album, quote, codeType, barColor }) {
+function LayoutMinimal({ album, quote, codeType, barColor, codeColor }) {
   return (
     <>
       <div className="poster-minimal-topline">
@@ -464,7 +473,7 @@ function LayoutMinimal({ album, quote, codeType, barColor }) {
         </p>
         <div className="poster-minimal-meta-row">
           <span className="poster-meta">{album.releaseDate} &bull; {getCountLabel(album)} &bull; {album.totalDuration}</span>
-          <BottomCode url={album.spotifyUrl} uri={album.uri} codeType={codeType} barColor={barColor} />
+          <BottomCode url={album.spotifyUrl} uri={album.uri} codeType={codeType} barColor={barColor} codeColor={codeColor} />
         </div>
       </div>
     </>
@@ -475,7 +484,7 @@ function LayoutMinimal({ album, quote, codeType, barColor }) {
 
 /* ═══════════════════════ IMMERSIVE (SZA "SOS") ═══════════════════════ */
 
-function LayoutImmersive({ album, quote, codeType, barColor }) {
+function LayoutImmersive({ album, quote, codeType, barColor, codeColor }) {
   return (
     <>
       <Cover src={album.coverUrl} name={album.name} className="poster-cover-fullbleed" />
@@ -500,7 +509,7 @@ function LayoutImmersive({ album, quote, codeType, barColor }) {
           <span className="poster-meta">
             {album.releaseDate} &bull; {getCountLabel(album)} &bull; {album.totalDuration}
           </span>
-          <BottomCode url={album.spotifyUrl} uri={album.uri} codeType={codeType} barColor={barColor} />
+          <BottomCode url={album.spotifyUrl} uri={album.uri} codeType={codeType} barColor={barColor} codeColor={codeColor} />
         </div>
       </div>
     </>
@@ -509,7 +518,7 @@ function LayoutImmersive({ album, quote, codeType, barColor }) {
 
 /* ═══════════════════════ RETRO (Disco poster) ═══════════════════════ */
 
-function LayoutRetro({ album, quote, codeType, barColor }) {
+function LayoutRetro({ album, quote, codeType, barColor, codeColor }) {
   return (
     <>
       <TextureOverlay type="vintage" />
@@ -544,7 +553,7 @@ function LayoutRetro({ album, quote, codeType, barColor }) {
         <StarRating rating={5} className="poster-retro-stars" />
         <div className="poster-retro-meta-row">
           <span className="poster-meta">{album.releaseDate} &bull; {album.totalDuration}</span>
-          <BottomCode url={album.spotifyUrl} uri={album.uri} codeType={codeType} barColor={barColor} />
+          <BottomCode url={album.spotifyUrl} uri={album.uri} codeType={codeType} barColor={barColor} codeColor={codeColor} />
         </div>
       </div>
     </>
@@ -553,7 +562,7 @@ function LayoutRetro({ album, quote, codeType, barColor }) {
 
 /* ═══════════════════════ OVERLAY (Kanye "Graduation") ═══════════════════════ */
 
-function LayoutOverlay({ album, quote, codeType, barColor }) {
+function LayoutOverlay({ album, quote, codeType, barColor, codeColor }) {
   return (
     <>
       <Cover src={album.coverUrl} name={album.name} className="poster-cover-bg" />
@@ -570,7 +579,7 @@ function LayoutOverlay({ album, quote, codeType, barColor }) {
         {quote && <p className="poster-quote">&ldquo;{quote}&rdquo;</p>}
         <SoundWave className="poster-overlay-wave" width={140} height={30} bars={40} />
         <div className="poster-overlay-bottom">
-          <BottomCode url={album.spotifyUrl} uri={album.uri} codeType={codeType} barColor={barColor} />
+          <BottomCode url={album.spotifyUrl} uri={album.uri} codeType={codeType} barColor={barColor} codeColor={codeColor} />
           <p className="poster-meta">{album.totalDuration} &bull; {album.releaseDate}</p>
         </div>
       </div>
@@ -580,7 +589,7 @@ function LayoutOverlay({ album, quote, codeType, barColor }) {
 
 /* ═══════════════════════ MASTERPIECE: J-CARD ═══════════════════════ */
 
-function LayoutMasterpieceJCard({ album, quote, codeType, barColor }) {
+function LayoutMasterpieceJCard({ album, quote, codeType, barColor, codeColor }) {
   return (
     <>
       <div className="jcard-spine">
@@ -592,7 +601,7 @@ function LayoutMasterpieceJCard({ album, quote, codeType, barColor }) {
         </div>
         <div className="jcard-spine-text">{album.artists} &mdash; {album.name}</div>
         <div className="jcard-spine-bottom">
-          <BottomCode url={album.spotifyUrl} uri={album.uri} codeType={codeType} barColor={barColor} />
+          <BottomCode url={album.spotifyUrl} uri={album.uri} codeType={codeType} barColor={barColor} codeColor={codeColor} />
         </div>
       </div>
       <div className="jcard-front">
@@ -614,7 +623,7 @@ function LayoutMasterpieceJCard({ album, quote, codeType, barColor }) {
 
 /* ═══════════════════════ MASTERPIECE: COMIC ═══════════════════════ */
 
-function LayoutMasterpieceComic({ album, quote, codeType, barColor }) {
+function LayoutMasterpieceComic({ album, quote, codeType, barColor, codeColor }) {
   return (
     <>
       <TextureOverlay type="halftone" />
@@ -634,7 +643,7 @@ function LayoutMasterpieceComic({ album, quote, codeType, barColor }) {
           {album.tracks.map((t) => <TrackRow key={t.number} t={t} hideArtists />)}
         </div>
         <div className="comic-footer-right">
-          <BottomCode url={album.spotifyUrl} uri={album.uri} codeType={codeType} barColor={barColor} />
+          <BottomCode url={album.spotifyUrl} uri={album.uri} codeType={codeType} barColor={barColor} codeColor={codeColor} />
         </div>
       </div>
     </>
@@ -643,7 +652,7 @@ function LayoutMasterpieceComic({ album, quote, codeType, barColor }) {
 
 /* ═══════════════════════ MASTERPIECE: PLAYLIST ═══════════════════════ */
 
-function LayoutMasterpiecePlaylist({ album, quote, codeType, albumColors, barColor }) {
+function LayoutMasterpiecePlaylist({ album, quote, codeType, albumColors, barColor, codeColor }) {
   const swatches = (albumColors && albumColors.length >= 2) ? albumColors.slice(0, 5) : null;
   return (
     <>
@@ -668,7 +677,7 @@ function LayoutMasterpiecePlaylist({ album, quote, codeType, albumColors, barCol
             </div>
           )}
           <Signature artistName={album.artists} />
-          <BottomCode url={album.spotifyUrl} uri={album.uri} codeType={codeType} barColor={barColor} />
+          <BottomCode url={album.spotifyUrl} uri={album.uri} codeType={codeType} barColor={barColor} codeColor={codeColor} />
         </div>
       </div>
     </>
@@ -677,7 +686,7 @@ function LayoutMasterpiecePlaylist({ album, quote, codeType, albumColors, barCol
 
 /* ═══════════════════════ MASTERPIECE: GRADUATION ═══════════════════════ */
 
-function LayoutMasterpieceGraduation({ album, quote, codeType, barColor }) {
+function LayoutMasterpieceGraduation({ album, quote, codeType, barColor, codeColor }) {
   return (
     <>
       <Cover src={album.coverUrl} name={album.name} className="grad-bg" />
@@ -697,7 +706,7 @@ function LayoutMasterpieceGraduation({ album, quote, codeType, barColor }) {
             <p className="poster-meta">{getCountAndDuration(album)}</p>
           </div>
           <div className="grad-footer-right">
-            <BottomCode url={album.spotifyUrl} uri={album.uri} codeType={codeType} barColor={barColor} />
+            <BottomCode url={album.spotifyUrl} uri={album.uri} codeType={codeType} barColor={barColor} codeColor={codeColor} />
             <SoundWave className="poster-decor-wave" width={80} height={20} bars={20} />
           </div>
         </div>
@@ -706,62 +715,10 @@ function LayoutMasterpieceGraduation({ album, quote, codeType, barColor }) {
   );
 }
 
-/* ═══════════════════════ MASTERPIECE: 8-BIT ARCADE ═══════════════════════ */
 
-function LayoutMasterpiece8Bit({ album, quote, codeType, barColor }) {
-  const hiScore = isTrackItem(album)
-    ? String((album.popularity ?? album.trackNumber ?? 1) * 1000).padStart(6, "0")
-    : String(album.totalTracks * 1250).padStart(6, "0");
-
-  return (
-    <>
-      <div className="poster-8bit-grid" />
-      <div className="poster-8bit-scanlines" />
-      <div className="poster-8bit-content">
-        <div className="poster-8bit-hud">
-          <span className="poster-8bit-chip">1UP {album.releaseYear || "0000"}</span>
-          <span className="poster-8bit-chip">HI-SCORE {hiScore}</span>
-          <span className="poster-8bit-chip">TIME {album.totalDuration}</span>
-        </div>
-        <div className="poster-8bit-marquee">
-          <span className="poster-8bit-label">{getPosterTypeLabel(album)}</span>
-          <h1 className="poster-title">{album.name}</h1>
-          <p className="poster-8bit-artist">PLAYER 1: {album.artists}</p>
-        </div>
-        <div className="poster-8bit-main">
-          <div className="poster-8bit-art-container">
-            <span className="poster-8bit-art-label">NOW LOADING</span>
-            <Cover src={album.coverUrl} name={album.name} className="poster-8bit-cover" />
-          </div>
-          <div className="poster-8bit-panel">
-            <div className="poster-8bit-panel-header">
-              <span>{getArcadePanelLabel(album)}</span>
-              <span>{getCountLabelUpper(album)}</span>
-            </div>
-            <div className="poster-8bit-tracklist">
-              {album.tracks.map((t) => (
-                <TrackRow key={t.number} t={t} hideArtists hideDur />
-              ))}
-            </div>
-          </div>
-        </div>
-        {quote && <p className="poster-quote">&ldquo;{quote}&rdquo;</p>}
-        <div className="poster-bottom-row">
-          <div className="poster-8bit-footer-left">
-            <span className="poster-8bit-press">PRESS START</span>
-            <span className="poster-8bit-credit">CREDIT 01 / {album.releaseYear || "----"}</span>
-          </div>
-          <div className="poster-8bit-code-frame">
-            <BottomCode url={album.spotifyUrl} uri={album.uri} codeType={codeType} barColor={barColor} />
-          </div>
-        </div>
-      </div>
-    </>
-  );
-}
 /* ═══════════════════════ MASTERPIECE: RECEIPT ═══════════════════════ */
 
-function LayoutMasterpieceReceipt({ album, quote, codeType, barColor }) {
+function LayoutMasterpieceReceipt({ album, quote, codeType, barColor, codeColor }) {
   return (
     <>
       <div className="receipt-container">
@@ -787,7 +744,7 @@ function LayoutMasterpieceReceipt({ album, quote, codeType, barColor }) {
           <div className="receipt-divider" />
           {quote && <p className="poster-quote">&ldquo;{quote}&rdquo;</p>}
           <div className="receipt-barcode">
-            <BottomCode url={album.spotifyUrl} uri={album.uri} codeType={codeType} barColor={barColor} />
+            <BottomCode url={album.spotifyUrl} uri={album.uri} codeType={codeType} barColor={barColor} codeColor={codeColor} />
           </div>
           <p className="poster-meta receipt-thanks">*** THANK YOU ***</p>
         </div>
@@ -809,11 +766,11 @@ const LAYOUTS = {
   "masterpiece-comic": LayoutMasterpieceComic,
   "masterpiece-playlist": LayoutMasterpiecePlaylist,
   "masterpiece-graduation": LayoutMasterpieceGraduation,
-  "masterpiece-8bit": LayoutMasterpiece8Bit,
+
   "masterpiece-receipt": LayoutMasterpieceReceipt,
 };
 
-export default function Poster({ album, quote, frameSize, layout, codeType, albumColors, barColor }) {
+export default function Poster({ album, quote, frameSize, layout, codeType, albumColors, barColor, codeColor }) {
   if (!album) return null;
 
   const aspect = frameAspect(frameSize);
@@ -847,6 +804,7 @@ export default function Poster({ album, quote, frameSize, layout, codeType, albu
           codeType={codeType || "qr"}
           albumColors={albumColors}
           barColor={barColor}
+          codeColor={codeColor}
         />
       </div>
       {/* Layer 5 — edge vignette */}

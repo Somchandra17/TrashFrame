@@ -2,6 +2,7 @@
 
 import { useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import Image from "next/image";
 import { FRAME_SIZES, DEFAULT_THEME_CSS, PRESET_THEMES, AI_THEME_PROMPT } from "../lib/constants";
 import { downloadPng, downloadPdf } from "../lib/export";
 
@@ -184,6 +185,7 @@ export default function Sidebar({
   canUndo,
   canRedo,
   onHelpOpen,
+  onExportingChange,
 }) {
   const fileRef = useRef(null);
   const [exporting, setExporting] = useState(null);
@@ -237,6 +239,7 @@ export default function Sidebar({
   async function handleExport(type) {
     setExporting(type);
     setExportError("");
+    onExportingChange?.(true);
     try {
       if (type === "png") await downloadPng(frameSize, itemName, exportDpi);
       else await downloadPdf(frameSize, itemName, exportDpi);
@@ -247,6 +250,7 @@ export default function Sidebar({
       setExportError(err.message || "Export failed. Try again.");
     } finally {
       setExporting(null);
+      onExportingChange?.(false);
     }
   }
 
@@ -312,7 +316,7 @@ export default function Sidebar({
         </div>
         <div className="sidebar-header-info">
           {coverUrl && (
-            <img src={coverUrl} alt="" className="sidebar-header-thumb" crossOrigin="anonymous" />
+            <Image src={coverUrl} alt="" width={32} height={32} className="sidebar-header-thumb" unoptimized />
           )}
           <span className="sidebar-header-album">{albumName || itemName}{artistName ? ` - ${artistName}` : ""}</span>
         </div>
@@ -423,7 +427,7 @@ export default function Sidebar({
                   )}
                 </button>
               ))}
-              <div className="color-swatch-custom">
+              <div className={`color-swatch-custom ${overrides.fontColor && ![null, "#ffffff", "#111111", "#f5f0e6", "#c9a962"].includes(overrides.fontColor) ? "color-swatch-custom-active" : ""}`}>
                 <input
                   type="color"
                   value={overrides.fontColor || "#111111"}
@@ -457,7 +461,7 @@ export default function Sidebar({
                   )}
                 </button>
               ))}
-              <div className="color-swatch-custom">
+              <div className={`color-swatch-custom ${overrides.bgColor && ![null, "#ffffff", "#111111", "#f5f0e6", "#e8e4df"].includes(overrides.bgColor) ? "color-swatch-custom-active" : ""}`}>
                 <input
                   type="color"
                   value={overrides.bgColor || "#ffffff"}
@@ -539,6 +543,37 @@ export default function Sidebar({
                 >
                   Spotify Code
                 </button>
+              </div>
+            </div>
+            <div className="sidebar-field">
+              <span className="sidebar-field-label">Code Color</span>
+              <div className="color-swatches">
+                {[
+                  { label: "Auto", value: null },
+                  { label: "Black", value: "#000000" },
+                  { label: "White", value: "#ffffff" },
+                ].map((opt) => (
+                  <button
+                    key={opt.label}
+                    onClick={() => setOverride("codeColor", opt.value)}
+                    className={`color-swatch-btn ${overrides.codeColor === opt.value ? "color-swatch-active" : ""}`}
+                    title={opt.label}
+                  >
+                    {opt.value ? (
+                      <span className="color-swatch-dot" style={{ backgroundColor: opt.value }} />
+                    ) : (
+                      <span className="color-swatch-auto">A</span>
+                    )}
+                  </button>
+                ))}
+                <div className={`color-swatch-custom ${overrides.codeColor && ![null, "#000000", "#ffffff"].includes(overrides.codeColor) ? "color-swatch-custom-active" : ""}`}>
+                  <input
+                    type="color"
+                    value={overrides.codeColor || "#111111"}
+                    onChange={(e) => setOverride("codeColor", e.target.value)}
+                    className="color-input"
+                  />
+                </div>
               </div>
             </div>
           </div>

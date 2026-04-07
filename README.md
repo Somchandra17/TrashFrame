@@ -24,7 +24,7 @@ Turn any **Spotify album or song** into a stunning, **printable poster**. Choose
 - **Comic Strip** - Pop-art poster with speech bubbles, price tag, and halftone dots.
 - **Retro Playlist** - Vintage polaroid with rotated quote and color swatches.
 - **Wave Overlay** - Floating frosted glass text plate over full album art.
-- **8-Bit Arcade** - Pixel-driven arcade layout with scanlines and cabinet-inspired framing.
+
 - **Receipt** - Stylized supermarket receipt with dashed dividers and dotted track rows.
 - **Minimal** - Stripped-down, type-focused layout.
 - **Playlist** - Polaroid-style layout with palette swatches.

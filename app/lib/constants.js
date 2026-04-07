@@ -394,9 +394,9 @@ export const PRESET_THEMES = [
   },
   {
     id: "red-mono",
-    name: "Receipt",
+    name: "Red Receipt",
     layout: "masterpiece-receipt",
-    desc: "Receipt-style, dashed dividers, total row",
+    desc: "Red-tinted receipt with dashed dividers",
     colors: ["#ece4d8", "#c0392b", "#d4a89a"],
     css: `#poster-root {
   --fp-bg: #ece4d8;
@@ -664,40 +664,6 @@ export const PRESET_THEMES = [
   --fp-qr-size: 42px;
   --fp-qr-fg: #ff0099;
   --fp-qr-bg: transparent;
-  --fp-padding: 0%;
-  --fp-gap: 0em;
-  --fp-bg-art-opacity: 0;
-  --fp-vignette-opacity: 0;
-}`,
-  },
-  {
-    id: "masterpiece-8bit",
-    name: "8-Bit Arcade",
-    layout: "masterpiece-8bit",
-    desc: "Retro game aesthetic with pixelated art and typography.",
-    colors: ["#120625", "#f7ff65", "#63f4ff"],
-    css: `#poster-root {
-  --fp-bg: #120625;
-  --fp-heading-font: 'Press Start 2P', monospace;
-  --fp-heading-size: 1.26em;
-  --fp-heading-color: #f7ff65;
-  --fp-subtitle-color: #63f4ff;
-  --fp-track-font: 'VT323', monospace;
-  --fp-track-size: 0.42em;
-  --fp-track-color: #f6f3ff;
-  --fp-track-num-color: #ff9d2e;
-  --fp-meta-size: 0.36em;
-  --fp-meta-color: #ff7bd5;
-  --fp-quote-font: 'VT323', monospace;
-  --fp-quote-size: 0.78em;
-  --fp-quote-style: normal;
-  --fp-quote-color: #63f4ff;
-  --fp-border-color: #4cffb0;
-  --fp-qr-size: 36px;
-  --fp-qr-fg: #63f4ff;
-  --fp-qr-bg: transparent;
-  --fp-image-filter: saturate(1.05) contrast(1.35) brightness(0.95);
-  --fp-border-width: 0px;
   --fp-padding: 0%;
   --fp-gap: 0em;
   --fp-bg-art-opacity: 0;
