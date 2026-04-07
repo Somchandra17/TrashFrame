@@ -1,0 +1,85 @@
+/* ══════════════════════════════════════════════════════
+   LAYOUT: IMMERSIVE  (SZA "SOS")
+   Full-bleed album cover. HUGE outlined/stroked
+   title at top. Small subtitle. Thin white inset
+   rectangle border frame. Dash-separated flowing
+   track names at bottom over heavy dark gradient.
+   QR + meta at very bottom edge.
+   ══════════════════════════════════════════════════════ */
+
+#poster-root[data-layout="immersive"] {
+  padding: 0;
+  gap: 0;
+}
+#poster-root[data-layout="immersive"] .poster-cover-fullbleed {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: 0;
+}
+#poster-root[data-layout="immersive"] .poster-immersive-frame {
+  position: absolute;
+  inset: 4%;
+  border: 1.5px solid rgba(255,255,255,0.35);
+  z-index: 4;
+  pointer-events: none;
+}
+#poster-root[data-layout="immersive"] .poster-immersive-overlay {
+  position: relative;
+  z-index: 4;
+  padding: 6% 6% 0;
+  text-align: center;
+}
+#poster-root[data-layout="immersive"] .poster-immersive-overlay .poster-artist {
+  font-size: calc(var(--fp-subtitle-size) * 0.55);
+  text-shadow: 0 2px 12px rgba(0,0,0,0.7);
+  margin-bottom: 0.02em;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  color: rgba(255,255,255,0.6);
+}
+#poster-root[data-layout="immersive"] .poster-immersive-overlay .poster-title {
+  font-size: calc(var(--fp-heading-size) * 2.5);
+  line-height: 0.88;
+  -webkit-text-stroke: 3px var(--fp-heading-color);
+  color: transparent;
+  text-shadow: none;
+  letter-spacing: 0.1em;
+}
+#poster-root[data-layout="immersive"] .poster-immersive-bottom {
+  position: relative;
+  z-index: 4;
+  margin-top: auto;
+  padding: 20% 5% 4%;
+  background: linear-gradient(transparent 0%, rgba(0,0,0,0.85) 45%);
+  display: flex;
+  flex-direction: column;
+  gap: 0.25em;
+  overflow: hidden;
+}
+#poster-root[data-layout="immersive"] .poster-immersive-tracks {
+  font-family: var(--fp-track-font);
+  font-size: var(--fp-track-size);
+  color: var(--fp-track-color);
+  text-align: center;
+  line-height: 1.9;
+  font-weight: 600;
+}
+#poster-root[data-layout="immersive"] .poster-track-sep {
+  color: var(--fp-track-num-color);
+  margin: 0 0.12em;
+}
+#poster-root[data-layout="immersive"] .poster-immersive-meta-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-top: 0.1em;
+}
+#poster-root[data-layout="immersive"] .poster-quote {
+  text-shadow: 0 2px 16px rgba(0,0,0,0.6);
+  font-size: calc(var(--fp-quote-size) * 0.65);
+}
+
+

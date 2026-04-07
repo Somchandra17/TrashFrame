@@ -1,0 +1,136 @@
+/* ══════════════════════════════════════════════════════
+   LAYOUT: GALLERY  (Drake "More Life")
+   Cream bg. Bold title centered top. Dark panel ~45%
+   height holding cover + cursive subtitle. 2-col
+   numbered tracklist, palette swatches right. Footer
+   with duration/date left, artist + album name right.
+   ══════════════════════════════════════════════════════ */
+
+#poster-root[data-layout="gallery"] {
+  gap: 0;
+  padding: 4%;
+}
+
+#poster-root[data-layout="gallery"] .poster-content > .poster-title {
+  text-align: center;
+  font-size: calc(var(--fp-heading-size) * 1.35);
+  line-height: 0.95;
+  color: var(--fp-heading-color);
+  padding-bottom: 0.2em;
+  flex-shrink: 0;
+  letter-spacing: 0.06em;
+}
+
+#poster-root[data-layout="gallery"] .poster-gallery-art-panel {
+  background: #111;
+  padding: 6% 10%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5em;
+  flex-shrink: 1;
+  min-height: 35%;
+  max-height: 55%;
+  justify-content: center;
+  overflow: hidden;
+}
+#poster-root[data-layout="gallery"] .poster-gallery-art-panel .poster-cover {
+  width: 65%;
+  border-radius: var(--fp-image-radius);
+}
+#poster-root[data-layout="gallery"] .poster-gallery-art-panel .poster-quote {
+  color: rgba(255,255,255,0.6);
+  font-size: calc(var(--fp-quote-size) * 0.7);
+  text-align: center;
+}
+
+#poster-root[data-layout="gallery"] .poster-gallery-body {
+  display: flex;
+  gap: 0.8em;
+  flex: 1;
+  padding-top: 0.6em;
+  min-height: 0;
+}
+#poster-root[data-layout="gallery"] .poster-gallery-body > .poster-tracklist {
+  flex: 1;
+  min-width: 0;
+  font-size: calc(var(--fp-track-size) * 1.05);
+  line-height: 1.8;
+}
+#poster-root[data-layout="gallery"] .poster-gallery-body .poster-track {
+  font-weight: 700;
+}
+#poster-root[data-layout="gallery"] .poster-gallery-body .poster-track-num {
+  font-weight: 400;
+  color: var(--fp-track-num-color);
+}
+#poster-root[data-layout="gallery"] .poster-gallery-side {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.5em;
+  flex-shrink: 0;
+  padding-top: 0.2em;
+  justify-content: flex-start;
+  max-width: 30%;
+  overflow: hidden;
+}
+#poster-root[data-layout="gallery"] .poster-gallery-palette {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3em;
+  justify-content: flex-end;
+}
+#poster-root[data-layout="gallery"] .poster-gallery-swatch {
+  width: 1.4em;
+  height: 1.8em;
+  display: block;
+  border-radius: 1px;
+}
+#poster-root[data-layout="gallery"] .poster-gallery-type {
+  font-family: var(--fp-heading-font);
+  font-size: calc(var(--fp-meta-size) * 0.85);
+  color: var(--fp-meta-color);
+  text-transform: capitalize;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+}
+
+#poster-root[data-layout="gallery"] .poster-gallery-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  flex-shrink: 0;
+  padding-top: 0.6em;
+  border-top: 1px solid color-mix(in srgb, var(--fp-meta-color) 15%, transparent);
+  margin-top: 0.4em;
+}
+#poster-root[data-layout="gallery"] .poster-gallery-footer-left {
+  display: flex;
+  flex-direction: column;
+  gap: 0.12em;
+}
+#poster-root[data-layout="gallery"] .poster-gallery-footer-left .poster-meta {
+  font-size: calc(var(--fp-meta-size) * 0.8);
+  line-height: 1.5;
+}
+#poster-root[data-layout="gallery"] .poster-gallery-footer-right {
+  text-align: right;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.1em;
+}
+#poster-root[data-layout="gallery"] .poster-gallery-footer-right .poster-artist {
+  font-size: calc(var(--fp-subtitle-size) * 0.65);
+  margin-bottom: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+#poster-root[data-layout="gallery"] .poster-gallery-footer-right .poster-title-sm {
+  font-size: calc(var(--fp-heading-size) * 0.55);
+  line-height: 1.05;
+  font-weight: var(--fp-heading-weight);
+}
+
+

@@ -134,8 +134,8 @@ function parseSpotifyResource(value) {
 
   if (isSpotifyShortLink(hostname)) {
     throw makeSpotifyError(
-      "Short Spotify share links aren't supported yet. Open the song or album in Spotify and copy the full link.",
-      "spotify_short_link_unsupported",
+      "Couldn't resolve that short Spotify link. Try copying the full album or song URL from Spotify instead.",
+      "spotify_short_link_failed",
     );
   }
 
@@ -267,8 +267,29 @@ function normalizeTrack(data, url, id) {
   };
 }
 
+async function resolveShortLink(shortUrl) {
+  try {
+    const res = await fetch(`/api/spotify/resolve?url=${encodeURIComponent(shortUrl)}`);
+    if (res.ok) {
+      const data = await res.json();
+      if (data.url) return data.url;
+    }
+  } catch {}
+  return shortUrl;
+}
+
 export async function fetchSpotifyItem(url) {
-  const { resourceType, resourceId } = parseSpotifyResource(url);
+  let inputUrl = url;
+
+  try {
+    const normalized = normalizeInputUrl(url);
+    const parsed = new URL(normalized);
+    if (isSpotifyShortLink(parsed.hostname.toLowerCase())) {
+      inputUrl = await resolveShortLink(normalized);
+    }
+  } catch {}
+
+  const { resourceType, resourceId } = parseSpotifyResource(inputUrl);
 
   let res;
 
@@ -298,6 +319,3 @@ export async function fetchSpotifyItem(url) {
   return normalizeAlbum(data, url, resourceId);
 }
 
-export async function fetchAlbum(url) {
-  return fetchSpotifyItem(url);
-}

@@ -1,0 +1,89 @@
+/* ══════════════════════════════════════════════════════
+   LAYOUT: OVERLAY  (Kanye "Graduation")
+   Full album art fills background at partial opacity.
+   Artist name + bold title right-aligned at top.
+   Single-column tracklist with numbers + durations.
+   Spotify code + meta at very bottom. All text over
+   the cover image.
+   ══════════════════════════════════════════════════════ */
+
+#poster-root[data-layout="overlay"] {
+  padding: 5%;
+  gap: 0;
+}
+#poster-root[data-layout="overlay"] .poster-cover-bg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: 0;
+  filter: blur(15px) brightness(0.7);
+  transform: scale(1.05); /* clean blurred edges */
+}
+#poster-root[data-layout="overlay"] .poster-overlay-content {
+  position: relative;
+  z-index: 4;
+  display: flex;
+  flex-direction: column;
+  padding: 6% 8%;
+  height: 100%;
+  gap: 0.6em;
+  background: rgba(20, 20, 20, 0.4);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 16px;
+  box-shadow: 0 30px 60px -15px rgba(0,0,0,0.6);
+  color: #fff;
+  overflow: hidden;
+}
+#poster-root[data-layout="overlay"] .poster-overlay-header {
+  text-align: right;
+}
+#poster-root[data-layout="overlay"] .poster-overlay-header .poster-artist {
+  font-size: calc(var(--fp-subtitle-size) * 0.7);
+  margin-bottom: 0.02em;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+#poster-root[data-layout="overlay"] .poster-overlay-header .poster-title {
+  line-height: 0.95;
+  font-size: calc(var(--fp-heading-size) * 1.25);
+}
+#poster-root[data-layout="overlay"] .poster-tracklist {
+  column-count: 1;
+  margin-top: 0.2em;
+  line-height: 1.7;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+}
+#poster-root[data-layout="overlay"] .poster-track-name {
+  font-weight: 700;
+  color: rgba(255,255,255,0.95);
+}
+#poster-root[data-layout="overlay"] .poster-track-dur {
+  color: rgba(255,255,255,0.6);
+}
+#poster-root[data-layout="overlay"] .poster-quote {
+  text-align: right;
+  font-size: calc(var(--fp-quote-size) * 0.75);
+  color: rgba(255,255,255,0.8);
+}
+#poster-root[data-layout="overlay"] .poster-overlay-bottom {
+  margin-top: auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  flex-shrink: 0;
+  padding-top: 0.3em;
+}
+#poster-root[data-layout="overlay"] .poster-overlay-bottom .poster-qr-wrap {
+  justify-content: flex-start;
+}
+#poster-root[data-layout="overlay"] .poster-overlay-bottom .poster-meta {
+  color: rgba(255,255,255,0.6);
+}
+
+

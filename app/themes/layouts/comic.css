@@ -1,0 +1,80 @@
+/* ══════════════════════════════════════════════════════
+   LAYOUT: MASTERPIECE COMIC
+   ══════════════════════════════════════════════════════ */
+#poster-root[data-layout="masterpiece-comic"] {
+  padding: 0;
+  border: var(--fp-border-width) solid var(--fp-border-color);
+  background: var(--fp-bg);
+  gap: 0;
+}
+#poster-root[data-layout="masterpiece-comic"] .comic-header {
+  background: var(--fp-bg);
+  padding: 5% 5% 3%;
+  font-family: var(--fp-heading-font);
+  text-align: center;
+}
+#poster-root[data-layout="masterpiece-comic"] .poster-title {
+  font-size: calc(var(--fp-heading-size) * 1.5);
+  text-transform: uppercase;
+  line-height: 0.9;
+  letter-spacing: -1px;
+  color: var(--fp-heading-color);
+  text-shadow: 2px 2px 0 var(--fp-border-color);
+}
+#poster-root[data-layout="masterpiece-comic"] .comic-image-container {
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+  border-top: 4px solid var(--fp-border-color);
+  border-bottom: 4px solid var(--fp-border-color);
+  background: black;
+}
+#poster-root[data-layout="masterpiece-comic"] .poster-cover {
+  width: 100%; height: 100%; object-fit: cover;
+  filter: var(--fp-image-filter);
+}
+#poster-root[data-layout="masterpiece-comic"] .comic-price {
+  position: absolute; top: 15px; right: 15px;
+  background: white; color: black;
+  border-radius: 50%; width: 45px; height: 45px;
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 900; font-family: sans-serif;
+  z-index: 10;
+  font-size: 14px;
+  border: 2px solid black;
+  transform: rotate(15deg);
+}
+#poster-root[data-layout="masterpiece-comic"] .comic-quote-bubble {
+  position: absolute; bottom: 15px; left: 15px;
+  background: var(--fp-bg);
+  border: 3px solid var(--fp-border-color);
+  padding: 10px 15px;
+  border-radius: 20px;
+  z-index: 10;
+  box-shadow: 3px 3px 0 var(--fp-border-color);
+}
+#poster-root[data-layout="masterpiece-comic"] .poster-quote,
+#poster-root[data-layout="masterpiece-comic"] .poster-artist {
+  color: var(--fp-heading-color);
+  font-family: var(--fp-quote-font);
+  font-weight: bold;
+  font-size: calc(var(--fp-quote-size) * 0.8);
+  margin: 0;
+}
+#poster-root[data-layout="masterpiece-comic"] .comic-footer {
+  background: var(--fp-bg);
+  padding: 4%;
+  display: flex;
+  justify-content: space-between;
+}
+#poster-root[data-layout="masterpiece-comic"] .poster-tracklist {
+  column-count: var(--fp-track-columns);
+  font-size: calc(var(--fp-track-size) * 0.8);
+  flex: 1;
+}
+#poster-root[data-layout="masterpiece-comic"] .comic-footer-right {
+  flex-shrink: 0;
+  display: flex;
+  align-items: flex-end;
+  padding-left: 10px;
+}

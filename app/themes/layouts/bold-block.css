@@ -1,0 +1,116 @@
+/* ══════════════════════════════════════════════════════
+   LAYOUT: BOLD BLOCK  (Billie "No Time To Die")
+   Comic-book poster. Colored top panel ~32% with
+   ENORMOUS stacked title + vertical genre strip on
+   right edge. Album art fills middle ~60%. Small
+   text overlay at bottom of image. Thin tracklist
+   strip at very bottom.
+   ══════════════════════════════════════════════════════ */
+
+#poster-root[data-layout="bold-block"] {
+  gap: 0;
+  padding: 0;
+  background: var(--fp-bg);
+  border: calc(var(--fp-border-width) * 2) solid var(--fp-border-color);
+}
+#poster-root[data-layout="bold-block"] .poster-boldblock-top {
+  background: var(--fp-bg);
+  min-height: 32%;
+  display: flex;
+  position: relative;
+  flex-shrink: 0;
+  border-bottom: calc(var(--fp-border-width) * 1.5) solid var(--fp-border-color);
+}
+#poster-root[data-layout="bold-block"] .poster-boldblock-title-area {
+  flex: 1;
+  padding: 5% 5% 3%;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+}
+#poster-root[data-layout="bold-block"] .poster-boldblock-title-area .poster-title {
+  font-size: calc(var(--fp-heading-size) * 2.2);
+  line-height: 0.85;
+  letter-spacing: -0.02em;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+#poster-root[data-layout="bold-block"] .poster-boldblock-title-area .poster-artist {
+  margin-top: 0.25em;
+  font-size: calc(var(--fp-subtitle-size) * 0.5);
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+}
+#poster-root[data-layout="bold-block"] .poster-boldblock-side-text {
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+  font-family: var(--fp-heading-font);
+  font-size: calc(var(--fp-heading-size) * 0.4);
+  font-weight: var(--fp-heading-weight);
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  padding: 0.3em 0.25em;
+  border-left: var(--fp-border-width) solid var(--fp-border-color);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  background: var(--fp-border-color);
+  color: var(--fp-bg);
+}
+#poster-root[data-layout="bold-block"] .poster-boldblock-image-wrap {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+}
+#poster-root[data-layout="bold-block"] .poster-boldblock-image-wrap .poster-cover {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+#poster-root[data-layout="bold-block"] .poster-boldblock-overlay-text {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 15% 5% 3%;
+  background: linear-gradient(transparent 0%, rgba(0,0,0,0.75) 100%);
+  display: flex;
+  flex-direction: column;
+  gap: 0.15em;
+}
+#poster-root[data-layout="bold-block"] .poster-boldblock-overlay-text .poster-meta {
+  color: rgba(255,255,255,0.65);
+  font-size: calc(var(--fp-meta-size) * 0.9);
+}
+#poster-root[data-layout="bold-block"] .poster-boldblock-overlay-text .poster-quote {
+  color: rgba(255,255,255,0.85);
+  text-align: left;
+  font-size: calc(var(--fp-quote-size) * 0.55);
+}
+#poster-root[data-layout="bold-block"] .poster-boldblock-bottom {
+  background: var(--fp-bg);
+  padding: 1.5% 4% 2.5%;
+  display: flex;
+  gap: 0.5em;
+  align-items: flex-end;
+  flex-shrink: 0;
+  border-top: calc(var(--fp-border-width) * 1.5) solid var(--fp-border-color);
+}
+#poster-root[data-layout="bold-block"] .poster-boldblock-bottom .poster-tracklist {
+  flex: 1;
+  min-width: 0;
+  font-size: calc(var(--fp-track-size) * 0.75);
+  line-height: 1.4;
+}
+#poster-root[data-layout="bold-block"] .poster-boldblock-bottom .poster-qr-wrap,
+#poster-root[data-layout="bold-block"] .poster-boldblock-bottom .poster-code-wrap {
+  flex-shrink: 0;
+}
+
+
+
+

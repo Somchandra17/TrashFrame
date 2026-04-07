@@ -1,0 +1,97 @@
+/* ══════════════════════════════════════════════════════
+   LAYOUT: EDITORIAL  (Beatles "Hey Jude")
+   Decorative rule + italic year top-right. Tiny
+   widely-spaced artist. MASSIVE bold title. Photo
+   fills ~62% of poster. Multi-line italic quote at
+   bottom-left. Labeled metadata in 4 columns.
+   ══════════════════════════════════════════════════════ */
+
+#poster-root[data-layout="editorial"] {
+  gap: 0.1em;
+  padding: 5% 5% 3%;
+}
+#poster-root[data-layout="editorial"] .poster-editorial-topline {
+  display: flex;
+  align-items: center;
+  gap: 0.5em;
+  justify-content: flex-end;
+  flex-shrink: 0;
+  padding-bottom: 0.05em;
+}
+#poster-root[data-layout="editorial"] .poster-editorial-rule-line {
+  flex: 1;
+  height: 1.5px;
+  background: var(--fp-heading-color);
+  opacity: 0.6;
+}
+#poster-root[data-layout="editorial"] .poster-editorial-topline .poster-date {
+  position: static;
+  font-size: calc(var(--fp-meta-size) * 1.5);
+  font-weight: 700;
+  font-style: italic;
+  letter-spacing: 0;
+  color: var(--fp-heading-color);
+}
+#poster-root[data-layout="editorial"] .poster-editorial-header {
+  text-align: center;
+  padding: 0.05em 0 0.15em;
+  flex-shrink: 0;
+}
+#poster-root[data-layout="editorial"] .poster-editorial-header .poster-artist {
+  font-size: calc(var(--fp-subtitle-size) * 0.45);
+  text-transform: uppercase;
+  letter-spacing: 0.35em;
+  margin-bottom: 0.05em;
+  font-weight: 400;
+}
+#poster-root[data-layout="editorial"] .poster-editorial-header .poster-title {
+  font-size: calc(var(--fp-heading-size) * 2.0);
+  line-height: 0.85;
+  letter-spacing: -0.02em;
+}
+#poster-root[data-layout="editorial"] .poster-cover-hero {
+  flex: 1;
+  min-height: 60%;
+  object-fit: cover;
+  object-position: center;
+}
+#poster-root[data-layout="editorial"] .poster-editorial-footer {
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.2em;
+  padding-top: 0.15em;
+}
+#poster-root[data-layout="editorial"] .poster-editorial-footer .poster-quote {
+  text-align: left;
+  font-size: calc(var(--fp-quote-size) * 0.55);
+  line-height: 1.5;
+  max-width: 55%;
+}
+#poster-root[data-layout="editorial"] .poster-editorial-rule {
+  width: 100%;
+  height: 1px;
+  background: var(--fp-heading-color);
+  opacity: 0.6;
+}
+#poster-root[data-layout="editorial"] .poster-editorial-meta-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.3em;
+}
+#poster-root[data-layout="editorial"] .poster-editorial-meta-col {
+  display: flex;
+  flex-direction: column;
+  gap: 0.02em;
+}
+#poster-root[data-layout="editorial"] .poster-editorial-meta-row .poster-meta {
+  font-size: calc(var(--fp-meta-size) * 0.75);
+  font-weight: 600;
+}
+#poster-root[data-layout="editorial"] .poster-editorial-meta-row .poster-meta-label {
+  font-size: calc(var(--fp-meta-size) * 0.55);
+  letter-spacing: 0.12em;
+  opacity: 0.7;
+}
+
+

@@ -1,0 +1,88 @@
+/* ══════════════════════════════════════════════════════
+   LAYOUT: MASTERPIECE JCARD
+   ══════════════════════════════════════════════════════ */
+#poster-root[data-layout="masterpiece-jcard"] {
+  flex-direction: row;
+  padding: 0;
+  gap: 0;
+  background: var(--fp-bg);
+}
+#poster-root[data-layout="masterpiece-jcard"] .jcard-spine {
+  width: 15%;
+  border-right: 2px solid color-mix(in srgb, var(--fp-heading-color) 20%, transparent);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 5% 0;
+  gap: 20px;
+}
+#poster-root[data-layout="masterpiece-jcard"] .jcard-spine-icon {
+  margin-bottom: 5px;
+  opacity: 1;
+}
+#poster-root[data-layout="masterpiece-jcard"] .jcard-spine-dolby {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--fp-heading-color);
+  color: var(--fp-bg);
+  padding: 2px 4px;
+  border-radius: 2px;
+  font-family: sans-serif;
+  font-weight: 900;
+  font-size: calc(var(--fp-meta-size) * 1.5);
+  line-height: 1;
+}
+#poster-root[data-layout="masterpiece-jcard"] .dolby-d.flipped {
+  transform: scaleX(-1);
+  margin-left: -2px;
+}
+#poster-root[data-layout="masterpiece-jcard"] .jcard-spine-text {
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+  font-family: var(--fp-heading-font);
+  font-size: calc(var(--fp-heading-size) * 0.55);
+  font-weight: 700;
+  color: var(--fp-heading-color);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  flex: 1;
+  text-align: center;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
+}
+#poster-root[data-layout="masterpiece-jcard"] .jcard-front {
+  width: 45%;
+  border-right: 2px solid color-mix(in srgb, var(--fp-heading-color) 20%, transparent);
+  padding: 4%;
+  display: flex;
+  flex-direction: column;
+  background: var(--fp-bg);
+}
+#poster-root[data-layout="masterpiece-jcard"] .poster-cover {
+  width: 100%;
+  aspect-ratio: 1;
+  object-fit: cover;
+  margin-top: auto;
+  margin-bottom: auto;
+  border-radius: var(--fp-image-radius);
+}
+#poster-root[data-layout="masterpiece-jcard"] .jcard-back {
+  flex: 1;
+  padding: 4%;
+  display: flex;
+  flex-direction: column;
+}
+#poster-root[data-layout="masterpiece-jcard"] .jcard-back-header {
+  margin-bottom: 0.5em;
+}
+#poster-root[data-layout="masterpiece-jcard"] .poster-tracklist {
+  column-count: var(--fp-track-columns);
+  font-size: calc(var(--fp-track-size) * 0.9);
+}
+#poster-root[data-layout="masterpiece-jcard"] .poster-quote {
+  margin-top: auto;
+  text-align: left;
+  font-size: calc(var(--fp-quote-size) * 0.6);
+}

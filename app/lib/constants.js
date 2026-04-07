@@ -1,16 +1,16 @@
 export const FRAME_SIZES = {
-  "4×6": { label: '4×6"', cm: [10, 15] },
-  "5×7": { label: '5×7"', cm: [13, 18] },
+  "4x6": { label: '4x6"', cm: [10, 15] },
+  "5x7": { label: '5x7"', cm: [13, 18] },
   A5:    { label: "A5",    cm: [14.8, 21] },
   A4:    { label: "A4",    cm: [21, 29.7] },
-  "30×40": { label: "30×40", cm: [30, 40] },
+  "30x40": { label: "30x40", cm: [30, 40] },
 };
 
-export const DEFAULT_FRAME = "5×7";
+export const DEFAULT_FRAME = "5x7";
 
-export function framePx(key) {
+export function framePx(key, dpi = 300) {
   const { cm } = FRAME_SIZES[key];
-  return cm.map((c) => Math.round((c / 2.54) * 300));
+  return cm.map((c) => Math.round((c / 2.54) * dpi));
 }
 
 export function frameAspect(key) {
@@ -709,9 +709,9 @@ export const PRESET_THEMES = [
     name: "Receipt",
     layout: "masterpiece-receipt",
     desc: "A stylized supermarket receipt design",
-    colors: ["#f9f9f9", "#111111", "#333333"],
+    colors: ["#ffffff", "#111111", "#333333"],
     css: `#poster-root {
-  --fp-bg: #f9f9f9;
+  --fp-bg: #ffffff;
   --fp-image-filter: grayscale(100%) contrast(1.2);
   --fp-image-radius: 0px;
   --fp-heading-font: 'Space Mono', monospace;

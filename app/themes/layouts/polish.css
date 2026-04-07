@@ -1,0 +1,422 @@
+/* ══════════════════════════════════════════════════════
+   POLISH PASS
+   Shared refinement and missing layout completion
+   ══════════════════════════════════════════════════════ */
+
+#poster-root[data-layout="classic"] {
+  gap: 0.5em;
+  background:
+    linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--fp-bg) 88%, white 12%) 0%,
+      var(--fp-bg) 60%,
+      color-mix(in srgb, var(--fp-border-color) 6%, var(--fp-bg)) 100%
+    );
+}
+#poster-root[data-layout="classic"] .poster-date {
+  padding: 0.35em 0.7em;
+  background: color-mix(in srgb, var(--fp-bg) 78%, white 22%);
+  border: 1px solid color-mix(in srgb, var(--fp-border-color) 18%, transparent);
+  border-radius: 999px;
+  box-shadow: 0 10px 25px -20px rgba(0, 0, 0, 0.55);
+}
+#poster-root[data-layout="classic"] .poster-cover {
+  border: 1px solid color-mix(in srgb, var(--fp-border-color) 14%, transparent);
+  box-shadow: 0 24px 32px -28px rgba(0, 0, 0, 0.55);
+}
+#poster-root[data-layout="classic"] .poster-info {
+  gap: 0.12em;
+  padding-top: 0.12em;
+}
+#poster-root[data-layout="classic"] .poster-quote {
+  max-width: 78%;
+  text-align: left;
+  padding-left: 0.1em;
+}
+#poster-root[data-layout="classic"] .poster-bottom-row {
+  padding-top: 0.75em;
+  border-top: 1px solid color-mix(in srgb, var(--fp-border-color) 14%, transparent);
+}
+#poster-root[data-layout="classic"] .poster-bottom-right .poster-qr-wrap,
+#poster-root[data-layout="classic"] .poster-bottom-right .poster-code-wrap {
+  padding: 0.25em;
+  border: 1px solid color-mix(in srgb, var(--fp-border-color) 18%, transparent);
+  background: color-mix(in srgb, var(--fp-bg) 72%, white 28%);
+}
+
+#poster-root[data-layout="gallery"] {
+  background:
+    linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--fp-bg) 84%, white 16%) 0%,
+      var(--fp-bg) 62%,
+      color-mix(in srgb, var(--fp-border-color) 8%, var(--fp-bg)) 100%
+    );
+}
+#poster-root[data-layout="gallery"] .poster-gallery-art-panel {
+  border: 1px solid color-mix(in srgb, white 18%, transparent);
+  box-shadow: 0 24px 36px -30px rgba(0, 0, 0, 0.6);
+}
+#poster-root[data-layout="gallery"] .poster-gallery-art-panel .poster-cover {
+  box-shadow: 0 20px 30px -24px rgba(0, 0, 0, 0.75);
+}
+#poster-root[data-layout="gallery"] .poster-gallery-side {
+  min-width: 5.5em;
+}
+#poster-root[data-layout="gallery"] .poster-gallery-type {
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+  letter-spacing: 0.18em;
+}
+#poster-root[data-layout="gallery"] .poster-gallery-footer-right .poster-qr-wrap,
+#poster-root[data-layout="gallery"] .poster-gallery-footer-right .poster-code-wrap {
+  padding: 0.18em;
+  border: 1px solid color-mix(in srgb, var(--fp-heading-color) 14%, transparent);
+  background: color-mix(in srgb, var(--fp-bg) 72%, white 28%);
+}
+
+#poster-root[data-layout="overlay"] .poster-overlay-content {
+  background:
+    linear-gradient(
+      180deg,
+      rgba(16, 16, 24, 0.38) 0%,
+      rgba(16, 16, 24, 0.58) 100%
+    );
+  border: 1px solid color-mix(in srgb, var(--fp-heading-color) 16%, transparent);
+  box-shadow: 0 34px 64px -22px rgba(0, 0, 0, 0.65);
+}
+#poster-root[data-layout="overlay"] .poster-overlay-header {
+  max-width: 82%;
+  align-self: flex-end;
+}
+#poster-root[data-layout="overlay"] .poster-track {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+#poster-root[data-layout="overlay"] .poster-quote {
+  margin-left: auto;
+  max-width: 72%;
+  padding: 0.45em 0.55em;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+#poster-root[data-layout="overlay"] .poster-overlay-bottom {
+  padding-top: 0.55em;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+#poster-root[data-layout="editorial"] .poster-cover-hero {
+  box-shadow: 0 24px 36px -30px rgba(0, 0, 0, 0.45);
+}
+#poster-root[data-layout="editorial"] .poster-editorial-footer {
+  padding-top: 0.3em;
+  gap: 0.35em;
+}
+#poster-root[data-layout="editorial"] .poster-editorial-footer .poster-quote {
+  max-width: 62%;
+}
+#poster-root[data-layout="editorial"] .poster-editorial-meta-row {
+  gap: 0.55em;
+  align-items: flex-start;
+}
+#poster-root[data-layout="editorial"] .poster-editorial-meta-col {
+  flex: 1;
+  min-width: 0;
+}
+#poster-root[data-layout="editorial"] .poster-editorial-code-col {
+  flex: 0 0 auto;
+  align-items: flex-end;
+}
+#poster-root[data-layout="editorial"] .poster-editorial-code-col .poster-qr-wrap,
+#poster-root[data-layout="editorial"] .poster-editorial-code-col .poster-code-wrap {
+  justify-content: flex-end;
+  padding-top: 0.1em;
+}
+
+#poster-root[data-layout="bold-block"] .poster-boldblock-top {
+  background:
+    linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--fp-bg) 92%, white 8%) 0%,
+      var(--fp-bg) 100%
+    );
+}
+#poster-root[data-layout="bold-block"] .poster-boldblock-image-wrap::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(transparent 48%, rgba(0, 0, 0, 0.12) 100%);
+  pointer-events: none;
+}
+#poster-root[data-layout="bold-block"] .poster-boldblock-bottom {
+  gap: 0.8em;
+  padding: 2.2% 4.2% 2.8%;
+}
+#poster-root[data-layout="bold-block"] .poster-boldblock-bottom .poster-qr-wrap,
+#poster-root[data-layout="bold-block"] .poster-boldblock-bottom .poster-code-wrap {
+  padding: 0.18em;
+  border: 1px solid color-mix(in srgb, var(--fp-border-color) 24%, transparent);
+  background: color-mix(in srgb, var(--fp-bg) 86%, white 14%);
+}
+
+#poster-root[data-layout="minimal"] {
+  gap: 0;
+  padding: 6%;
+  background:
+    linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--fp-bg) 90%, white 10%) 0%,
+      var(--fp-bg) 60%,
+      color-mix(in srgb, var(--fp-heading-color) 4%, var(--fp-bg)) 100%
+    );
+}
+#poster-root[data-layout="minimal"] .poster-minimal-topline {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1em;
+  padding-bottom: 0.7em;
+  border-bottom: 1px solid color-mix(in srgb, var(--fp-heading-color) 14%, transparent);
+}
+#poster-root[data-layout="minimal"] .poster-minimal-topline .poster-date {
+  position: static;
+  text-align: left;
+  font-size: calc(var(--fp-meta-size) * 1.35);
+}
+#poster-root[data-layout="minimal"] .poster-minimal-topline .poster-meta {
+  font-size: calc(var(--fp-meta-size) * 1.05);
+}
+#poster-root[data-layout="minimal"] .poster-minimal-stage {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  gap: 1.15em;
+  padding: 1em 0 0.9em;
+}
+#poster-root[data-layout="minimal"] .poster-minimal-copy {
+  width: 54%;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35em;
+  z-index: 2;
+}
+#poster-root[data-layout="minimal"] .poster-minimal-copy .poster-artist {
+  font-size: calc(var(--fp-subtitle-size) * 0.92);
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+}
+#poster-root[data-layout="minimal"] .poster-minimal-copy .poster-title {
+  font-size: calc(var(--fp-heading-size) * 1.32);
+  line-height: 0.84;
+  max-width: 5.5ch;
+}
+#poster-root[data-layout="minimal"] .poster-minimal-copy .poster-quote {
+  margin-top: auto;
+  text-align: left;
+  max-width: 92%;
+  font-size: calc(var(--fp-quote-size) * 0.84);
+}
+#poster-root[data-layout="minimal"] .poster-minimal-art-wrap {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: flex-end;
+}
+#poster-root[data-layout="minimal"] .poster-minimal-cover {
+  width: 100%;
+  height: 100%;
+  border-radius: 0;
+  box-shadow: 0 28px 40px -28px rgba(0, 0, 0, 0.5);
+  border: 1px solid color-mix(in srgb, var(--fp-heading-color) 12%, transparent);
+}
+#poster-root[data-layout="minimal"] .poster-minimal-bottom {
+  display: flex;
+  flex-direction: column;
+  gap: 0.55em;
+  padding-top: 0.75em;
+  border-top: 1px solid color-mix(in srgb, var(--fp-heading-color) 14%, transparent);
+}
+#poster-root[data-layout="minimal"] .poster-minimal-tracks {
+  font-family: var(--fp-track-font);
+  font-size: calc(var(--fp-track-size) * 1.28);
+  color: var(--fp-track-color);
+  line-height: 1.6;
+  max-height: 5.2em;
+  overflow: hidden;
+}
+#poster-root[data-layout="minimal"] .poster-minimal-sep {
+  color: var(--fp-track-num-color);
+}
+#poster-root[data-layout="minimal"] .poster-minimal-meta-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 0.8em;
+}
+#poster-root[data-layout="minimal"] .poster-minimal-meta-row .poster-qr-wrap,
+#poster-root[data-layout="minimal"] .poster-minimal-meta-row .poster-code-wrap {
+  padding: 0.2em;
+  border: 1px solid color-mix(in srgb, var(--fp-heading-color) 18%, transparent);
+  background: color-mix(in srgb, var(--fp-bg) 74%, white 26%);
+}
+
+#poster-root[data-layout="immersive"] .poster-immersive-frame {
+  inset: 3.5%;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08);
+}
+#poster-root[data-layout="immersive"] .poster-immersive-overlay {
+  padding: 8% 8% 0;
+}
+#poster-root[data-layout="immersive"] .poster-immersive-overlay .poster-title {
+  text-shadow: 0 18px 30px rgba(0, 0, 0, 0.38);
+}
+#poster-root[data-layout="immersive"] .poster-immersive-bottom {
+  padding: 24% 6% 5%;
+  background: linear-gradient(transparent 0%, rgba(6, 10, 18, 0.3) 24%, rgba(6, 10, 18, 0.92) 56%);
+}
+#poster-root[data-layout="immersive"] .poster-quote {
+  max-width: 72%;
+  margin: 0 auto;
+}
+#poster-root[data-layout="immersive"] .poster-immersive-meta-row {
+  padding-top: 0.45em;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+#poster-root[data-layout="immersive"] .poster-immersive-meta-row .poster-qr-wrap,
+#poster-root[data-layout="immersive"] .poster-immersive-meta-row .poster-code-wrap {
+  padding: 0.2em;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.04);
+}
+
+#poster-root[data-layout="masterpiece-jcard"] {
+  border: 1px solid color-mix(in srgb, var(--fp-heading-color) 12%, transparent);
+}
+#poster-root[data-layout="masterpiece-jcard"] .jcard-spine {
+  background: color-mix(in srgb, var(--fp-bg) 92%, black 8%);
+}
+#poster-root[data-layout="masterpiece-jcard"] .jcard-front {
+  background:
+    linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--fp-bg) 94%, white 6%) 0%,
+      var(--fp-bg) 100%
+    );
+}
+#poster-root[data-layout="masterpiece-jcard"] .jcard-back {
+  background:
+    repeating-linear-gradient(
+      180deg,
+      transparent 0 18px,
+      color-mix(in srgb, var(--fp-heading-color) 6%, transparent) 18px 19px
+    );
+}
+#poster-root[data-layout="masterpiece-jcard"] .jcard-back-header {
+  padding-bottom: 0.45em;
+  border-bottom: 1px solid color-mix(in srgb, var(--fp-heading-color) 14%, transparent);
+}
+
+#poster-root[data-layout="masterpiece-comic"] .comic-header {
+  background:
+    linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--fp-bg) 90%, white 10%) 0%,
+      var(--fp-bg) 100%
+    );
+}
+#poster-root[data-layout="masterpiece-comic"] .comic-subhead {
+  margin-top: 0.28em;
+  font-family: var(--fp-track-font);
+  font-size: calc(var(--fp-meta-size) * 1.35);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--fp-subtitle-color);
+}
+#poster-root[data-layout="masterpiece-comic"] .comic-price {
+  box-shadow: 3px 3px 0 var(--fp-border-color);
+}
+#poster-root[data-layout="masterpiece-comic"] .comic-quote-bubble {
+  max-width: 58%;
+}
+#poster-root[data-layout="masterpiece-comic"] .comic-footer {
+  gap: 0.8em;
+  align-items: flex-end;
+}
+
+#poster-root[data-layout="masterpiece-playlist"] {
+  background:
+    linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--fp-bg) 90%, white 10%) 0%,
+      var(--fp-bg) 100%
+    );
+  gap: 0.95em;
+}
+#poster-root[data-layout="masterpiece-playlist"] .playlist-meta {
+  margin-top: -0.45em;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 0.08em;
+}
+#poster-root[data-layout="masterpiece-playlist"] .playlist-meta .poster-artist {
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+}
+#poster-root[data-layout="masterpiece-playlist"] .playlist-image {
+  transform: rotate(-1.5deg);
+  box-shadow: 0 22px 34px -28px rgba(0, 0, 0, 0.45);
+}
+#poster-root[data-layout="masterpiece-playlist"] .playlist-side .poster-qr-wrap,
+#poster-root[data-layout="masterpiece-playlist"] .playlist-side .poster-code-wrap {
+  padding: 0.2em;
+  border: 1px solid color-mix(in srgb, var(--fp-heading-color) 14%, transparent);
+  background: color-mix(in srgb, var(--fp-bg) 75%, white 25%);
+}
+
+#poster-root[data-layout="masterpiece-graduation"] .grad-text-plate {
+  background: rgba(255, 255, 255, 0.88);
+  border: 1px solid rgba(255, 255, 255, 0.9);
+  box-shadow: 0 24px 44px rgba(0, 0, 0, 0.24);
+}
+#poster-root[data-layout="masterpiece-graduation"] .grad-quote {
+  font-size: calc(var(--fp-quote-size) * 0.74);
+  line-height: 1.28;
+  text-align: left;
+  color: var(--fp-quote-color);
+}
+#poster-root[data-layout="masterpiece-graduation"] .grad-footer-row {
+  gap: 0.8em;
+}
+#poster-root[data-layout="masterpiece-graduation"] .grad-footer-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 0.12em;
+}
+#poster-root[data-layout="masterpiece-graduation"] .grad-footer-right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.45em;
+}
+#poster-root[data-layout="masterpiece-graduation"] .grad-footer-right .poster-decor-wave {
+  position: static;
+  bottom: auto;
+  left: auto;
+  transform: none;
+  opacity: 0.35;
+}
+
+#poster-root[data-layout="masterpiece-receipt"] .receipt-container {
+  background: transparent;
+}
+#poster-root[data-layout="masterpiece-receipt"] .receipt-header {
+  margin-bottom: 0.7em;
+}
+#poster-root[data-layout="masterpiece-receipt"] .poster-title {
+  line-height: 0.92;
+}
+#poster-root[data-layout="masterpiece-receipt"] .receipt-barcode .poster-qr-wrap,
+#poster-root[data-layout="masterpiece-receipt"] .receipt-barcode .poster-code-wrap {
+  justify-content: center;
+}

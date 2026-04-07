@@ -152,6 +152,15 @@ function Cover({ src, name, className }) {
 function BottomCode({ url, uri, codeType, barColor }) {
   const bar = barColor || "black";
   const [svgStr, setSvgStr] = useState("");
+  const [qrFg, setQrFg] = useState("#111");
+
+  useEffect(() => {
+    if (codeType !== "qr") return;
+    const root = document.getElementById("poster-root");
+    if (!root) return;
+    const val = getComputedStyle(root).getPropertyValue("--fp-qr-fg").trim();
+    setQrFg(val || "#111");
+  });
 
   useEffect(() => {
     if (codeType !== "scannable" || !uri) {
@@ -199,7 +208,7 @@ function BottomCode({ url, uri, codeType, barColor }) {
 
   return (
     <div className="poster-qr-wrap">
-      <QRCode value={url} size={48} fgColor="var(--fp-qr-fg, #111)" bgColor="transparent" />
+      <QRCode value={url} size={48} fgColor={qrFg} bgColor="transparent" />
     </div>
   );
 }

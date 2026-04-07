@@ -26,16 +26,15 @@ async function getSafeFontEmbedCSS(node) {
   }
 }
 
-export async function exportPng(frameKey) {
+export async function exportPng(frameKey, dpi = 300) {
   const node = document.getElementById("poster-root");
   if (!node) throw new Error("Poster element not found");
 
-  // Wait for all fonts to be fully loaded before capturing
   if (document.fonts?.ready) {
     await document.fonts.ready;
   }
 
-  const [w, h] = framePx(frameKey);
+  const [w, h] = framePx(frameKey, dpi);
   const rect = node.getBoundingClientRect();
   const ratio = w / rect.width;
   const fontEmbedCSS = await getSafeFontEmbedCSS(node);
@@ -57,16 +56,16 @@ export async function exportPng(frameKey) {
   }
 }
 
-export async function downloadPng(frameKey, albumName) {
-  const dataUrl = await exportPng(frameKey);
+export async function downloadPng(frameKey, albumName, dpi = 300) {
+  const dataUrl = await exportPng(frameKey, dpi);
   const link = document.createElement("a");
   link.download = `${getDownloadBaseName(albumName, frameKey)}.png`;
   link.href = dataUrl;
   link.click();
 }
 
-export async function downloadPdf(frameKey, albumName) {
-  const dataUrl = await exportPng(frameKey);
+export async function downloadPdf(frameKey, albumName, dpi = 300) {
+  const dataUrl = await exportPng(frameKey, dpi);
   const { cm } = FRAME_SIZES[frameKey];
 
   const pdf = new jsPDF({

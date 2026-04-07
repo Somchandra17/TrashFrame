@@ -1,0 +1,217 @@
+/* ══════════════════════════════════════════════════════
+   LAYOUT: RETRO  (Disco poster)
+   Tiny subtitle at top. ENORMOUS 3D-shadow title
+   dominating upper third. Album art in thick bordered
+   frame centered. Cursive quote at bottom with meta.
+   ══════════════════════════════════════════════════════ */
+
+#poster-root[data-layout="retro"] {
+  gap: 0;
+  align-items: center;
+  padding: 4.8%;
+  background:
+    radial-gradient(
+      circle at 50% 12%,
+      color-mix(in srgb, var(--fp-track-num-color) 38%, transparent) 0%,
+      transparent 34%
+    ),
+    linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--fp-bg) 86%, white 14%) 0%,
+      var(--fp-bg) 44%,
+      color-mix(in srgb, var(--fp-border-color) 14%, var(--fp-bg)) 100%
+    );
+}
+#poster-root[data-layout="retro"] .poster-retro-glow {
+  position: absolute;
+  top: 10%;
+  left: 50%;
+  width: 74%;
+  height: 22%;
+  transform: translateX(-50%);
+  background: radial-gradient(
+    circle at center,
+    color-mix(in srgb, var(--fp-subtitle-color) 36%, transparent) 0%,
+    transparent 72%
+  );
+  filter: blur(20px);
+  opacity: 0.65;
+  pointer-events: none;
+  z-index: 0;
+}
+#poster-root[data-layout="retro"] .poster-retro-header {
+  position: relative;
+  text-align: center;
+  padding-bottom: 0.4em;
+  width: 100%;
+  max-width: 92%;
+  flex-shrink: 0;
+  z-index: 3;
+}
+#poster-root[data-layout="retro"] .poster-retro-kicker {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.3em 0.9em;
+  margin-bottom: 0.55em;
+  border: 2px solid var(--fp-border-color);
+  background: color-mix(in srgb, var(--fp-bg) 72%, white 28%);
+  color: var(--fp-border-color);
+  font-family: var(--fp-track-font);
+  font-size: calc(var(--fp-meta-size) * 1.45);
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  box-shadow: 0.28em 0.28em 0 color-mix(in srgb, var(--fp-track-num-color) 75%, transparent);
+}
+#poster-root[data-layout="retro"] .poster-retro-header .poster-artist {
+  font-size: calc(var(--fp-subtitle-size) * 0.68);
+  text-transform: uppercase;
+  letter-spacing: 0.28em;
+  margin-bottom: 0.2em;
+  color: var(--fp-subtitle-color);
+  font-weight: 800;
+}
+#poster-root[data-layout="retro"] .poster-retro-header .poster-title {
+  font-size: calc(var(--fp-heading-size) * 1.45);
+  line-height: 0.82;
+  text-transform: uppercase;
+  color: var(--fp-heading-color);
+  text-shadow:
+    3px 3px 0 var(--fp-subtitle-color),
+    7px 7px 0 color-mix(in srgb, var(--fp-track-num-color) 88%, transparent),
+    11px 11px 0 color-mix(in srgb, var(--fp-border-color) 86%, transparent);
+  letter-spacing: -0.04em;
+  font-style: italic;
+  transform: skewX(-8deg);
+  margin-top: 0.05em;
+  max-width: 100%;
+  overflow-wrap: anywhere;
+}
+#poster-root[data-layout="retro"] .poster-retro-stage {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 0.85em;
+  margin: 0.95em 0 0.75em;
+  min-height: 0;
+  flex: 1;
+  position: relative;
+  z-index: 3;
+}
+#poster-root[data-layout="retro"] .poster-retro-image-frame {
+  border: 6px solid var(--fp-border-color);
+  padding: 0.6em;
+  width: 82%;
+  max-width: 100%;
+  align-self: center;
+  flex-shrink: 0;
+  box-shadow:
+    0 0 0 6px color-mix(in srgb, var(--fp-track-num-color) 72%, transparent),
+    0.9em 0.9em 0 color-mix(in srgb, var(--fp-subtitle-color) 88%, transparent);
+  position: relative;
+  background:
+    linear-gradient(
+      135deg,
+      color-mix(in srgb, var(--fp-bg) 70%, white 30%) 0%,
+      color-mix(in srgb, var(--fp-bg) 82%, var(--fp-border-color) 18%) 100%
+    );
+}
+#poster-root[data-layout="retro"] .poster-retro-image-frame::before {
+  content: "";
+  position: absolute;
+  inset: 0.55em;
+  border: 2px solid color-mix(in srgb, var(--fp-track-num-color) 72%, transparent);
+  pointer-events: none;
+}
+#poster-root[data-layout="retro"] .poster-retro-image-frame .poster-cover {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  border-radius: 0;
+  filter: var(--fp-image-filter);
+  display: block;
+}
+#poster-root[data-layout="retro"] .poster-retro-track-panel {
+  width: 100%;
+  min-height: 0;
+  background: color-mix(in srgb, var(--fp-bg) 68%, black 32%);
+  border: 3px solid var(--fp-border-color);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--fp-track-num-color) 42%, transparent);
+  padding: 0.85em 0.95em 0.75em;
+  display: flex;
+  flex-direction: column;
+  gap: 0.55em;
+}
+#poster-root[data-layout="retro"] .poster-retro-track-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.8em;
+  color: var(--fp-heading-color);
+  font-family: var(--fp-track-font);
+  font-size: calc(var(--fp-meta-size) * 1.75);
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+#poster-root[data-layout="retro"] .poster-retro-tracklist {
+  column-count: 2;
+  column-gap: 1.35em;
+  font-size: calc(var(--fp-track-size) * 1.14);
+  line-height: 1.48;
+}
+#poster-root[data-layout="retro"] .poster-retro-tracklist .poster-track {
+  gap: 0.55em;
+  padding: 0.08em 0;
+}
+#poster-root[data-layout="retro"] .poster-retro-tracklist .poster-track-num {
+  color: var(--fp-subtitle-color);
+}
+#poster-root[data-layout="retro"] .poster-retro-tracklist .poster-track-name {
+  font-weight: 700;
+}
+#poster-root[data-layout="retro"] .poster-retro-footer {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35em;
+  flex-shrink: 0;
+  position: relative;
+  z-index: 3;
+}
+#poster-root[data-layout="retro"] .poster-retro-footer .poster-quote {
+  font-size: calc(var(--fp-quote-size) * 0.95);
+  line-height: 1.24;
+  text-align: center;
+  max-width: 88%;
+  margin: 0 auto;
+  color: var(--fp-quote-color);
+  text-shadow: 1px 1px 0 color-mix(in srgb, var(--fp-border-color) 30%, transparent);
+}
+#poster-root[data-layout="retro"] .poster-retro-meta-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 0.8em;
+  width: 100%;
+  padding-top: 0.45em;
+  border-top: 3px solid color-mix(in srgb, var(--fp-border-color) 28%, transparent);
+}
+#poster-root[data-layout="retro"] .poster-retro-meta-row .poster-meta {
+  color: var(--fp-border-color);
+  font-weight: 700;
+  font-size: calc(var(--fp-meta-size) * 1.25);
+}
+#poster-root[data-layout="retro"] .poster-retro-meta-row .poster-qr-wrap,
+#poster-root[data-layout="retro"] .poster-retro-meta-row .poster-code-wrap {
+  padding: 0.3em 0.35em;
+  border: 2px solid var(--fp-border-color);
+  background: color-mix(in srgb, var(--fp-bg) 58%, white 42%);
+  box-shadow: 0.28em 0.28em 0 color-mix(in srgb, var(--fp-track-num-color) 72%, transparent);
+}
+#poster-root[data-layout="retro"] .poster-retro-note {
+  color: color-mix(in srgb, var(--fp-track-num-color) 62%, var(--fp-heading-color) 38%);
+  opacity: 0.24;
+}
+
+

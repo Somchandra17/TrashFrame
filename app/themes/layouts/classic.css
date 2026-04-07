@@ -1,0 +1,39 @@
+/* ══════════════════════════════════════════════════════
+   LAYOUT: CLASSIC
+   Clean album poster. Date top-right. Big cover image.
+   Title + artist + meta. Quote. Tracklist + QR bottom.
+   ══════════════════════════════════════════════════════ */
+
+#poster-root[data-layout="classic"] {
+  gap: 0.35em;
+}
+#poster-root[data-layout="classic"] .poster-date {
+  position: absolute;
+  top: var(--fp-padding);
+  right: var(--fp-padding);
+  z-index: 4;
+}
+#poster-root[data-layout="classic"] .poster-cover {
+  border-radius: var(--fp-image-radius);
+}
+#poster-root[data-layout="classic"] .poster-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.05em;
+}
+#poster-root[data-layout="classic"] .poster-info .poster-title {
+  font-size: calc(var(--fp-heading-size) * 1.1);
+}
+#poster-root[data-layout="classic"] .poster-bottom-row {
+  display: flex;
+  gap: 0.8em;
+  align-items: flex-end;
+  margin-top: auto;
+}
+#poster-root[data-layout="classic"] .poster-bottom-row .poster-tracklist {
+  flex: 1;
+  min-width: 0;
+}
+#poster-root[data-layout="classic"] .poster-track-name {
+  font-weight: 600;
+}

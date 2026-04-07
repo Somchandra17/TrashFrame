@@ -1,0 +1,84 @@
+/* ══════════════════════════════════════════════════════
+   LAYOUT: MASTERPIECE RECEIPT
+   ══════════════════════════════════════════════════════ */
+#poster-root[data-layout="masterpiece-receipt"] {
+  --fp-bg: #ffffff;
+  --fp-heading-color: #111111;
+  --fp-subtitle-color: #333333;
+  --fp-track-color: #222222;
+  --fp-meta-color: #555555;
+  --fp-quote-color: #111111;
+  --fp-border-color: #333333;
+  --fp-track-num-color: #555555;
+  --fp-qr-fg: #111111;
+  --fp-qr-bg: transparent;
+  background: var(--fp-bg);
+  align-items: center;
+  font-family: var(--fp-track-font);
+}
+#poster-root[data-layout="masterpiece-receipt"] .poster-layer-bloom,
+#poster-root[data-layout="masterpiece-receipt"] .poster-layer-overlay,
+#poster-root[data-layout="masterpiece-receipt"] .poster-layer-ghost,
+#poster-root[data-layout="masterpiece-receipt"] .poster-layer-vignette {
+  display: none;
+}
+#poster-root[data-layout="masterpiece-receipt"] .receipt-container {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+#poster-root[data-layout="masterpiece-receipt"] .receipt-header {
+  text-align: center;
+  margin-bottom: 0.5em;
+  flex-shrink: 0;
+}
+#poster-root[data-layout="masterpiece-receipt"] .poster-title {
+  text-transform: uppercase;
+}
+#poster-root[data-layout="masterpiece-receipt"] .poster-artist {
+  margin-top: 0.5em;
+  font-size: calc(var(--fp-subtitle-size) * 0.9);
+}
+#poster-root[data-layout="masterpiece-receipt"] .receipt-divider {
+  border-top: 2px dashed var(--fp-border-color);
+  margin: 0.8em 0;
+  flex-shrink: 0;
+}
+#poster-root[data-layout="masterpiece-receipt"] .poster-tracklist {
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+  column-count: 1;
+}
+#poster-root[data-layout="masterpiece-receipt"] .poster-track {
+  justify-content: space-between;
+  display: flex;
+  border-bottom: 1px dotted color-mix(in srgb, var(--fp-border-color) 30%, transparent);
+  padding: 0.15em 0;
+}
+#poster-root[data-layout="masterpiece-receipt"] .poster-track:last-child {
+  border-bottom: none;
+}
+#poster-root[data-layout="masterpiece-receipt"] .receipt-footer {
+  margin-top: auto;
+  text-align: center;
+  flex-shrink: 0;
+}
+#poster-root[data-layout="masterpiece-receipt"] .receipt-total-row {
+  display: flex;
+  justify-content: space-between;
+  font-weight: bold;
+  font-size: calc(var(--fp-meta-size) * 1.8);
+  padding: 0.3em 0;
+}
+#poster-root[data-layout="masterpiece-receipt"] .receipt-barcode {
+  display: flex;
+  justify-content: center;
+  margin: 1em 0;
+}
+#poster-root[data-layout="masterpiece-receipt"] .receipt-thanks {
+  font-weight: bold;
+  letter-spacing: 0.15em;
+  font-size: calc(var(--fp-meta-size) * 1.2);
+}

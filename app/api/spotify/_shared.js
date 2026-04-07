@@ -34,14 +34,28 @@ export async function getSpotifyToken() {
     `${SPOTIFY_CLIENT_ID}:${SPOTIFY_CLIENT_SECRET}`,
   ).toString("base64");
 
-  const res = await fetch("https://accounts.spotify.com/api/token", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/x-www-form-urlencoded",
-      Authorization: `Basic ${base64Credentials}`,
-    },
-    body: "grant_type=client_credentials",
-  });
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 10000);
+
+  let res;
+  try {
+    res = await fetch("https://accounts.spotify.com/api/token", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+        Authorization: `Basic ${base64Credentials}`,
+      },
+      body: "grant_type=client_credentials",
+      signal: controller.signal,
+    });
+  } catch (err) {
+    if (err.name === "AbortError") {
+      throw makeSpotifyError("Spotify authentication timed out.", "spotify_auth_timeout");
+    }
+    throw err;
+  } finally {
+    clearTimeout(timeout);
+  }
 
   if (!res.ok) {
     const text = await res.text();
@@ -95,6 +109,7 @@ export async function spotifyApiError(resourceName, res) {
   }
 
   if (res.status === 401 || res.status === 403) {
+    tokenCache = { token: null, expiry: 0 };
     return jsonError(
       "Spotify rejected the server credentials.",
       res.status,
