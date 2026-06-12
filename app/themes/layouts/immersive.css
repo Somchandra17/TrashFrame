@@ -31,6 +31,7 @@
   z-index: 4;
   padding: 6% 6% 0;
   text-align: center;
+  flex-shrink: 0;
 }
 #poster-root[data-layout="immersive"] .poster-immersive-overlay .poster-artist {
   font-size: calc(var(--fp-subtitle-size) * 0.55);
@@ -41,7 +42,7 @@
   color: rgba(255,255,255,0.6);
 }
 #poster-root[data-layout="immersive"] .poster-immersive-overlay .poster-title {
-  font-size: calc(var(--fp-heading-size) * 2.5);
+  font-size: calc(var(--fp-heading-size) * 2.5 * var(--fp-title-fit, 1));
   line-height: 0.88;
   -webkit-text-stroke: 3px var(--fp-heading-color);
   color: transparent;
@@ -58,6 +59,8 @@
   flex-direction: column;
   gap: 0.25em;
   overflow: hidden;
+  flex-shrink: 1;
+  min-height: 0;
 }
 #poster-root[data-layout="immersive"] .poster-immersive-tracks {
   font-family: var(--fp-track-font);
@@ -66,6 +69,15 @@
   text-align: center;
   line-height: 1.9;
   font-weight: 600;
+  /* With many tracks, truncate the flowing names instead of pushing the
+     wave/meta/QR row off the poster. */
+  flex: 0 1 auto;
+  min-height: 0;
+  overflow: hidden;
+}
+#poster-root[data-layout="immersive"] .poster-immersive-wave,
+#poster-root[data-layout="immersive"] .poster-immersive-meta-row {
+  flex-shrink: 0;
 }
 #poster-root[data-layout="immersive"] .poster-track-sep {
   color: var(--fp-track-num-color);

@@ -13,7 +13,7 @@
 
 #poster-root[data-layout="gallery"] .poster-content > .poster-title {
   text-align: center;
-  font-size: calc(var(--fp-heading-size) * 1.35);
+  font-size: calc(var(--fp-heading-size) * 1.35 * var(--fp-title-fit, 1));
   line-height: 0.95;
   color: var(--fp-heading-color);
   padding-bottom: 0.2em;

@@ -8,7 +8,7 @@
   align-items: center;
 }
 #poster-root[data-layout="masterpiece-playlist"] .playlist-title {
-  font-size: calc(var(--fp-heading-size) * 1.4);
+  font-size: calc(var(--fp-heading-size) * 1.4 * var(--fp-title-fit, 1));
   color: var(--fp-heading-color);
   font-family: var(--fp-heading-font);
   font-weight: var(--fp-heading-weight);

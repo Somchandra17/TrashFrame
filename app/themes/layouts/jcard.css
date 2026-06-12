@@ -2,10 +2,15 @@
    LAYOUT: MASTERPIECE JCARD
    ══════════════════════════════════════════════════════ */
 #poster-root[data-layout="masterpiece-jcard"] {
-  flex-direction: row;
   padding: 0;
   gap: 0;
   background: var(--fp-bg);
+}
+/* The spine/front/back panels live inside .poster-content (a column by
+   default), so the row direction must be set there, not on the root. */
+#poster-root[data-layout="masterpiece-jcard"] .poster-content {
+  flex-direction: row;
+  gap: 0;
 }
 #poster-root[data-layout="masterpiece-jcard"] .jcard-spine {
   width: 15%;
@@ -76,6 +81,9 @@
 }
 #poster-root[data-layout="masterpiece-jcard"] .jcard-back-header {
   margin-bottom: 0.5em;
+}
+#poster-root[data-layout="masterpiece-jcard"] .jcard-back-header .poster-title {
+  font-size: calc(var(--fp-heading-size) * var(--fp-title-fit, 1));
 }
 #poster-root[data-layout="masterpiece-jcard"] .poster-tracklist {
   column-count: var(--fp-track-columns);

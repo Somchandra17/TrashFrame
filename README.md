@@ -1,6 +1,6 @@
 # TrashFrame
 
-Turn any **Spotify album or song** into a stunning, **printable poster**. Choose from 15 layout presets, fine-tune album art, tweak typography, and export at configurable DPI for real picture frames.
+Turn any **Spotify album or song** into a stunning, **printable poster**. Choose from 14 theme presets across 13 layouts, fine-tune album art, tweak typography, and export at configurable DPI for real picture frames.
 
 **Live repo:** [github.com/Somchandra17/TrashFrame](https://github.com/Somchandra17/TrashFrame)
 **Live app:** [trash-frame.vercel.app](https://trash-frame.vercel.app/)
@@ -12,22 +12,22 @@ Turn any **Spotify album or song** into a stunning, **printable poster**. Choose
 ### Spotify Integration
 - Paste any **Spotify album or song link** (including `spotify.link` short URLs). Tracks, durations, cover art, and URI load instantly via a client-credentials flow proxied through Next.js API routes.
 
-### 15 Poster Layouts
+### 14 Theme Presets (13 Layouts)
 - **Classic** - Clean album poster with big cover, tracklist, and QR code.
 - **Gallery** - Drake "More Life" inspired cream/dark panel with palette swatches.
 - **Overlay** - Frosted glassmorphism card over a blurred full-bleed cover.
 - **Editorial** - Magazine-style with massive title, italic year, labeled metadata columns.
 - **Bold Block** - Comic-book poster with colored panel, vertical genre strip, thick grid borders.
+- **Minimal** - Stripped-down, type-focused layout with arched art.
 - **Immersive** - Full-bleed cover with outlined title and flowing track names over gradient.
-- **Retro** - 80s synthwave with neon shadows, skewed titles, and duo-tone art.
+- **Retro** - 70s disco poster with 3D-shadow title and framed duo-tone art.
 - **Cassette J-Card** - Three-panel cassette insert with spine, front cover, and tracklist back.
 - **Comic Strip** - Pop-art poster with speech bubbles, price tag, and halftone dots.
 - **Retro Playlist** - Vintage polaroid with rotated quote and color swatches.
 - **Wave Overlay** - Floating frosted glass text plate over full album art.
+- **Receipt** / **Red Receipt** - Stylized supermarket receipt with dashed dividers, in mono or red ink.
 
-- **Receipt** - Stylized supermarket receipt with dashed dividers and dotted track rows.
-- **Minimal** - Stripped-down, type-focused layout.
-- **Playlist** - Polaroid-style layout with palette swatches.
+Every preset shows a **mini layout preview** in the sidebar picker, and long album titles **auto-scale** on display-type layouts so nothing clips.
 
 ### Album Art Controls
 - **B&W / Color** toggle for the cover art.
@@ -47,7 +47,8 @@ Turn any **Spotify album or song** into a stunning, **printable poster**. Choose
 
 ### Export
 - **PNG** and **PDF** with configurable DPI (**150** Draft, **300** Print, **600** Ultra).
-- Frame sizes: **4x6"**, **5x7"**, **A5**, **A4**, **30x40 cm**.
+- Frame sizes: **4x6"**, **5x7"**, **A5**, **A4**, **30x40 cm** — exact output dimensions shown before you export.
+- The poster renders at a fixed internal size, so exports are **pixel-identical on any screen or window size**.
 
 ### Background Effects
 - Blurred album bloom, dominant-color overlay & vignette via canvas-based palette extraction.
@@ -93,12 +94,14 @@ Open [http://localhost:3000](http://localhost:3000).
 | Path | Role |
 |------|------|
 | `app/page.js` | Main flow, theme injection, palette/auto-colors, overrides, undo/redo |
-| `app/components/Poster.jsx` | Layout switcher + background layers + QR/Spotify code |
+| `app/components/Poster.jsx` | Layout switcher, fixed-width render basis, background layers, QR/Spotify code |
 | `app/components/Sidebar.jsx` | Accordion-style edit menu with 7 collapsible sections |
+| `app/components/ThemeThumb.jsx` | Mini CSS-drawn layout previews for the theme picker |
 | `app/components/HelpModal.jsx` | Accessible modal explaining custom CSS theming workflow |
-| `app/posterTheme.css` | Base `--fp-*` defaults + layout-specific rules for all 15 themes |
+| `app/posterTheme.css` | Base `--fp-*` variables, shared poster rules, long-title auto-fit buckets |
+| `app/themes/layouts/*.css` | One file per layout (`polish.css` = minimal layout + cross-layout refinements, `decorative.css` = shared textures/ornaments) |
 | `app/globals.css` | App shell styling + animated landing page |
-| `app/lib/constants.js` | Preset themes, frame sizes, downloadable template, AI prompt |
+| `app/lib/constants.js` | Preset themes, frame sizes, poster base width, downloadable template, AI prompt |
 | `app/lib/colors.js` | Canvas-based palette extraction + luminance-based auto colors |
 | `app/lib/export.js` | PNG / PDF export with configurable DPI |
 | `app/lib/spotify.js` | URL parsing, short-link resolution, data fetching & normalization |

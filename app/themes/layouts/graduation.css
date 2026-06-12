@@ -31,7 +31,7 @@
   letter-spacing: 0.1em;
 }
 #poster-root[data-layout="masterpiece-graduation"] .poster-title {
-  font-size: calc(var(--fp-heading-size) * 1.5);
+  font-size: calc(var(--fp-heading-size) * 1.5 * var(--fp-title-fit, 1));
 }
 #poster-root[data-layout="masterpiece-graduation"] .poster-tracklist {
   column-count: var(--fp-track-columns);

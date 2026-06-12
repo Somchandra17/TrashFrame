@@ -3,10 +3,36 @@ export const FRAME_SIZES = {
   "5x7": { label: '5x7"', cm: [13, 18] },
   A5:    { label: "A5",    cm: [14.8, 21] },
   A4:    { label: "A4",    cm: [21, 29.7] },
-  "30x40": { label: "30x40", cm: [30, 40] },
+  "30x40": { label: "30×40 cm", cm: [30, 40] },
 };
 
 export const DEFAULT_FRAME = "5x7";
+
+// Fixed CSS width the poster always renders at. The preview scales it via a
+// wrapper transform, and exports capture this untransformed basis — so the
+// output is identical regardless of viewport size.
+export const POSTER_BASE_WIDTH = 480;
+
+export const DEFAULT_OVERRIDES = {
+  titleFontScale: 1.0,
+  tracklistFontScale: 1.0,
+  colorCover: false,
+  gradientBg: false,
+  codeType: "qr",
+  codeColor: null,
+  gradientColors: null,
+  ghostOpacity: 0,
+  fontColor: null,
+  bgColor: null,
+  hideDate: false,
+  hideArtist: false,
+  quoteFont: "",
+  artZoom: 1.0,
+  artPosX: 50,
+  artPosY: 50,
+  artBrightness: 100,
+  artContrast: 100,
+};
 
 export function framePx(key, dpi = 300) {
   const { cm } = FRAME_SIZES[key];
@@ -687,7 +713,7 @@ export const PRESET_THEMES = [
   --fp-heading-spacing: -0.05em;
   --fp-subtitle-color: #333333;
   --fp-subtitle-size: 0.8em;
-  --fp-meta-color: #111111;
+  --fp-meta-color: #555555;
   --fp-meta-size: 0.6em;
   --fp-quote-font: 'Space Mono', monospace;
   --fp-quote-size: 0.7em;
@@ -695,11 +721,11 @@ export const PRESET_THEMES = [
   --fp-quote-style: italic;
   --fp-track-font: 'Space Mono', monospace;
   --fp-track-size: 0.55em;
-  --fp-track-color: #111111;
-  --fp-track-num-color: #111111;
+  --fp-track-color: #222222;
+  --fp-track-num-color: #555555;
   --fp-track-columns: 1;
   --fp-track-gap: 0.3em;
-  --fp-border-color: #111111;
+  --fp-border-color: #333333;
   --fp-border-width: 2px;
   --fp-qr-size: 40px;
   --fp-qr-fg: #111111;

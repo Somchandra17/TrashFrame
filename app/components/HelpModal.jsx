@@ -74,8 +74,8 @@ export default function HelpModal({ open, onClose }) {
           <section className="help-modal-section">
             <h3 className="help-modal-step-title">1. Download the template</h3>
             <p>
-              Click <strong>&ldquo;Download Template CSS&rdquo;</strong> in the
-              Theme section. You&rsquo;ll get a <code className="help-modal-code">.css</code> file
+              Click <strong>&ldquo;Download blank CSS template&rdquo;</strong> in the
+              AI Theme Builder section. You&rsquo;ll get a <code className="help-modal-code">.css</code> file
               containing all the poster&rsquo;s style variables.
             </p>
           </section>
@@ -99,9 +99,10 @@ export default function HelpModal({ open, onClose }) {
           <section className="help-modal-section">
             <h3 className="help-modal-step-title">3. Upload your custom CSS</h3>
             <p>
-              Click <strong>&ldquo;Upload Custom CSS&rdquo;</strong> and select
-              your edited file. The poster will update instantly. Your theme is
-              saved in your browser, so it persists between sessions.
+              Click <strong>&ldquo;Upload .css file&rdquo;</strong> in the AI Theme
+              Builder section and select your edited file. The poster will update
+              instantly. Your theme is saved in your browser, so it persists
+              between sessions.
             </p>
           </section>
 

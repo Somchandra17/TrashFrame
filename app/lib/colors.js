@@ -11,6 +11,18 @@ function luminance([r, g, b]) {
   return (0.299 * r + 0.587 * g + 0.114 * b) / 255;
 }
 
+/**
+ * True when a hex color reads as "light" (same 150/255 threshold the
+ * Spotify scannable code uses to pick its bar color).
+ */
+export function isLightHex(hex) {
+  const c = hex.replace("#", "");
+  const r = parseInt(c.substring(0, 2), 16);
+  const g = parseInt(c.substring(2, 4), 16);
+  const b = parseInt(c.substring(4, 6), 16);
+  return luminance([r, g, b]) > 150 / 255;
+}
+
 function darken([r, g, b], factor) {
   return rgbToHex([
     Math.round(r * factor),
@@ -52,9 +64,11 @@ function getColorsFromCanvas(img, colorCount = 5) {
   const colorMap = {};
   
   for (let i = 0; i < pixels.length; i += 4) {
-    const r = Math.round(pixels[i] / 16) * 16;
-    const g = Math.round(pixels[i + 1] / 16) * 16;
-    const b = Math.round(pixels[i + 2] / 16) * 16;
+    // Quantize to 16-step buckets; clamp so 255 doesn't round up to 256
+    // (which would produce invalid 3-digit hex channels).
+    const r = Math.min(255, Math.round(pixels[i] / 16) * 16);
+    const g = Math.min(255, Math.round(pixels[i + 1] / 16) * 16);
+    const b = Math.min(255, Math.round(pixels[i + 2] / 16) * 16);
     const a = pixels[i + 3];
     
     // Skip transparent pixels

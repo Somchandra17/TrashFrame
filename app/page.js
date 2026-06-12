@@ -1,18 +1,18 @@
 "use client";
 
 import { useState, useEffect, useCallback, useRef } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, MotionConfig } from "framer-motion";
 import Poster from "./components/Poster";
 import Sidebar from "./components/Sidebar";
 import HelpModal from "./components/HelpModal";
 import Image from "next/image";
 import { fetchSpotifyItem } from "./lib/spotify";
 import { extractPalette, extractDominantColors } from "./lib/colors";
-import { DEFAULT_FRAME, PRESET_THEMES } from "./lib/constants";
+import { DEFAULT_FRAME, DEFAULT_OVERRIDES, PRESET_THEMES } from "./lib/constants";
 
 const RECENT_KEY = "trashframe_recent";
 const MAX_RECENT = 6;
-const DEMO_SPOTIFY_URL = "https://open.spotify.com/album/5poA9SAx0Xiz1cf17fWBLS?si=PtJAoI4ORvuLzorUZE9Q_Q";
+const DEMO_SPOTIFY_URL = "https://open.spotify.com/album/5poA9SAx0Xiz1cf17fWBLS";
 
 function loadRecent() {
   if (typeof window === "undefined") return [];
@@ -64,26 +64,6 @@ function loadGoogleFonts(fonts) {
     document.head.appendChild(link);
   });
 }
-
-const DEFAULT_OVERRIDES = {
-  titleFontScale: 1.0,
-  tracklistFontScale: 1.0,
-  colorCover: false,
-  gradientBg: false,
-  codeType: "qr",
-  gradientColors: null,
-  ghostOpacity: 0,
-  fontColor: null,
-  bgColor: null,
-  hideDate: false,
-  hideArtist: false,
-  quoteFont: "",
-  artZoom: 1.0,
-  artPosX: 50,
-  artPosY: 50,
-  artBrightness: 100,
-  artContrast: 100,
-};
 
 const EMPTY_COLORS = [];
 
@@ -197,6 +177,9 @@ export default function Home() {
   const [recentItems, setRecentItems] = useState([]);
   const [isExporting, setIsExporting] = useState(false);
   const undoRef = useRef({ past: [], future: [] });
+  // Mirror of posterOverrides so history pushes can happen outside setState
+  // updaters (updaters run twice under StrictMode in dev).
+  const overridesRef = useRef(DEFAULT_OVERRIDES);
   const [undoVersion, setUndoVersion] = useState(0);
 
   const currentPreset = (!customTheme && activePreset !== "default") 
@@ -245,13 +228,10 @@ export default function Home() {
     extractDominantColors(album.coverUrl)
       .then((colors) => {
         if (cancelled) return;
-        setPosterOverrides((prev) => {
-          undoRef.current.past.push(prev);
-          if (undoRef.current.past.length > 50) undoRef.current.past.shift();
-          undoRef.current.future = [];
-          return { ...prev, gradientColors: colors };
-        });
-        setUndoVersion(v => v + 1);
+        // Completes the "gradient on" action — not a separate undo step.
+        const next = { ...overridesRef.current, gradientColors: colors };
+        overridesRef.current = next;
+        setPosterOverrides(next);
       })
       .catch(() => {});
     return () => { cancelled = true; };
@@ -277,37 +257,32 @@ export default function Home() {
     const cleaned = { ...next };
     if (!cleaned.gradientBg) {
       cleaned.gradientColors = null;
-    } else if (cleaned.gradientBg && !cleaned.gradientColors) {
-      cleaned.gradientColors = null;
     }
-    setPosterOverrides(prev => {
-      undoRef.current.past.push(prev);
-      if (undoRef.current.past.length > 50) undoRef.current.past.shift();
-      undoRef.current.future = [];
-      return cleaned;
-    });
+    undoRef.current.past.push(overridesRef.current);
+    if (undoRef.current.past.length > 50) undoRef.current.past.shift();
+    undoRef.current.future = [];
+    overridesRef.current = cleaned;
+    setPosterOverrides(cleaned);
     setUndoVersion(v => v + 1);
   }, []);
 
   const handleUndo = useCallback(() => {
-    const { past } = undoRef.current;
+    const { past, future } = undoRef.current;
     if (past.length === 0) return;
     const prev = past.pop();
-    setPosterOverrides(current => {
-      undoRef.current.future.push(current);
-      return prev;
-    });
+    future.push(overridesRef.current);
+    overridesRef.current = prev;
+    setPosterOverrides(prev);
     setUndoVersion(v => v + 1);
   }, []);
 
   const handleRedo = useCallback(() => {
-    const { future } = undoRef.current;
+    const { past, future } = undoRef.current;
     if (future.length === 0) return;
     const next = future.pop();
-    setPosterOverrides(current => {
-      undoRef.current.past.push(current);
-      return next;
-    });
+    past.push(overridesRef.current);
+    overridesRef.current = next;
+    setPosterOverrides(next);
     setUndoVersion(v => v + 1);
   }, []);
 
@@ -362,6 +337,7 @@ export default function Home() {
       const data = await fetchSpotifyItem(spotifyUrl);
       setAlbum(data);
       setPosterOverrides(DEFAULT_OVERRIDES);
+      overridesRef.current = DEFAULT_OVERRIDES;
       undoRef.current = { past: [], future: [] };
       setUndoVersion(v => v + 1);
       const entry = { name: data.name, artists: data.artists, coverUrl: data.coverUrl, spotifyUrl: data.spotifyUrl };
@@ -453,9 +429,14 @@ export default function Home() {
     overridesCss += `\n${selectorOverrides.join("\n")}`;
   }
 
+  // Everything that can change the resolved --fp-qr-fg; the QR code re-reads
+  // the computed style whenever this key changes (palette arrives async and
+  // changes again on every album switch).
+  const qrKey = `${activePreset}|${customTheme ? customTheme.length : 0}|${o.fontColor || ""}|${paletteData?.autoVars?.["--fp-qr-fg"] || ""}`;
+
   if (!album) {
     return (
-      <>
+      <MotionConfig reducedMotion="user">
         <MobilePrompt />
         <div className="landing-page">
           <div className="landing-shell">
@@ -488,7 +469,7 @@ export default function Home() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.55, delay: 0.16, ease: [0.4, 0, 0.2, 1] }}
               >
-                Paste a Spotify album link and generate a clean, customizable poster in a few seconds.
+                Paste a Spotify album or song link and generate a clean, customizable poster in a few seconds.
               </motion.p>
 
               <motion.form
@@ -503,6 +484,7 @@ export default function Home() {
                   value={url}
                   onChange={(e) => setUrl(e.target.value)}
                   placeholder="Paste a Spotify link..."
+                  aria-label="Spotify album or song link"
                   className="landing-input"
                 />
                 <button type="submit" disabled={loading || !url.trim()} className="landing-btn">
@@ -527,7 +509,7 @@ export default function Home() {
                 >
                   Try demo album
                 </button>
-                <span className="landing-meta">Albums, tracks, and playlists. PNG + PDF export.</span>
+                <span className="landing-meta">Albums and songs. PNG + PDF export.</span>
               </motion.div>
 
               {error && <p className="landing-error">{error}</p>}
@@ -615,7 +597,7 @@ export default function Home() {
             <AuthorCredit />
           </div>
         </div>
-      </>
+      </MotionConfig>
     );
   }
 
@@ -624,7 +606,7 @@ export default function Home() {
   const canRedo = undoVersion >= 0 && undoRef.current.future.length > 0;
 
   return (
-    <>
+    <MotionConfig reducedMotion="user">
       <MobilePrompt />
       <HelpModal open={helpOpen} onClose={() => setHelpOpen(false)} />
       <style id="poster-auto-colors" dangerouslySetInnerHTML={{ __html: autoColorsCss }} suppressHydrationWarning />
@@ -663,6 +645,7 @@ export default function Home() {
                   albumColors={albumColors}
                   barColor={paletteData?.barColor}
                   codeColor={posterOverrides.codeColor}
+                  qrKey={qrKey}
                 />
                 <AnimatePresence>
                   {isExporting && (
@@ -727,6 +710,6 @@ export default function Home() {
           />
         )}
       </div>
-    </>
+    </MotionConfig>
   );
 }

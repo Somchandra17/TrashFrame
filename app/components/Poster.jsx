@@ -1,18 +1,17 @@
 "use client";
 
 import QRCode from "react-qr-code";
-import { frameAspect } from "../lib/constants";
-import { useState, useEffect } from "react";
+import { frameAspect, POSTER_BASE_WIDTH } from "../lib/constants";
+import { isLightHex } from "../lib/colors";
+import { useState, useEffect, useContext, useLayoutEffect, useRef, createContext } from "react";
 
 /* eslint-disable @next/next/no-img-element */
 
-function isLightColor(hex) {
-  const c = hex.replace("#", "");
-  const r = parseInt(c.substring(0, 2), 16);
-  const g = parseInt(c.substring(2, 4), 16);
-  const b = parseInt(c.substring(4, 6), 16);
-  return (r * 299 + g * 587 + b * 114) / 1000 > 150;
-}
+// Bumped by page.js whenever the theme cascade may have changed --fp-qr-fg
+// (preset switch, custom CSS, font-color override, async palette arrival),
+// so BottomCode re-reads the computed style without threading a prop
+// through every layout component.
+const QrRefreshContext = createContext("");
 
 /* ═══════════════════════ DECORATIVE SVG ELEMENTS ═══════════════════════ */
 
@@ -159,6 +158,7 @@ function Cover({ src, name, className }) {
 
 function BottomCode({ url, uri, codeType, barColor, codeColor }) {
   const bar = barColor || "black";
+  const qrKey = useContext(QrRefreshContext);
   const [svgStr, setSvgStr] = useState("");
   const [qrFg, setQrFg] = useState("#111");
 
@@ -168,7 +168,7 @@ function BottomCode({ url, uri, codeType, barColor, codeColor }) {
     if (!root) return;
     const val = getComputedStyle(root).getPropertyValue("--fp-qr-fg").trim();
     setQrFg(val || "#111");
-  }, [codeType, codeColor]);
+  }, [codeType, codeColor, qrKey]);
 
   useEffect(() => {
     if (codeType !== "scannable" || !uri) {
@@ -177,7 +177,7 @@ function BottomCode({ url, uri, codeType, barColor, codeColor }) {
     }
 
     const controller = new AbortController();
-    const fetchBar = codeColor ? (isLightColor(codeColor) ? "white" : "black") : bar;
+    const fetchBar = codeColor ? (isLightHex(codeColor) ? "white" : "black") : bar;
     const bg = fetchBar === "black" ? "ffffff" : "000000";
     const src = `https://scannables.scdn.co/uri/plain/svg/${bg}/${fetchBar}/640/${uri}`;
 
@@ -437,7 +437,7 @@ function LayoutBoldBlock({ album, quote, codeType, barColor, codeColor }) {
         <div className="poster-tracklist">
           {album.tracks.map((t) => <TrackRow key={t.number} t={t} hideArtists />)}
         </div>
-        <BottomCode url={album.spotifyUrl} uri={album.uri} codeType={codeType} barColor={barColor} />
+        <BottomCode url={album.spotifyUrl} uri={album.uri} codeType={codeType} barColor={barColor} codeColor={codeColor} />
       </div>
     </>
   );
@@ -770,7 +770,23 @@ const LAYOUTS = {
   "masterpiece-receipt": LayoutMasterpieceReceipt,
 };
 
-export default function Poster({ album, quote, frameSize, layout, codeType, albumColors, barColor, codeColor }) {
+export default function Poster({ album, quote, frameSize, layout, codeType, albumColors, barColor, codeColor, qrKey }) {
+  const boxRef = useRef(null);
+  const [scale, setScale] = useState(1);
+
+  useLayoutEffect(() => {
+    const box = boxRef.current;
+    if (!box) return undefined;
+    const update = () => {
+      const w = box.clientWidth;
+      if (w > 0) setScale(w / POSTER_BASE_WIDTH);
+    };
+    update();
+    const observer = new ResizeObserver(update);
+    observer.observe(box);
+    return () => observer.disconnect();
+  }, []);
+
   if (!album) return null;
 
   const aspect = frameAspect(frameSize);
@@ -778,37 +794,55 @@ export default function Poster({ album, quote, frameSize, layout, codeType, albu
   const LayoutComponent = LAYOUTS[layoutKey] || LayoutClassic;
   const coverUrl = album.coverUrl;
 
+  // Display-type layouts scale their huge titles down for long names via
+  // --fp-title-fit (see posterTheme.css); buckets keep it deterministic.
+  const titleLen = (album.name || "").length;
+  const titleSize = titleLen >= 40 ? "xl" : titleLen >= 28 ? "l" : titleLen >= 18 ? "m" : "s";
+
   return (
-    <div
-      id="poster-root"
-      data-layout={layoutKey}
-      style={{ aspectRatio: `${aspect}` }}
-    >
-      {/* Layer 1 — blurred background bloom */}
+    <div className="poster-scale-box" ref={boxRef} style={{ aspectRatio: `${aspect}` }}>
+      {/* The transform lives on this wrapper, NOT on #poster-root: html-to-image
+          copies the captured node's computed transform into the clone, which
+          would bake the preview scale into exports. */}
       <div
-        className="poster-layer-bloom"
-        style={{ backgroundImage: `url(${coverUrl})` }}
-      />
-      {/* Layer 2 — dark/light overlay */}
-      <div className="poster-layer-overlay" />
-      {/* Layer 3 — ghost watermark */}
-      <div
-        className="poster-layer-ghost"
-        style={{ backgroundImage: `url(${coverUrl})` }}
-      />
-      {/* Layer 4 — poster content */}
-      <div className="poster-content">
-        <LayoutComponent
-          album={album}
-          quote={quote}
-          codeType={codeType || "qr"}
-          albumColors={albumColors}
-          barColor={barColor}
-          codeColor={codeColor}
-        />
+        className="poster-scale-layer"
+        style={{ width: POSTER_BASE_WIDTH, transform: `scale(${scale})` }}
+      >
+        <div
+          id="poster-root"
+          data-layout={layoutKey}
+          data-title-size={titleSize}
+          style={{ aspectRatio: `${aspect}` }}
+        >
+          {/* Layer 1 — blurred background bloom */}
+          <div
+            className="poster-layer-bloom"
+            style={{ backgroundImage: `url(${coverUrl})` }}
+          />
+          {/* Layer 2 — dark/light overlay */}
+          <div className="poster-layer-overlay" />
+          {/* Layer 3 — ghost watermark */}
+          <div
+            className="poster-layer-ghost"
+            style={{ backgroundImage: `url(${coverUrl})` }}
+          />
+          {/* Layer 4 — poster content */}
+          <div className="poster-content">
+            <QrRefreshContext.Provider value={qrKey || ""}>
+              <LayoutComponent
+                album={album}
+                quote={quote}
+                codeType={codeType || "qr"}
+                albumColors={albumColors}
+                barColor={barColor}
+                codeColor={codeColor}
+              />
+            </QrRefreshContext.Provider>
+          </div>
+          {/* Layer 5 — edge vignette */}
+          <div className="poster-layer-vignette" />
+        </div>
       </div>
-      {/* Layer 5 — edge vignette */}
-      <div className="poster-layer-vignette" />
     </div>
   );
 }

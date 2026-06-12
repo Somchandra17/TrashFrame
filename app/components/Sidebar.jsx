@@ -3,8 +3,9 @@
 import { useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
-import { FRAME_SIZES, DEFAULT_THEME_CSS, PRESET_THEMES, AI_THEME_PROMPT } from "../lib/constants";
+import { FRAME_SIZES, DEFAULT_OVERRIDES, DEFAULT_THEME_CSS, PRESET_THEMES, AI_THEME_PROMPT, framePx } from "../lib/constants";
 import { downloadPng, downloadPdf } from "../lib/export";
+import ThemeThumb from "./ThemeThumb";
 
 function Section({ icon, title, children, defaultOpen = false }) {
   const [open, setOpen] = useState(defaultOpen);
@@ -58,6 +59,7 @@ function SliderRow({ label, value, min, max, step, onChange, unit = "", displayV
           onChange={(e) => onChange(parseFloat(e.target.value))}
           className="slider-input"
           style={{ "--slider-pct": `${pct}%` }}
+          aria-label={label}
         />
       </div>
     </div>
@@ -73,6 +75,7 @@ function ToggleSwitch({ label, checked, onChange }) {
         type="button"
         role="switch"
         aria-checked={checked}
+        aria-label={label}
         onClick={(e) => { e.stopPropagation(); toggle(); }}
         className={`toggle-switch ${checked ? "toggle-switch-on" : ""}`}
       >
@@ -255,30 +258,14 @@ export default function Sidebar({
   }
 
   function handleResetOverrides() {
-    onChangeOverrides({
-      titleFontScale: 1.0,
-      tracklistFontScale: 1.0,
-      colorCover: false,
-      gradientBg: false,
-      codeType: "qr",
-      gradientColors: null,
-      ghostOpacity: 0,
-      fontColor: null,
-      bgColor: null,
-      hideDate: false,
-      hideArtist: false,
-      quoteFont: "",
-      artZoom: 1.0,
-      artPosX: 50,
-      artPosY: 50,
-      artBrightness: 100,
-      artContrast: 100,
-    });
+    onChangeOverrides({ ...DEFAULT_OVERRIDES });
   }
 
   const activeLabel = customTheme
     ? "AI theme"
     : PRESET_THEMES.find((p) => p.id === activePreset)?.name || "Classic";
+
+  const [exportW, exportH] = framePx(frameSize, exportDpi);
 
   return (
     <motion.aside
@@ -326,6 +313,7 @@ export default function Sidebar({
             value={urlValue}
             onChange={(e) => onUrlChange(e.target.value)}
             placeholder="Paste a new Spotify link\u2026"
+            aria-label="Spotify album or song link"
             className="sidebar-url-input"
           />
           <button type="submit" disabled={urlLoading || !urlValue?.trim()} className="sidebar-url-btn">
@@ -406,7 +394,7 @@ export default function Sidebar({
 
           <div className="sidebar-field">
             <span className="sidebar-field-label">Font Color</span>
-            <div className="color-swatches">
+            <div className="color-swatches" role="group" aria-label="Font color">
               {[
                 { label: "Auto", value: null },
                 { label: "White", value: "#ffffff" },
@@ -419,6 +407,8 @@ export default function Sidebar({
                   onClick={() => setOverride("fontColor", opt.value)}
                   className={`color-swatch-btn ${overrides.fontColor === opt.value ? "color-swatch-active" : ""}`}
                   title={opt.label}
+                  aria-label={opt.label}
+                  aria-pressed={overrides.fontColor === opt.value}
                 >
                   {opt.value ? (
                     <span className="color-swatch-dot" style={{ backgroundColor: opt.value }} />
@@ -440,7 +430,7 @@ export default function Sidebar({
 
           <div className="sidebar-field">
             <span className="sidebar-field-label">Background Color</span>
-            <div className="color-swatches">
+            <div className="color-swatches" role="group" aria-label="Background color">
               {[
                 { label: "Auto", value: null },
                 { label: "White", value: "#ffffff" },
@@ -453,6 +443,8 @@ export default function Sidebar({
                   onClick={() => setOverride("bgColor", opt.value)}
                   className={`color-swatch-btn ${overrides.bgColor === opt.value ? "color-swatch-active" : ""}`}
                   title={opt.label}
+                  aria-label={opt.label}
+                  aria-pressed={overrides.bgColor === opt.value}
                 >
                   {opt.value ? (
                     <span className="color-swatch-dot" style={{ backgroundColor: opt.value }} />
@@ -472,9 +464,6 @@ export default function Sidebar({
             </div>
           </div>
 
-          <button onClick={handleResetOverrides} className="sidebar-reset-btn">
-            Reset All Overrides
-          </button>
         </Section>
 
         {/* ── 3. DYNAMIC THEME PRESETS ── */}
@@ -488,19 +477,19 @@ export default function Sidebar({
                   onClick={() => onSelectPreset(preset.id)}
                   className={`theme-card ${isActive ? "theme-card-active" : ""}`}
                   title={preset.desc}
+                  aria-pressed={isActive}
                   whileHover={{ scale: 1.04 }}
                   whileTap={{ scale: 0.96 }}
                   transition={{ type: "spring", stiffness: 400, damping: 25 }}
                 >
-                  <div className="theme-card-colors">
-                    {preset.colors.map((c, i) => (
-                      <span
-                        key={i}
-                        className="theme-card-dot"
-                        style={{ backgroundColor: c }}
-                      />
-                    ))}
-                  </div>
+                  {isActive && (
+                    <span className="theme-card-check" aria-hidden="true">
+                      <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round">
+                        <polyline points="20 6 9 17 4 12" />
+                      </svg>
+                    </span>
+                  )}
+                  <ThemeThumb layout={preset.layout} colors={preset.colors} />
                   <span className={`theme-card-name ${isActive ? "theme-card-name-active" : ""}`}>
                     {preset.name}
                   </span>
@@ -525,10 +514,11 @@ export default function Sidebar({
             />
             <div className="sidebar-field">
               <span className="sidebar-field-label">Bottom Code</span>
-              <div className="cover-toggles">
+              <div className="cover-toggles" role="group" aria-label="Bottom code type">
                 <button
                   onClick={() => setOverride("codeType", "qr")}
                   className={`cover-mode-btn ${overrides.codeType === "qr" ? "cover-mode-active" : ""}`}
+                  aria-pressed={overrides.codeType === "qr"}
                 >
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" style={{ marginRight: 4, display: "inline-block", verticalAlign: "-2px" }}>
                     <rect x="3" y="3" width="7" height="7" rx="1" />
@@ -540,6 +530,7 @@ export default function Sidebar({
                 <button
                   onClick={() => setOverride("codeType", "scannable")}
                   className={`cover-mode-btn ${overrides.codeType === "scannable" ? "cover-mode-active" : ""}`}
+                  aria-pressed={overrides.codeType === "scannable"}
                 >
                   Spotify Code
                 </button>
@@ -547,7 +538,7 @@ export default function Sidebar({
             </div>
             <div className="sidebar-field">
               <span className="sidebar-field-label">Code Color</span>
-              <div className="color-swatches">
+              <div className="color-swatches" role="group" aria-label="Code color">
                 {[
                   { label: "Auto", value: null },
                   { label: "Black", value: "#000000" },
@@ -558,6 +549,8 @@ export default function Sidebar({
                     onClick={() => setOverride("codeColor", opt.value)}
                     className={`color-swatch-btn ${overrides.codeColor === opt.value ? "color-swatch-active" : ""}`}
                     title={opt.label}
+                    aria-label={opt.label}
+                    aria-pressed={overrides.codeColor === opt.value}
                   >
                     {opt.value ? (
                       <span className="color-swatch-dot" style={{ backgroundColor: opt.value }} />
@@ -581,16 +574,18 @@ export default function Sidebar({
 
         {/* ── 5. COVER ART ── */}
         <Section icon={icons.image} title="Cover Art" defaultOpen={false}>
-          <div className="cover-toggles">
+          <div className="cover-toggles" role="group" aria-label="Cover art mode">
             <button
               onClick={() => setOverride("colorCover", false)}
               className={`cover-mode-btn ${!overrides.colorCover ? "cover-mode-active" : ""}`}
+              aria-pressed={!overrides.colorCover}
             >
               B&W
             </button>
             <button
               onClick={() => setOverride("colorCover", true)}
               className={`cover-mode-btn ${overrides.colorCover ? "cover-mode-active" : ""}`}
+              aria-pressed={overrides.colorCover}
             >
               Color
             </button>
@@ -630,6 +625,7 @@ export default function Sidebar({
             <button
               onClick={() => setOverride("gradientBg", !overrides.gradientBg)}
               className={`cover-mode-btn ${overrides.gradientBg ? "cover-mode-active" : ""}`}
+              aria-pressed={overrides.gradientBg}
             >
               {overrides.gradientBg ? "Gradient On" : "Solid BG"}
             </button>
@@ -726,7 +722,7 @@ export default function Sidebar({
         <Section icon={icons.export} title="Export" defaultOpen={true}>
           <div className="sidebar-field">
             <span className="sidebar-field-label">Quality (DPI)</span>
-            <div className="cover-toggles">
+            <div className="cover-toggles" role="group" aria-label="Export quality">
               {[
                 { dpi: 150, label: "150 Draft" },
                 { dpi: 300, label: "300 Print" },
@@ -736,11 +732,15 @@ export default function Sidebar({
                   key={dpi}
                   onClick={() => setExportDpi(dpi)}
                   className={`cover-mode-btn ${exportDpi === dpi ? "cover-mode-active" : ""}`}
+                  aria-pressed={exportDpi === dpi}
                 >
                   {label}
                 </button>
               ))}
             </div>
+            <p className="export-dim-hint">
+              {FRAME_SIZES[frameSize].label} @ {exportDpi} DPI &rarr; {exportW.toLocaleString()} &times; {exportH.toLocaleString()} px
+            </p>
           </div>
           <div className="export-buttons">
             <motion.button
@@ -774,6 +774,15 @@ export default function Sidebar({
           </div>
           {exportError && <p className="export-error">{exportError}</p>}
         </Section>
+
+        <div className="sidebar-footer-reset">
+          <button onClick={handleResetOverrides} className="sidebar-reset-all-btn">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <polyline points="1 4 1 10 7 10" /><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10" />
+            </svg>
+            Reset All Overrides
+          </button>
+        </div>
       </div>
       <AnimatePresence>
         {toast && (

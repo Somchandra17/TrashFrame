@@ -28,9 +28,35 @@ const geistMono = localFont({
   weight: "100 900",
 });
 
+const SITE_DESCRIPTION =
+  "Turn any Spotify album or song into a printable poster. 14 layout presets, custom typography and colors, and high-DPI PNG + PDF export.";
+
 export const metadata = {
+  metadataBase: new URL("https://trash-frame.vercel.app"),
   title: "TrashFrame - Album Poster Generator",
-  description: "Turn any Spotify album into a printable poster",
+  description: SITE_DESCRIPTION,
+  applicationName: "TrashFrame",
+  openGraph: {
+    title: "TrashFrame - Album Poster Generator",
+    description: SITE_DESCRIPTION,
+    url: "/",
+    siteName: "TrashFrame",
+    type: "website",
+    images: [
+      {
+        url: "/images/hero-posters.png",
+        width: 1376,
+        height: 768,
+        alt: "Album posters generated with TrashFrame",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "TrashFrame - Album Poster Generator",
+    description: SITE_DESCRIPTION,
+    images: ["/images/hero-posters.png"],
+  },
 };
 
 export default function RootLayout({ children }) {

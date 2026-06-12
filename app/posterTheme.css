@@ -32,7 +32,7 @@
   --fp-border-width: 2px;
   --fp-qr-size: 48px;
   --fp-qr-fg: #111111;
-  --fp-qr-bg: #ffffff;
+  --fp-qr-bg: transparent;
   --fp-padding: 5%;
   --fp-gap: 0.6em;
 
@@ -43,7 +43,15 @@
   --fp-vignette-opacity: 0.4;
   --fp-vignette-color: rgba(0, 0, 0, 0.6);
   --fp-ghost-opacity: 0;
+
+  /* Long-title scale factor; display-type layouts multiply their heading
+     size by this so 40+ character names don't clip or push content out. */
+  --fp-title-fit: 1;
 }
+
+#poster-root[data-title-size="m"] { --fp-title-fit: 0.85; }
+#poster-root[data-title-size="l"] { --fp-title-fit: 0.7; }
+#poster-root[data-title-size="xl"] { --fp-title-fit: 0.58; }
 
 /* ──────────────── BASE (ALL LAYOUTS) ──────────────── */
 
@@ -81,6 +89,7 @@
   color: var(--fp-heading-color);
   text-transform: uppercase;
   line-height: 1.1;
+  overflow-wrap: break-word;
 }
 .poster-artist {
   font-family: var(--fp-heading-font);

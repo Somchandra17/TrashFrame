@@ -73,7 +73,7 @@
   font-weight: 800;
 }
 #poster-root[data-layout="retro"] .poster-retro-header .poster-title {
-  font-size: calc(var(--fp-heading-size) * 1.45);
+  font-size: calc(var(--fp-heading-size) * 1.45 * var(--fp-title-fit, 1));
   line-height: 0.82;
   text-transform: uppercase;
   color: var(--fp-heading-color);
@@ -105,7 +105,12 @@
   width: 82%;
   max-width: 100%;
   align-self: center;
-  flex-shrink: 0;
+  /* Shrinks (center-cropping the art) when the tracklist needs room,
+     instead of pushing the track panel off the poster. */
+  display: flex;
+  flex-shrink: 1;
+  min-height: 0;
+  overflow: hidden;
   box-shadow:
     0 0 0 6px color-mix(in srgb, var(--fp-track-num-color) 72%, transparent),
     0.9em 0.9em 0 color-mix(in srgb, var(--fp-subtitle-color) 88%, transparent);
@@ -130,10 +135,13 @@
   border-radius: 0;
   filter: var(--fp-image-filter);
   display: block;
+  min-height: 0;
+  object-fit: cover;
 }
 #poster-root[data-layout="retro"] .poster-retro-track-panel {
   width: 100%;
   min-height: 0;
+  flex-shrink: 0;
   background: color-mix(in srgb, var(--fp-bg) 68%, black 32%);
   border: 3px solid var(--fp-border-color);
   box-shadow: 0 0 0 3px color-mix(in srgb, var(--fp-track-num-color) 42%, transparent);
@@ -159,6 +167,8 @@
   column-gap: 1.35em;
   font-size: calc(var(--fp-track-size) * 1.14);
   line-height: 1.48;
+  max-height: 16em;
+  overflow: hidden;
 }
 #poster-root[data-layout="retro"] .poster-retro-tracklist .poster-track {
   gap: 0.55em;

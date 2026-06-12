@@ -206,9 +206,12 @@
   letter-spacing: 0.18em;
 }
 #poster-root[data-layout="minimal"] .poster-minimal-copy .poster-title {
-  font-size: calc(var(--fp-heading-size) * 1.32);
+  font-size: calc(var(--fp-heading-size) * 1.32 * var(--fp-title-fit, 1));
   line-height: 0.84;
   max-width: 5.5ch;
+  /* Words intentionally overflow the 5.5ch box (one word per line); keep
+     them whole rather than breaking mid-word. */
+  overflow-wrap: normal;
 }
 #poster-root[data-layout="minimal"] .poster-minimal-copy .poster-quote {
   margin-top: auto;

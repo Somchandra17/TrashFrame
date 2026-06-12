@@ -1,17 +1,10 @@
 /* ══════════════════════════════════════════════════════
    LAYOUT: MASTERPIECE RECEIPT
    ══════════════════════════════════════════════════════ */
+/* Color values live in the preset CSS (constants.js), NOT here — this
+   selector outranks the injected `#poster-root { ... }` preset themes, so
+   variables defined here would silently block presets like Red Receipt. */
 #poster-root[data-layout="masterpiece-receipt"] {
-  --fp-bg: #ffffff;
-  --fp-heading-color: #111111;
-  --fp-subtitle-color: #333333;
-  --fp-track-color: #222222;
-  --fp-meta-color: #555555;
-  --fp-quote-color: #111111;
-  --fp-border-color: #333333;
-  --fp-track-num-color: #555555;
-  --fp-qr-fg: #111111;
-  --fp-qr-bg: transparent;
   background: var(--fp-bg);
   align-items: center;
   font-family: var(--fp-track-font);

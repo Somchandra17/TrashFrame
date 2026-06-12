@@ -35,15 +35,18 @@ export async function exportPng(frameKey, dpi = 300) {
   }
 
   const [w, h] = framePx(frameKey, dpi);
-  const rect = node.getBoundingClientRect();
-  const ratio = w / rect.width;
   const fontEmbedCSS = await getSafeFontEmbedCSS(node);
 
   try {
+    // html-to-image sizes the final canvas as canvasWidth × pixelRatio, so
+    // pixelRatio must stay 1 for the output to be exactly w × h. The node is
+    // captured at its fixed untransformed layout width (POSTER_BASE_WIDTH)
+    // and the vector SVG is rasterized at the target size, so text stays
+    // crisp and the result no longer depends on the on-screen preview size.
     const dataUrl = await toPng(node, {
       canvasWidth: w,
       canvasHeight: h,
-      pixelRatio: ratio,
+      pixelRatio: 1,
       cacheBust: true,
       preferredFontFormat: "woff2",
       fontEmbedCSS,

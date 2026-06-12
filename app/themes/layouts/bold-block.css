@@ -29,7 +29,7 @@
   justify-content: flex-end;
 }
 #poster-root[data-layout="bold-block"] .poster-boldblock-title-area .poster-title {
-  font-size: calc(var(--fp-heading-size) * 2.2);
+  font-size: calc(var(--fp-heading-size) * 2.2 * var(--fp-title-fit, 1));
   line-height: 0.85;
   letter-spacing: -0.02em;
   font-weight: 800;
