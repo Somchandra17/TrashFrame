@@ -104,6 +104,12 @@ export default function HelpModal({ open, onClose }) {
               instantly. Your theme is saved in your browser, so it persists
               between sessions.
             </p>
+            <p>
+              The file is checked before it&rsquo;s applied &mdash; if it isn&rsquo;t a
+              valid theme you&rsquo;ll see a short message explaining why, and every
+              rule is automatically scoped to the poster so a stray style can never
+              affect the rest of the app.
+            </p>
           </section>
 
           <section className="help-modal-section">

@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 import { FRAME_SIZES, DEFAULT_OVERRIDES, DEFAULT_THEME_CSS, PRESET_THEMES, AI_THEME_PROMPT, framePx } from "../lib/constants";
 import { downloadPng, downloadPdf } from "../lib/export";
+import { sanitizeTheme } from "../lib/theme";
 import ThemeThumb from "./ThemeThumb";
 
 function Section({ icon, title, children, defaultOpen = false }) {
@@ -191,11 +192,13 @@ export default function Sidebar({
   onExportingChange,
 }) {
   const fileRef = useRef(null);
+  const themeMsgTimer = useRef(null);
   const [exporting, setExporting] = useState(null);
   const [copied, setCopied] = useState(false);
   const [exportError, setExportError] = useState("");
   const [toast, setToast] = useState(null);
   const [exportDpi, setExportDpi] = useState(300);
+  const [themeMsg, setThemeMsg] = useState(null);
 
   function setOverride(key, value) {
     onChangeOverrides({ ...overrides, [key]: value });
@@ -211,13 +214,47 @@ export default function Sidebar({
     URL.revokeObjectURL(url);
   }
 
+  function showThemeMsg(type, text) {
+    setThemeMsg({ type, text });
+    if (themeMsgTimer.current) clearTimeout(themeMsgTimer.current);
+    if (type === "ok") {
+      themeMsgTimer.current = setTimeout(() => setThemeMsg(null), 4000);
+    }
+  }
+
+  function applyThemeCss(raw) {
+    const result = sanitizeTheme(raw);
+    if (!result.ok) {
+      showThemeMsg("err", result.error);
+      return;
+    }
+    onUploadTheme(result.css);
+    const fontNote = result.fontCount
+      ? `, ${result.fontCount} font${result.fontCount > 1 ? "s" : ""} loaded`
+      : "";
+    showThemeMsg(
+      "ok",
+      `Theme applied — ${result.varCount} variable${result.varCount > 1 ? "s" : ""}${fontNote}.`,
+    );
+  }
+
   function handleFileUpload(e) {
     const file = e.target.files?.[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = () => onUploadTheme(reader.result);
-    reader.readAsText(file);
     e.target.value = "";
+    if (!file) return;
+    if (file.size > 200 * 1024) {
+      showThemeMsg("err", "That file is too large to be a theme.");
+      return;
+    }
+    const reader = new FileReader();
+    reader.onerror = () => showThemeMsg("err", "Couldn't read that file.");
+    reader.onload = () => applyThemeCss(String(reader.result || ""));
+    reader.readAsText(file);
+  }
+
+  function handleResetTheme() {
+    setThemeMsg(null);
+    onResetTheme();
   }
 
   async function handleCopyPrompt() {
@@ -693,13 +730,22 @@ export default function Sidebar({
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline points="17 8 12 3 7 8" /><line x1="12" y1="3" x2="12" y2="15" /></svg>
             Upload .css file
           </button>
-          <input ref={fileRef} type="file" accept=".css" className="hidden" onChange={handleFileUpload} />
+          <input ref={fileRef} type="file" accept=".css,text/css" className="hidden" onChange={handleFileUpload} />
+
+          {themeMsg && (
+            <p
+              className={`ai-theme-msg ${themeMsg.type === "err" ? "ai-theme-msg-err" : "ai-theme-msg-ok"}`}
+              role={themeMsg.type === "err" ? "alert" : "status"}
+            >
+              {themeMsg.text}
+            </p>
+          )}
 
           {customTheme ? (
             <div className="ai-status ai-status-active">
               <span className="ai-status-dot" />
               AI theme active
-              <button onClick={onResetTheme} className="ai-status-remove">&times;</button>
+              <button onClick={handleResetTheme} className="ai-status-remove" aria-label="Remove AI theme">&times;</button>
             </div>
           ) : (
             <div className="ai-status">

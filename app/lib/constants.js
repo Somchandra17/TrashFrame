@@ -119,13 +119,12 @@ Your job is to look at the image and extract:
 - Overall mood (minimal, vintage, dark, neon, editorial, etc.)
 
 Then return ONLY a filled .css file using the exact template below. Rules:
-- Do NOT rename any variable
-- Do NOT add any new variables
-- Only change the values on the right side of the colon
-- For fonts: use real Google Fonts that match the mood
+- Output a SINGLE "#poster-root { ... }" block and nothing else — no other selectors (no body, :root, html, or .class rules), no @import, no @font-face, no @media
+- Do NOT rename any variable and do NOT add new variables — only change the values on the right side of each colon
+- For fonts: set the --fp-*-font variables to real Google Fonts that match the mood. Do NOT add @import lines — the app loads the fonts for you
 - For --fp-image-filter: use a CSS filter string e.g. grayscale(100%) or sepia(70%) or none
 - For --fp-track-columns: use 1, 2, or 3 only
-- Return only the CSS file, no explanation, no markdown code fences, just raw CSS
+- Return raw CSS only: start your reply with "#poster-root {" — no explanation, no commentary, no markdown code fences
 
 Here is the template to fill:
 

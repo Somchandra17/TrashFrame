@@ -9,6 +9,7 @@ import Image from "next/image";
 import { fetchSpotifyItem } from "./lib/spotify";
 import { extractPalette, extractDominantColors } from "./lib/colors";
 import { DEFAULT_FRAME, DEFAULT_OVERRIDES, PRESET_THEMES } from "./lib/constants";
+import { extractFontsFromCss, sanitizeTheme } from "./lib/theme";
 
 const RECENT_KEY = "trashframe_recent";
 const MAX_RECENT = 6;
@@ -26,30 +27,6 @@ function saveRecent(item) {
   const recent = loadRecent().filter(r => r.spotifyUrl !== item.spotifyUrl);
   recent.unshift(item);
   localStorage.setItem(RECENT_KEY, JSON.stringify(recent.slice(0, MAX_RECENT)));
-}
-
-function extractFontsFromCss(css) {
-  const fonts = new Set();
-  
-  const varRe = /--fp-(?:quote|heading|track)-font:\s*['"]([^'"]+)['"]/g;
-  let m;
-  while ((m = varRe.exec(css)) !== null) {
-    const name = m[1]?.trim();
-    if (name) fonts.add(name);
-  }
-
-  const importRe = /family=([^&:'"]+)/g;
-  while ((m = importRe.exec(css)) !== null) {
-    const name = decodeURIComponent(m[1].replace(/\+/g, " "))?.trim();
-    if (name) fonts.add(name);
-  }
-
-  const system = [
-    "Arial", "Helvetica", "Courier New", "Georgia",
-    "Times New Roman", "sans-serif", "serif", "monospace", "cursive", "fantasy", "system-ui"
-  ];
-
-  return [...fonts].filter(f => !system.includes(f) && !f.startsWith("Geist"));
 }
 
 function loadGoogleFonts(fonts) {
@@ -208,8 +185,15 @@ export default function Home() {
     const savedPreset = localStorage.getItem("poster_preset");
 
     if (savedCustom) {
-      setCustomTheme(savedCustom);
-      loadGoogleFonts(extractFontsFromCss(savedCustom));
+      // Re-sanitize on restore: a theme saved before scoping existed (or a
+      // tampered localStorage value) must not be injected raw.
+      const restored = sanitizeTheme(savedCustom);
+      if (restored.ok) {
+        setCustomTheme(restored.css);
+        loadGoogleFonts(extractFontsFromCss(restored.css));
+      } else {
+        localStorage.removeItem("poster_custom_css");
+      }
     } else if (savedPreset && savedPreset !== "default") {
       setActivePreset(savedPreset);
       const preset = PRESET_THEMES.find((p) => p.id === savedPreset);

@@ -1096,6 +1096,26 @@ body {
   color: #047857;
 }
 
+.ai-theme-msg {
+  font-size: 11px;
+  line-height: 1.5;
+  padding: 8px 12px;
+  border-radius: var(--radius-md);
+  border: 1px solid transparent;
+}
+
+.ai-theme-msg-ok {
+  background: #ecfdf5;
+  border-color: #a7f3d0;
+  color: #047857;
+}
+
+.ai-theme-msg-err {
+  background: #fef2f2;
+  border-color: #fecaca;
+  color: #b91c1c;
+}
+
 .ai-divider {
   display: flex;
   align-items: center;
