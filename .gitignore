@@ -24,6 +24,9 @@
 /.codegraph/
 /.cursor/
 
+# throwaway verification/screenshot harness scripts
+/tf-*.mjs
+
 # debug
 npm-debug.log*
 yarn-debug.log*

@@ -60,18 +60,21 @@
 #poster-root[data-layout="masterpiece-jcard"] .jcard-front {
   width: 45%;
   border-right: 2px solid color-mix(in srgb, var(--fp-heading-color) 20%, transparent);
-  padding: 4%;
+  padding: 0;
   display: flex;
   flex-direction: column;
   background: var(--fp-bg);
+  overflow: hidden;
 }
+/* Full-bleed front cover (a real cassette J-card front) — fills the panel
+   instead of floating a small square in dead space. */
 #poster-root[data-layout="masterpiece-jcard"] .poster-cover {
   width: 100%;
-  aspect-ratio: 1;
+  height: 100%;
+  aspect-ratio: auto;
+  min-height: 0;
   object-fit: cover;
-  margin-top: auto;
-  margin-bottom: auto;
-  border-radius: var(--fp-image-radius);
+  border-radius: 0;
 }
 #poster-root[data-layout="masterpiece-jcard"] .jcard-back {
   flex: 1;

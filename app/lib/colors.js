@@ -126,18 +126,21 @@ export async function extractPalette(imageUrl) {
   let autoVars;
   if (isDark) {
     autoVars = {
-      "--fp-bg": darken(dominant, 0.2),
-      "--fp-heading-color": "#f0f0f0",
-      "--fp-subtitle-color": "#bbbbbb",
-      "--fp-track-color": "#999999",
-      "--fp-meta-color": "#777777",
-      "--fp-quote-color": "#dddddd",
-      "--fp-bg-overlay": "rgba(0,0,0,0.55)",
-      "--fp-vignette-color": `rgba(${dominant[0]},${dominant[1]},${dominant[2]},0.4)`,
-      "--fp-qr-fg": "#cccccc",
+      // Keep more of the album's hue than a near-black darken (0.2) gave,
+      // so the classic background reads as a rich tone rather than flat black.
+      "--fp-bg": darken(dominant, 0.3),
+      "--fp-heading-color": "#f4f4f4",
+      "--fp-subtitle-color": "#c2c2c2",
+      "--fp-track-color": "#a6a6a6",
+      "--fp-meta-color": "#8a8a8a",
+      "--fp-quote-color": "#e2e2e2",
+      // Album-aware scrim over the bloom — only the classic layer shows it (posterTheme.css).
+      "--fp-bg-overlay": "rgba(0,0,0,0.5)",
+      "--fp-vignette-color": `rgba(${Math.round(dominant[0] * 0.4)},${Math.round(dominant[1] * 0.4)},${Math.round(dominant[2] * 0.4)},0.55)`,
+      "--fp-qr-fg": "#d4d4d4",
       "--fp-qr-bg": "transparent",
       "--fp-border-color": "rgba(255,255,255,0.08)",
-      "--fp-track-num-color": "#666666",
+      "--fp-track-num-color": "#6f6f6f",
     };
   } else {
     autoVars = {
@@ -145,10 +148,10 @@ export async function extractPalette(imageUrl) {
       "--fp-heading-color": "#111111",
       "--fp-subtitle-color": "#444444",
       "--fp-track-color": "#555555",
-      "--fp-meta-color": "#888888",
+      "--fp-meta-color": "#808080",
       "--fp-quote-color": "#222222",
-      "--fp-bg-overlay": "rgba(255,255,255,0.45)",
-      "--fp-vignette-color": `rgba(${dominant[0]},${dominant[1]},${dominant[2]},0.4)`,
+      "--fp-bg-overlay": "rgba(255,255,255,0.35)",
+      "--fp-vignette-color": `rgba(${dominant[0]},${dominant[1]},${dominant[2]},0.32)`,
       "--fp-qr-fg": "#111111",
       "--fp-qr-bg": "transparent",
       "--fp-border-color": "#e0e0e0",

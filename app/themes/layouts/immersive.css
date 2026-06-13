@@ -29,9 +29,24 @@
 #poster-root[data-layout="immersive"] .poster-immersive-overlay {
   position: relative;
   z-index: 4;
-  padding: 6% 6% 0;
+  padding: 8% 6% 6%;
   text-align: center;
   flex-shrink: 0;
+}
+/* Subtle top scrim so the outlined title + small subtitle stay legible over
+   bright covers (the shared darkening overlay is intentionally off here). */
+#poster-root[data-layout="immersive"] .poster-immersive-overlay::before {
+  content: "";
+  position: absolute;
+  inset: -2% 0 auto 0;
+  height: 220%;
+  background: linear-gradient(to bottom, rgba(0, 0, 0, 0.45) 0%, rgba(0, 0, 0, 0.12) 55%, transparent 100%);
+  z-index: -1;
+  pointer-events: none;
+}
+#poster-root[data-layout="immersive"][data-title-size="l"] .poster-immersive-overlay .poster-title,
+#poster-root[data-layout="immersive"][data-title-size="xl"] .poster-immersive-overlay .poster-title {
+  letter-spacing: 0.01em;
 }
 #poster-root[data-layout="immersive"] .poster-immersive-overlay .poster-artist {
   font-size: calc(var(--fp-subtitle-size) * 0.55);

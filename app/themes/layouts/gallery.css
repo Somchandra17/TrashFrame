@@ -23,19 +23,22 @@
 
 #poster-root[data-layout="gallery"] .poster-gallery-art-panel {
   background: #111;
-  padding: 6% 10%;
+  padding: 7% 8%;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0.5em;
-  flex-shrink: 1;
-  min-height: 35%;
-  max-height: 55%;
+  gap: 0.7em;
+  /* Hero panel grows to absorb slack so short tracklists don't leave a void
+     below; shrinks toward its min when the tracklist is long. */
+  flex: 1 1 auto;
+  min-height: 36%;
   justify-content: center;
   overflow: hidden;
 }
 #poster-root[data-layout="gallery"] .poster-gallery-art-panel .poster-cover {
-  width: 65%;
+  width: auto;
+  max-width: 78%;
+  max-height: 100%;
   border-radius: var(--fp-image-radius);
 }
 #poster-root[data-layout="gallery"] .poster-gallery-art-panel .poster-quote {
@@ -47,8 +50,9 @@
 #poster-root[data-layout="gallery"] .poster-gallery-body {
   display: flex;
   gap: 0.8em;
-  flex: 1;
-  padding-top: 0.6em;
+  /* Natural height (don't grow) — the art panel above absorbs the slack. */
+  flex: 0 1 auto;
+  padding-top: 0.7em;
   min-height: 0;
 }
 #poster-root[data-layout="gallery"] .poster-gallery-body > .poster-tracklist {

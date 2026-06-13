@@ -39,7 +39,7 @@
   /* ── Background Art Effects ── */
   --fp-bg-art-opacity: 0.15;
   --fp-bg-blur: 40px;
-  --fp-bg-overlay: rgba(0, 0, 0, 0.55);
+  --fp-bg-overlay: transparent;
   --fp-vignette-opacity: 0.4;
   --fp-vignette-color: rgba(0, 0, 0, 0.6);
   --fp-ghost-opacity: 0;
@@ -49,9 +49,26 @@
   --fp-title-fit: 1;
 }
 
-#poster-root[data-title-size="m"] { --fp-title-fit: 0.85; }
-#poster-root[data-title-size="l"] { --fp-title-fit: 0.7; }
-#poster-root[data-title-size="xl"] { --fp-title-fit: 0.58; }
+#poster-root[data-title-size="m"] { --fp-title-fit: 0.86; }
+#poster-root[data-title-size="l"] { --fp-title-fit: 0.72; }
+#poster-root[data-title-size="xl"] { --fp-title-fit: 0.6; }
+
+/* The most title-sensitive display layouts (heavy 3D shadow, outlined stroke,
+   single-word-per-line, thick comic weight) need to shrink harder on long
+   names so words don't collide or break mid-word. These [layout][size] rules
+   outrank the global buckets above. */
+#poster-root[data-layout="retro"][data-title-size="m"] { --fp-title-fit: 0.7; }
+#poster-root[data-layout="retro"][data-title-size="l"] { --fp-title-fit: 0.5; }
+#poster-root[data-layout="retro"][data-title-size="xl"] { --fp-title-fit: 0.4; }
+
+#poster-root[data-layout="immersive"][data-title-size="l"] { --fp-title-fit: 0.56; }
+#poster-root[data-layout="immersive"][data-title-size="xl"] { --fp-title-fit: 0.42; }
+
+#poster-root[data-layout="masterpiece-graduation"][data-title-size="l"] { --fp-title-fit: 0.6; }
+#poster-root[data-layout="masterpiece-graduation"][data-title-size="xl"] { --fp-title-fit: 0.46; }
+
+#poster-root[data-layout="bold-block"][data-title-size="l"] { --fp-title-fit: 0.62; }
+#poster-root[data-layout="bold-block"][data-title-size="xl"] { --fp-title-fit: 0.48; }
 
 /* ──────────────── BASE (ALL LAYOUTS) ──────────────── */
 
@@ -245,6 +262,17 @@
   opacity: var(--fp-vignette-opacity);
   z-index: 5;
   pointer-events: none;
+}
+
+/* The album-derived darkening scrim + vignette only belong on the classic
+   layout (the one that renders the subtle bloom and reads the auto/custom
+   --fp-bg-overlay). Every other layout is either flat-background — where the
+   scrim would muddy a white/cream bg to gray on dark albums — or carries its
+   own contrast treatment (overlay's frosted card, immersive's bottom
+   gradient, graduation's frosted plate). So suppress the shared layers there. */
+#poster-root:not([data-layout="classic"]) > .poster-layer-overlay,
+#poster-root:not([data-layout="classic"]) > .poster-layer-vignette {
+  display: none;
 }
 
 #poster-root > .poster-content {

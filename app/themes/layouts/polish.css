@@ -197,7 +197,10 @@
   min-width: 0;
   display: flex;
   flex-direction: column;
-  gap: 0.35em;
+  /* Center the (often short) title block against the full-height cover so the
+     column doesn't leave a dead void below a top-anchored title. */
+  justify-content: center;
+  gap: 0.5em;
   z-index: 2;
 }
 #poster-root[data-layout="minimal"] .poster-minimal-copy .poster-artist {
@@ -206,15 +209,15 @@
   letter-spacing: 0.18em;
 }
 #poster-root[data-layout="minimal"] .poster-minimal-copy .poster-title {
-  font-size: calc(var(--fp-heading-size) * 1.32 * var(--fp-title-fit, 1));
-  line-height: 0.84;
+  font-size: calc(var(--fp-heading-size) * 1.55 * var(--fp-title-fit, 1));
+  line-height: 0.82;
   max-width: 5.5ch;
   /* Words intentionally overflow the 5.5ch box (one word per line); keep
      them whole rather than breaking mid-word. */
   overflow-wrap: normal;
 }
 #poster-root[data-layout="minimal"] .poster-minimal-copy .poster-quote {
-  margin-top: auto;
+  margin-top: 0.4em;
   text-align: left;
   max-width: 92%;
   font-size: calc(var(--fp-quote-size) * 0.84);
@@ -228,6 +231,11 @@
 #poster-root[data-layout="minimal"] .poster-minimal-cover {
   width: 100%;
   height: 100%;
+  /* Override the base 1/1 ratio so the arched cover fills the full poster
+     height as a hero column instead of capping square and leaving a void. */
+  aspect-ratio: auto;
+  min-height: 0;
+  object-fit: cover;
   border-radius: 0;
   box-shadow: 0 28px 40px -28px rgba(0, 0, 0, 0.5);
   border: 1px solid color-mix(in srgb, var(--fp-heading-color) 12%, transparent);

@@ -29,7 +29,9 @@
   padding: 6% 8%;
   height: 100%;
   gap: 0.6em;
-  background: rgba(20, 20, 20, 0.4);
+  /* More opaque so purple title + white tracklist stay crisp over bright
+     covers (0.4 read as washed-out gray on light albums). */
+  background: rgba(16, 16, 20, 0.55);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   border: 1px solid rgba(255, 255, 255, 0.15);

@@ -11,14 +11,16 @@
 }
 #poster-root[data-layout="masterpiece-graduation"] .grad-text-plate {
   position: absolute; top: 6%; right: 6%; max-height: 88%;
-  background: rgba(255,255,255,0.85); backdrop-filter: blur(8px);
-  padding: 5% 6%; border-radius: 20px;
-  width: 65%;
+  /* More opaque so the tracklist stays crisp over dark covers (it read as
+     faint gray at 0.85 over a dark album). */
+  background: rgba(255,255,255,0.93); backdrop-filter: blur(10px);
+  padding: 6% 6%; border-radius: 20px;
+  width: 66%;
   z-index: 2;
-  box-shadow: 0 20px 40px rgba(0,0,0,0.25);
+  box-shadow: 0 24px 48px rgba(0,0,0,0.32);
   display: flex;
   flex-direction: column;
-  gap: 0.8em;
+  gap: 0.7em;
   border: 1px solid rgba(255,255,255,1);
   overflow: hidden;
 }
@@ -35,7 +37,8 @@
 }
 #poster-root[data-layout="masterpiece-graduation"] .poster-tracklist {
   column-count: var(--fp-track-columns);
-  font-size: calc(var(--fp-track-size) * 0.8);
+  font-size: calc(var(--fp-track-size) * 0.92);
+  line-height: 1.5;
   flex: 1;
   min-height: 0;
 }

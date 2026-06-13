@@ -15,6 +15,13 @@
 }
 #poster-root[data-layout="classic"] .poster-cover {
   border-radius: var(--fp-image-radius);
+  /* Grow to absorb slack (sparse tracklists) for a confident hero cover,
+     capped so a long tracklist still gets room. Slight crop is fine. */
+  flex: 1 1 auto;
+  aspect-ratio: auto;
+  min-height: 46%;
+  max-height: 66%;
+  object-fit: cover;
 }
 #poster-root[data-layout="classic"] .poster-info {
   display: flex;
